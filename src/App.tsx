@@ -155,7 +155,7 @@ export default function App(){
     // Apply the scroll dissolve to every main-page section/block and its visible content.
     // Hero copy is selected item-by-item so one entering line never hides the whole headline.
     const selector='main > section,main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main button,main img,main picture,main figure,main .eyebrow,main .hero-buttons,main .hero-photo-layer,main .hero-stamp,main .ticker > div,main .product-card,main .format-card,main .process-item,main .value-card,main .size-guide-grid article,main .quick-view-photo,main .craft-image,main .contact-panel,main .delivery-points > div,main .calc-grid > div,main .faq-list details,main .guest-notes-grid > div';
-    const visualContainers='.product-card,.format-card,.process-item,.value-card,.size-guide-grid article,.quick-view-photo,.craft-image,.contact-panel,main > section';
+    const visualContainers='.product-card,.format-card,.process-item,.value-card,.size-guide-grid article,.quick-view-photo,.craft-image,.contact-panel';
     const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
       .filter(node=>{
         // Keep section backgrounds as independent blocks, while avoiding nested opacity multiplication.
