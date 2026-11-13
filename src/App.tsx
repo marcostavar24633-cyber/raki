@@ -152,7 +152,7 @@ export default function App(){
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce) return;
-    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main .eyebrow,main .section-index,main .kicker,main .vertical-label,main .photo-caption,main .value-number,main .value-symbol,main .hero-side span,main .hero-bottom > span,main .hero-stamp span';
+    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main a,main button,main span,main strong,main em,main b';
     const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
       .filter(node=>!node.parentElement?.closest(selector));
     nodes.forEach(node=>node.dataset.scrollTextFade='true');
@@ -160,10 +160,11 @@ export default function App(){
     const update=()=>{
       frame=0;
       const fadeStart=260;
-      const fadeEnd=100;
+      const fadeEnd=40;
       nodes.forEach(node=>{
         const top=node.getBoundingClientRect().top;
-        const opacity=Math.max(0,Math.min(1,(top-fadeEnd)/(fadeStart-fadeEnd)));
+        const progress=Math.max(0,Math.min(1,(top-fadeEnd)/(fadeStart-fadeEnd)));
+        const opacity=progress*progress*(3-2*progress);
         node.style.setProperty('--scroll-text-opacity',opacity.toFixed(3));
       });
     };
