@@ -236,7 +236,7 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 .quick-view-close{position:absolute;z-index:3;top:17px;right:17px;background:rgba(8,10,9,.62);color:#fff;border-color:rgba(255,255,255,.25)}
 @keyframes quickViewIn{from{opacity:0;transform:translateY(18px) scale(.975)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes quickPhotoIn{from{transform:scale(1.07);filter:blur(5px)}to{transform:scale(1);filter:blur(0)}}
-@media(max-width:700px){.product-view{opacity:1;transform:none;left:9px;bottom:10px;padding:8px 10px;font-size:8px}.product-view svg{width:13px}.quick-view-overlay{padding:10px;align-items:end}.quick-view-modal{grid-template-columns:1fr;grid-template-rows:minmax(210px,34dvh) auto;max-height:92dvh;border-radius:22px}.quick-view-photo{min-height:0}.quick-view-photo span{left:18px;bottom:15px;font-size:7px}.quick-view-copy{padding:24px 22px 28px;gap:12px}.quick-view-copy h3{font-size:37px}.quick-view-copy p{font-size:12px}.quick-view-copy .btn{width:100%}.quick-view-close{top:12px;right:12px}}
+@media(max-width:700px){.product-view{opacity:1;transform:none;left:9px;bottom:10px;padding:8px 10px;font-size:8px}.product-view svg{width:13px}.quick-view-overlay{padding:8px;align-items:end}.quick-view-modal{grid-template-columns:1fr;grid-template-rows:minmax(150px,28dvh) auto;max-height:92dvh;border-radius:22px;overscroll-behavior:contain}.quick-view-photo{min-height:0}.quick-view-photo span{left:18px;bottom:15px;font-size:7px}.quick-view-copy{min-height:0;padding:20px 18px 22px;gap:10px}.quick-view-copy h3{font-size:34px}.quick-view-copy p{font-size:12px;line-height:1.65}.quick-view-copy .btn{width:100%}.quick-view-note{font-size:9px}.quick-view-close{top:12px;right:12px}}
 /* Raspberry-red accent echoes the reference while staying native to the crayfish brand. */
 :root{--neon-emerald:#ff7185;--neon-soft:rgba(255,113,133,.32)}
 .btn-gold:hover,.quick-add:hover{background:#ff9aaa;color:#241014;border-color:#ff7185;box-shadow:0 0 0 1px rgba(255,113,133,.42),0 0 18px rgba(255,113,133,.3),0 0 38px rgba(255,113,133,.18),0 12px 30px rgba(0,0,0,.2)}
@@ -534,6 +534,8 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
   opacity:1;
   transform:scale(1.015);
 }
+.hero-photo.hero-photo-layer.is-active{animation:heroPhotoEnter 1.2s cubic-bezier(.22,.61,.36,1) both}
+@keyframes heroPhotoEnter{from{opacity:0;transform:scale(1.055)}to{opacity:1;transform:scale(1.015)}}
 .hero-grain{z-index:1}
 .hero-inner,.hero-stamp{z-index:2}
 @media(prefers-reduced-motion:reduce){
