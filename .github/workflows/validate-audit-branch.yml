@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y webp
-          find public -maxdepth 1 -type f -iname '*.png' ! -name 'design-reference.png' -print0 | while IFS= read -r -d '' file; do
+          find public -maxdepth 1 -type f -iname '*.png' ! -name 'design-reference.png' ! -name 'ehal-greka-header.png' -print0 | while IFS= read -r -d '' file; do
             output="${file%.png}.webp"
             if [ ! -f "$output" ]; then
               cwebp -quiet -q 82 -m 6 -resize 1800 1800 "$file" -o "$output"
@@ -35,7 +35,7 @@ jobs:
           import fs from 'node:fs';
           for (const file of ['src/App.tsx', 'src/styles.css', 'index.html']) {
             const source = fs.readFileSync(file, 'utf8');
-            const updated = source.replace(/\.png/g, '.webp');
+            const updated = source.replace(/\.png/g, '.webp').replaceAll('ehal-greka-header.webp', 'ehal-greka-header.png');
             if (updated !== source) fs.writeFileSync(file, updated);
           }
           NODE
