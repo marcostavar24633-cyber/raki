@@ -709,3 +709,20 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   .product-card::after{animation:none!important}
 }
+
+/* Hero parallax: every slide follows the same scroll/pointer offset without GSAP transform conflicts */
+.hero-photo.hero-photo-layer,
+.hero-photo.hero-photo-layer.is-active{
+  transform:translate3d(var(--hero-parallax-x,0px),calc(var(--hero-parallax-y,0px) + var(--hero-pointer-y,0px)),0) scale(1.16)!important;
+  transition:opacity 3s cubic-bezier(.22,.61,.36,1),transform .32s ease-out!important;
+  background-position:center;
+  will-change:opacity,transform;
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-photo.hero-photo-layer,
+  .hero-photo.hero-photo-layer.is-active{
+    transform:none!important;
+    transition:none!important;
+    will-change:auto;
+  }
+}
