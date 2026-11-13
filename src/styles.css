@@ -931,7 +931,7 @@ main [data-scroll-text-fade="true"]{
 
 
 /* Unified scroll-edge dissolve and slow zone for all visible content.
-   Elements begin easing at 150px from the top and are fully dissolved by 60px. */
+   Elements begin easing in the marked upper zone (300px) and are fully dissolved by 60px. */
 main [data-scroll-text-fade="true"]{
   opacity:var(--scroll-text-opacity,1);
   translate:0 var(--scroll-slow-offset,0px);
