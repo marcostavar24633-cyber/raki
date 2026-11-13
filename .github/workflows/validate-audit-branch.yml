@@ -48,6 +48,23 @@ jobs:
           find public -maxdepth 1 -type f -iname '*.png' ! -name 'ehal-greka-header.png' -print0 | while IFS= read -r -d '' file; do
             mv "$file" source-images/
           done
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const sourceFiles = ['src/App.tsx', 'src/styles.css', 'index.html'];
+          const used = new Set();
+          for (const file of sourceFiles) {
+            const source = fs.readFileSync(file, 'utf8');
+            for (const match of source.matchAll(/\/raki\/([^"'\x60)]+\.webp)/g)) {
+              used.add(decodeURIComponent(match[1]));
+            }
+          }
+          for (const name of fs.readdirSync('public')) {
+            if (name.endsWith('.webp') && !used.has(name)) {
+              fs.renameSync(path.join('public', name), path.join('source-images', name));
+            }
+          }
+          NODE
       - name: Install dependencies
         run: npm ci
       - name: Dependency vulnerability report
