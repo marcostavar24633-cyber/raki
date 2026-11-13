@@ -956,3 +956,6 @@ main [data-scroll-text-fade="true"]{
 .logo-image-only{gap:0;width:190px;height:78px;flex:0 0 190px;overflow:visible}.logo-image-only .logo-cart{width:190px;height:78px;object-fit:contain;filter:drop-shadow(0 2px 10px rgba(173,128,80,.16))}.logo-image-only>span{display:none}
 @media(max-width:700px){.logo-image-only{width:128px;height:58px;flex-basis:128px}.logo-image-only .logo-cart{width:128px;height:58px}}
 @media(max-width:370px){.logo-image-only{width:112px;height:52px;flex-basis:112px}.logo-image-only .logo-cart{width:112px;height:52px}}
+
+/* Cart phone action */
+.drawer .cart-call{margin-top:12px;gap:10px;border-color:#9b7952;color:#293d33;background:rgba(255,255,255,.24);text-decoration:none}.drawer .cart-call:hover{background:#293d33;color:#f2ede4;border-color:#293d33}.drawer .cart-call svg{flex:0 0 auto}
