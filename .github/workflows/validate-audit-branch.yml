@@ -41,6 +41,23 @@ jobs:
           NODE
       - name: Install dependencies
         run: npm install
+      - name: Dependency vulnerability report
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('/tmp/npm-audit.json', 'utf8'));
+          console.log('Dependency audit summary:', JSON.stringify(report.metadata?.vulnerabilities ?? {}));
+          for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
+            console.log(JSON.stringify({
+              package: name,
+              severity: item.severity,
+              direct: item.isDirect,
+              range: item.range,
+              fixAvailable: item.fixAvailable
+            }));
+          }
+          NODE
       - name: TypeScript and production build
         run: npm run build
       - name: Commit optimized images and references
