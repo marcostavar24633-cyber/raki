@@ -864,3 +864,28 @@ main [data-scroll-text-fade="true"]{
     box-shadow:0 0 6px rgba(57,255,20,.1),0 10px 30px rgba(0,0,0,.18)!important;
   }
 }
+
+
+/* Product cards: soft traveling perimeter glow, no moving stripe */
+.product-card::after{content:none!important;display:none!important;animation:none!important}
+.product-card,.product-card:hover,.product-card:active,.product-card:focus,.product-card:focus-within{
+  border:1px solid rgba(110,255,70,.10)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+}
+.product-card:hover,.product-card:active,.product-card:focus,.product-card:focus-within{
+  animation:softPerimeterTravel 3.6s ease-in-out infinite!important;
+  outline:none;
+}
+@keyframes softPerimeterTravel{
+  0%,100%{border-color:rgba(110,255,70,.22);box-shadow:0 -2px 7px rgba(57,255,20,.09),0 10px 30px rgba(0,0,0,.18)}
+  25%{border-color:rgba(110,255,70,.30);box-shadow:2px 0 8px rgba(57,255,20,.11),0 10px 30px rgba(0,0,0,.18)}
+  50%{border-color:rgba(110,255,70,.22);box-shadow:0 2px 7px rgba(57,255,20,.09),0 10px 30px rgba(0,0,0,.18)}
+  75%{border-color:rgba(110,255,70,.30);box-shadow:-2px 0 8px rgba(57,255,20,.11),0 10px 30px rgba(0,0,0,.18)}
+}
+.product-card:hover .product-info h3,.product-card:focus-within .product-info h3{color:#c9eaa0!important}
+@media(prefers-reduced-motion:reduce){
+  .product-card:hover,.product-card:active,.product-card:focus,.product-card:focus-within{
+    animation:none!important;border-color:rgba(110,255,70,.22)!important;
+    box-shadow:0 0 5px rgba(57,255,20,.07),0 10px 30px rgba(0,0,0,.18)!important;
+  }
+}
