@@ -31,7 +31,7 @@ test('cart can be populated and checkout validates contacts before preparing a T
   await expect(page.getByRole('dialog', { name: 'Корзина' })).toBeVisible();
   await page.getByRole('button', { name: /Оформить заказ/ }).click();
 
-  const dialog = page.getByRole('dialog', { name: 'Оформление заказа.' });
+  const dialog = page.getByRole('dialog', { name: 'Оформление заказа' });
   await expect(dialog).toBeVisible();
   await dialog.locator('input[name="name"]').fill('Тестовый покупатель');
   await dialog.locator('input[name="phone"]').fill('+1 (2) 3-4');
