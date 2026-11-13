@@ -129,3 +129,63 @@
 @keyframes cartTotalIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 @media(max-width:700px),(hover:none),(pointer:coarse){.product-card,.product-card:hover{transform:none!important;will-change:auto}.reveal-ready{filter:none}}
 @media(prefers-reduced-motion:reduce){.reveal-ready{filter:none}.overlay,.drawer,.cart-line,.cart-total,.drawer>.btn-gold{animation:none!important}.product-card,.product-card:hover{transform:none!important}}
+
+
+/* Rounded neon-luxe controls */
+:root{--neon-emerald:#65f0bd;--neon-soft:rgba(101,240,189,.34)}
+.btn,.cart-trigger,.quick-add,.slide-controls button,.filters button,
+.calc-control button,.close-btn,.qty button,.mobile-bottom button,
+.mobile-bottom a,.checkout-modal button{
+  border-radius:999px;
+}
+.btn{border-radius:999px;letter-spacing:.055em}
+.btn-gold{
+  border-color:rgba(191,255,226,.3);
+  box-shadow:0 6px 24px rgba(173,128,80,.18),0 0 0 1px rgba(101,240,189,.08);
+}
+.btn-gold:hover{
+  background:#b7e8ce;
+  color:#102018;
+  border-color:rgba(101,240,189,.85);
+  box-shadow:0 0 0 1px rgba(101,240,189,.42),0 0 16px rgba(101,240,189,.32),0 0 38px rgba(101,240,189,.2),0 12px 30px rgba(0,0,0,.2);
+}
+.btn-outline,.cart-trigger,.mobile-bottom button{
+  border-radius:999px;
+  transition:color .3s,border-color .3s,background .3s,box-shadow .3s,transform .3s;
+}
+.btn-outline:hover,.cart-trigger:hover,.mobile-bottom button:hover{
+  border-color:var(--neon-emerald);
+  box-shadow:0 0 0 1px rgba(101,240,189,.18),0 0 22px rgba(101,240,189,.2);
+}
+.quick-add{
+  border:1px solid rgba(101,240,189,.28);
+  box-shadow:0 5px 20px rgba(0,0,0,.22);
+}
+.quick-add:hover{
+  background:#b7e8ce;
+  color:#102018;
+  border-color:var(--neon-emerald);
+  box-shadow:0 0 0 1px rgba(101,240,189,.35),0 0 18px rgba(101,240,189,.38),0 0 34px rgba(101,240,189,.2);
+}
+.filters button.active{
+  border-radius:999px;
+  box-shadow:0 0 0 1px rgba(101,240,189,.16),0 0 18px rgba(101,240,189,.15);
+}
+.filters button:hover,.slide-controls button:hover,.calc-control button:hover,
+.close-btn:hover,.qty button:hover{
+  border-color:var(--neon-emerald);
+  box-shadow:0 0 0 1px rgba(101,240,189,.16),0 0 16px rgba(101,240,189,.18);
+}
+.mobile-bottom a{
+  border-radius:999px;
+  box-shadow:0 0 18px rgba(101,240,189,.16);
+}
+.checkout-modal .btn:hover,.drawer .btn:hover{
+  box-shadow:0 0 0 1px rgba(101,240,189,.32),0 0 22px rgba(101,240,189,.24);
+}
+@media(prefers-reduced-motion:reduce){
+  .btn,.cart-trigger,.quick-add,.slide-controls button,.filters button,
+  .calc-control button,.close-btn,.qty button,.mobile-bottom button,.mobile-bottom a{
+    transition:none!important;
+  }
+}
