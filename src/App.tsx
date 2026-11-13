@@ -123,16 +123,24 @@ export default function App(){
     if(reduce) return;
     const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main .photo-caption,main .section-index,main .kicker,main .eyebrow,main .product-info,main .catalog-foot,main .intro-note,main .craft-steps > div,main .delivery-points > div';
     const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector));
+    const hero=document.querySelector<HTMLElement>('.hero');
+    const heroCopy=document.querySelector<HTMLElement>('.hero-copy');
     nodes.forEach(node=>node.dataset.topFade='true');
     let frame=0;
     const update=()=>{
       frame=0;
-      const fadeZone=112;
+      const fadeZone=190;
       nodes.forEach(node=>{
         const rect=node.getBoundingClientRect();
-        const opacity=Math.max(0,Math.min(1,rect.bottom/fadeZone));
+        const progress=Math.max(0,Math.min(1,rect.bottom/fadeZone));
+        const opacity=progress*progress*(3-2*progress);
         node.style.setProperty('--top-scroll-opacity',String(opacity));
       });
+      if(hero && heroCopy){
+        const rect=hero.getBoundingClientRect();
+        const travel=Math.max(0,Math.min(105,-rect.top*.32));
+        heroCopy.style.setProperty('--hero-text-drift',`${travel}px`);
+      }
     };
     const onScroll=()=>{if(!frame) frame=requestAnimationFrame(update)};
     update();
@@ -143,6 +151,7 @@ export default function App(){
       window.removeEventListener('resize',onScroll);
       if(frame) cancelAnimationFrame(frame);
       nodes.forEach(node=>{node.style.removeProperty('--top-scroll-opacity');delete node.dataset.topFade});
+      heroCopy?.style.removeProperty('--hero-text-drift');
     };
   },[]);
   useEffect(()=>{
