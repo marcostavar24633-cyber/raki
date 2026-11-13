@@ -154,7 +154,7 @@ export default function App(){
     if(reduce) return;
     // Cover the entire visible site: header, all main sections, footer and floating UI.
     // Each selected element is evaluated by its own lower edge as it enters the top fade zone.
-    const selector='header,header *,main,main *,footer,footer *,[role="dialog"],[role="dialog"] *,[role="complementary"],[role="complementary"] *';
+    const selector='main,main *,footer,footer *,[role="dialog"],[role="dialog"] *,[role="complementary"],[role="complementary"] *';
     const atomicContainers='section,article,aside,nav,form,figure,details,[role="dialog"],[role="complementary"],.product-card,.format-card,.process-item,.value-card,.contact-panel,.craft-image,.quick-view-photo';
     const allNodes=Array.from(document.querySelectorAll<HTMLElement>(selector));
     const nodes=allNodes.filter(node=>{
