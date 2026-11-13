@@ -793,3 +793,32 @@ main [data-scroll-text-fade="true"]{
   border-color:#39ff14!important;
   box-shadow:0 0 10px rgba(57,255,20,.32),0 0 28px rgba(57,255,20,.2),0 16px 42px rgba(0,0,0,.22)!important;
 }
+
+
+/* Final neon outline tuning: keep the moving lime streak vivid on hover, press and focus */
+.product-card::after{
+  background:conic-gradient(from 0deg,
+    transparent 0 66%,
+    #39ff14 73%,
+    #d4ff00 80%,
+    #39ff14 87%,
+    transparent 94% 100%)!important;
+  filter:drop-shadow(0 0 6px #39ff14) drop-shadow(0 0 16px rgba(57,255,20,.95))!important;
+}
+.product-card:hover::after,
+.product-card:active::after,
+.product-card:focus::after,
+.product-card:focus-within::after{
+  opacity:1!important;
+  animation:neonPerimeterRun 1.45s linear infinite!important;
+}
+.product-card:hover,
+.product-card:active,
+.product-card:focus,
+.product-card:focus-within{
+  border-color:#39ff14!important;
+  box-shadow:0 0 12px rgba(57,255,20,.4),0 0 30px rgba(57,255,20,.25),0 16px 42px rgba(0,0,0,.22)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .product-card::after{animation:none!important}
+}
