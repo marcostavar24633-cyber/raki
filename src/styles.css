@@ -1019,5 +1019,5 @@ main [data-scroll-text-fade="true"]{
 @media(prefers-reduced-motion:reduce){.choice-card>img{transition:none}}
 
 /* Clarify that the product-card photo shows a cooked crayfish, while the product is sold live. */
-.product-photo-note{position:absolute;left:14px;bottom:48px;z-index:2;padding:7px 10px;background:rgba(16,18,17,.78);border:1px solid rgba(194,166,105,.42);backdrop-filter:blur(8px);color:#f0dfc5;font-size:8px;letter-spacing:.06em;border-radius:2px}
-@media(max-width:700px){.product-photo-note{left:9px;bottom:43px;padding:6px 7px;font-size:7px;max-width:calc(100% - 18px)}}
+.product-photo-note{display:block;margin-top:9px;color:#999d95;font-size:9px;line-height:1.5;letter-spacing:.02em}
+}
