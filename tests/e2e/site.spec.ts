@@ -7,9 +7,13 @@ test('mobile layout stays within the viewport', async ({ page }) => {
     await expect(page.locator('main')).toBeVisible();
     const overflow = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
-      document: document.documentElement.scrollWidth
+      document: document.documentElement.scrollWidth,
+      offenders: Array.from(document.querySelectorAll<HTMLElement>('body *')).map(element => {
+        const rect = element.getBoundingClientRect();
+        return { tag: element.tagName, className: String(element.className || ''), text: (element.innerText || '').slice(0, 70), left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width) };
+      }).filter(item => item.right > window.innerWidth + 1 || item.left < -1).sort((a,b) => b.right-a.right).slice(0,12)
     }));
-    expect(overflow.document, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(overflow.viewport + 1);
+    expect(overflow.document, `horizontal overflow at ${width}px; offenders: ${JSON.stringify(overflow.offenders)}`).toBeLessThanOrEqual(overflow.viewport + 1);
     await expect(page.locator('.header')).toBeVisible();
     await expect(page.locator('.cart-trigger')).toBeVisible();
   }
