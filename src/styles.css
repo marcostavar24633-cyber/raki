@@ -726,3 +726,7 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
     will-change:auto;
   }
 }
+
+/* Keep typography visually locked while scrolling: no JS-driven text opacity or drift */
+[data-top-fade="true"]{opacity:1!important;transition:none!important}
+.hero-copy{transform:none!important;will-change:auto!important}
