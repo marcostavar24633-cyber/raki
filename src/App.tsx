@@ -56,19 +56,20 @@ export default function App(){
   const [quickView,setQuickView]=useState<Product|null>(null); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[category,setCategory]=useState('all'),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
   useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
   useEffect(()=>{
-    const panelOpen=cartOpen||checkout;
+    const panelOpen=cartOpen||checkout||!!quickView;
     if(!panelOpen) return;
     const previousOverflow=document.body.style.overflow;
     document.body.style.overflow='hidden';
     const onKeyDown=(event:KeyboardEvent)=>{
       if(event.key==='Escape'){
-        if(checkout) setCheckout(false);
+        if(quickView) setQuickView(null);
+        else if(checkout) setCheckout(false);
         else setCartOpen(false);
       }
     };
     window.addEventListener('keydown',onKeyDown);
     return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener('keydown',onKeyDown)};
-  },[cartOpen,checkout]);
+  },[cartOpen,checkout,quickView]);
   useEffect(()=>{
     const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduceMotion) return;
