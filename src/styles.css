@@ -1035,3 +1035,39 @@ main [data-scroll-text-fade="true"]{
 
 /* Compact mobile header: keep the brand, cart and menu inside narrow screens. */
 @media(max-width:700px){.header-actions{gap:8px}.sound-toggle{display:none!important}.logo-image-only{flex-basis:112px;width:112px}.logo-image-only .logo-cart{width:112px}}
+
+
+/* Mobile regression fix: keep footer columns and hero copy inside narrow viewports. */
+@media(max-width:700px){
+  .footer{
+    grid-template-columns:minmax(0,1fr);
+    gap:24px;
+    padding-left:7%;
+    padding-right:7%;
+  }
+  .footer>p{
+    max-width:100%;
+    margin:0;
+    overflow-wrap:anywhere;
+  }
+  .footer-links{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    min-width:0;
+  }
+  .footer-bottom{
+    grid-column:1;
+    min-width:0;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    gap:12px 18px;
+    line-height:1.6;
+  }
+  .footer-bottom>span{
+    max-width:100%;
+    overflow-wrap:anywhere;
+  }
+  .footer-bottom a{margin-left:auto}
+  .hero-copy,.hero-copy>p{min-width:0;max-width:100%}
+  .hero-copy>p{overflow-wrap:anywhere}
+  .ticker{contain:paint}
+}
