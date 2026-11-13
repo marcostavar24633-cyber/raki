@@ -477,3 +477,46 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 }
 @media(max-width:1000px){.product-image{aspect-ratio:1}}
 @media(max-width:700px){.product-image{aspect-ratio:1}}
+
+/* Matching image frames in the two editorial story panels */
+.values .value-photo,
+.values .value-image-two{
+  padding:24px;
+  min-width:0;
+  min-height:430px;
+}
+.values .value-photo-img{
+  inset:24px;
+  border-radius:34px;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 18px 42px rgba(0,0,0,.22);
+}
+.values .photo-caption{
+  left:44px;
+  bottom:42px;
+  z-index:2;
+  text-shadow:0 2px 12px rgba(0,0,0,.75);
+}
+.value-image-two .value-photo-img{
+  background-image:url('https://kaboompics.com/download/e002cbd9bfed23a7c5419d263415a9a9/medium');
+  background-position:center 52%;
+}
+@media(max-width:700px){
+  .values .value-photo,
+  .values .value-image-two{
+    min-height:0;
+    aspect-ratio:1 / 1.45;
+    padding:12px;
+  }
+  .values .value-photo-img{
+    inset:12px;
+    border-radius:25px;
+  }
+  .values .photo-caption{
+    left:24px;
+    bottom:26px;
+    font-size:6px;
+    letter-spacing:.12em;
+  }
+}
