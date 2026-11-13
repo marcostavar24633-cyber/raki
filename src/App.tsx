@@ -120,6 +120,27 @@ export default function App(){
   },[]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    const items=Array.from(document.querySelectorAll<HTMLElement>('.values .value-photo-img,.craft-image img'));
+    if(!items.length) return;
+    let frame=0;
+    const update=()=>{
+      frame=0;
+      items.forEach(item=>{
+        const rect=item.parentElement?.getBoundingClientRect();
+        if(!rect) return;
+        const offset=(rect.top+rect.height/2-window.innerHeight/2)/window.innerHeight;
+        item.style.setProperty('--scroll-parallax-y',`${Math.max(-22,Math.min(22,offset*-28))}px`);
+      });
+    };
+    const onScroll=()=>{if(!frame) frame=requestAnimationFrame(update)};
+    update();
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll);
+    return ()=>{window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onScroll);if(frame)cancelAnimationFrame(frame)};
+  },[]);
+  useEffect(()=>{
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce || !('IntersectionObserver' in window)) return;
     const nodes=Array.from(document.querySelectorAll<HTMLElement>('.section,.craft,.delivery,.final-cta,.product-card,.value-card'));
     nodes.forEach(node=>node.classList.add('reveal-ready'));
