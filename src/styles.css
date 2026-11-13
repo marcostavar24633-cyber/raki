@@ -193,3 +193,25 @@
 /* Hero copy enters only after the page mounts; GSAP controls the reveal. */
 .hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{opacity:0;}
 @media (prefers-reduced-motion: reduce){.hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{opacity:1;transform:none;filter:none;}}
+
+
+/* Editorial gastro finish — texture, typography and optional sound control */
+:root{--ink-deep:#0b100d;--paper-warm:#eee8dc;--gold-muted:#c8a77e;--green-glow:rgba(101,240,189,.18)}
+body{background:var(--ink-deep);font-feature-settings:"kern" 1,"liga" 1}
+h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{letter-spacing:-.045em;text-wrap:balance}
+.kicker,.section-index,.eyebrow,.photo-caption,.product-unit,.catalog-foot,.cta-bottom{font-feature-settings:"tnum" 1,"ss01" 1;letter-spacing:.19em}
+.hero-copy h1 i,.intro h2 i,.catalog h2 i,.craft h2 i,.calculator h2 i,.delivery h2 i,.final-cta h2 i{color:#d4b48b;text-shadow:0 0 34px rgba(212,180,139,.12)}
+.product-image,.value-photo,.value-image-two,.craft-image{background:#172019;isolation:isolate}
+.product-image:after,.value-photo:after,.value-image-two:after,.craft-image:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(145deg,rgba(255,240,214,.08),transparent 32%,rgba(4,8,5,.18)),repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);mix-blend-mode:soft-light}
+.product-image img,.value-photo-img,.value-image-two .value-photo-img,.craft-image img{filter:saturate(.9) contrast(1.04);transition:filter .7s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.product-card:hover .product-image img,.value-card:hover .value-photo-img,.craft-image:hover img{filter:saturate(1.08) contrast(1.06)}
+.product-card{background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 55%);padding:10px 10px 18px;border:1px solid rgba(230,218,196,.055);border-radius:5px 5px 18px 18px}
+.product-card:hover{border-color:rgba(201,164,116,.28);box-shadow:0 18px 45px rgba(0,0,0,.16)}
+.product-info h3{font-family:'Cormorant Garamond',serif;font-size:clamp(25px,2.3vw,34px);letter-spacing:-.025em}
+.sound-toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(201,164,116,.3);border-radius:999px;padding:10px 13px;background:rgba(255,255,255,.025);color:#c7c9c0;font:600 9px 'Manrope',sans-serif;letter-spacing:.06em;transition:all .25s;white-space:nowrap}
+.sound-toggle:hover,.sound-toggle[aria-pressed="true"]{border-color:var(--neon-emerald);color:#d9ffed;box-shadow:0 0 18px rgba(101,240,189,.14)}
+.sound-indicator{width:6px;height:6px;border-radius:50%;background:#777f75;box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.sound-toggle[aria-pressed="true"] .sound-indicator{background:#65f0bd;box-shadow:0 0 10px rgba(101,240,189,.8)}
+.header-actions{gap:10px}
+@media(max-width:700px){.sound-toggle{font-size:0;width:36px;height:36px;justify-content:center;padding:0}.sound-indicator{width:7px;height:7px}.header-actions{gap:7px}}
+@media(prefers-reduced-motion:reduce){.product-image img,.value-photo-img,.craft-image img{transition:none}}
