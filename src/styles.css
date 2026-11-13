@@ -822,3 +822,45 @@ main [data-scroll-text-fade="true"]{
 @media(prefers-reduced-motion:reduce){
   .product-card::after{animation:none!important}
 }
+
+
+/* Product cards: soft animated perimeter glow without a moving streak */
+.product-card::after{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+}
+.product-card,
+.product-card:hover,
+.product-card:active,
+.product-card:focus,
+.product-card:focus-within{
+  border-color:rgba(57,255,20,.12)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+}
+.product-card:hover,
+.product-card:active,
+.product-card:focus,
+.product-card:focus-within{
+  animation:softCardPerimeterGlow 2.8s ease-in-out infinite alternate;
+  border-color:rgba(110,255,70,.42)!important;
+  outline:none;
+}
+@keyframes softCardPerimeterGlow{
+  from{
+    box-shadow:0 0 3px rgba(57,255,20,.07),0 0 8px rgba(57,255,20,.045),0 10px 30px rgba(0,0,0,.18);
+  }
+  to{
+    box-shadow:0 0 7px rgba(57,255,20,.16),0 0 14px rgba(57,255,20,.09),0 10px 30px rgba(0,0,0,.18);
+  }
+}
+.product-card:hover .product-info h3,
+.product-card:focus-within .product-info h3{
+  color:#c9eaa0!important;
+}
+@media(prefers-reduced-motion:reduce){
+  .product-card:hover,.product-card:active,.product-card:focus,.product-card:focus-within{
+    animation:none!important;
+    box-shadow:0 0 6px rgba(57,255,20,.1),0 10px 30px rgba(0,0,0,.18)!important;
+  }
+}
