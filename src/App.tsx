@@ -29,7 +29,7 @@ const restoreCart=():CartLine[]=>{
 };
 export default function App(){
   const [cart,setCart]=useState<CartLine[]>(restoreCart);
-  const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[category,setCategory]=useState('all'),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[sending,setSending]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
+  const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[category,setCategory]=useState('all'),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
   useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
   useEffect(()=>{
     const panelOpen=cartOpen||checkout;
@@ -64,19 +64,32 @@ export default function App(){
   const add=(p:Product,amount=1)=>setCart(old=>{const line=old.find(l=>l.product.id===p.id);return line?old.map(l=>l.product.id===p.id?{...l,qty:Number((l.qty+amount).toFixed(1))}:l):[...old,{product:p,qty:amount}]});
   const change=(id:number,delta:number)=>setCart(old=>old.map(l=>l.product.id===id?{...l,qty:Number((l.qty+delta).toFixed(1))}:l).filter(l=>l.qty>0));
   const slides=[{eyebrow:'РАКОВАРНЯ · ГАСТРОНОМИЯ',title:<>Вкус, который<br/><i>невозможно</i> спутать.</>,desc:'Живые и варёные раки. Настоящий продукт, правильное приготовление и удовольствие, которым хочется делиться.'},{eyebrow:'ОТБОРНЫЙ ПРОДУКТ · ЧЕСТНЫЙ ВКУС',title:<>Хороший повод<br/><i>собраться</i> вместе.</>,desc:'Выбирайте свежий улов, фирменные рецепты и наборы для вечера в хорошей компании.'},{eyebrow:'МАСТЕРСТВО ПРИГОТОВЛЕНИЯ',title:<>Момент, который<br/><i>запомнится</i>.</>,desc:'Точная работа со вкусом, выразительные специи и внимание к каждой детали.'}];
-  const submitOrder=async(e:React.FormEvent<HTMLFormElement>)=>{
+  const submitOrder=(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(!cart.length){setOrderError('Корзина пуста. Добавьте товары перед оформлением.');return;}
-    setSending(true);setOrderError('');
+    setOrderError('');
     const form=new FormData(e.currentTarget);
-    const payload={name:String(form.get('name')||''),phone:String(form.get('phone')||''),comment:String(form.get('comment')||''),items:cart.map(({product,qty})=>({productId:product.id,quantity:qty}))};
-    try{
-      const response=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      const result=await response.json().catch(()=>({}));
-      if(!response.ok || result.ok !== true)throw new Error(result.error||'Сервис приёма заказов недоступен. Проверьте подключение API и попробуйте ещё раз.');
-      setSent(true);setCart([]);
-    }catch(error){setOrderError(error instanceof Error?error.message:'Ошибка отправки. Попробуйте позже.');}
-    finally{setSending(false);}
+    const name=String(form.get('name')||'').trim();
+    const phone=String(form.get('phone')||'').trim();
+    const comment=String(form.get('comment')||'').trim();
+    const lines=cart.map(({product,qty})=>`— ${product.name}: ${qty.toLocaleString('ru-RU',{maximumFractionDigits:1})} ${product.unit} × ${money(product.price)} = ${money(product.price*qty)}`);
+    const subject='Заявка с сайта РАКОВАРНЯ 73';
+    const body=[
+      'Новая заявка с сайта РАКОВАРНЯ 73',
+      '',
+      `Имя: ${name}`,
+      `Телефон: ${phone}`,
+      '',
+      'Состав заказа:',
+      ...lines,
+      '',
+      `Предварительный итог: ${money(total)}`,
+      comment ? `Комментарий: ${comment}` : '',
+      '',
+      'Прошу связаться для подтверждения наличия, доставки и окончательной стоимости.'
+    ].filter(Boolean).join('\\n');
+    window.location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSent(true);
   };
   return <>
     <div className="announcement">РАКОВАРНЯ 73 · ЖИВЫЕ И ВАРЁНЫЕ РАКИ <span>—</span> УЛЬЯНОВСК И ОБЛАСТЬ</div>
@@ -94,7 +107,7 @@ export default function App(){
     </main>
     <footer className="footer"><a className="logo" href="#top"><span className="logo-mark">Р.</span><span>РАКОВАРНЯ 73<small>КУЛЬТУРА НАСТОЯЩЕГО ВКУСА</small></span></a><p>Настоящий продукт.<br/>Правильное приготовление.</p><div className="footer-links"><a href="#catalog">Каталог</a><a href="#story">О нас</a><a href="#delivery">Доставка</a><a href="/terms.html">Условия заказа</a><a href="/privacy.html">Персональные данные</a></div><div className="footer-bottom"><span>© 2026 РАКОВАРНЯ 73</span><span>УЛЬЯНОВСК · ПРЕДВАРИТЕЛЬНЫЙ КАТАЛОГ И ЦЕНЫ</span><a href="#top">НАВЕРХ ↑</a></div></footer>
     {cartOpen&&<div className="overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setCartOpen(false)}}><aside className="drawer" role="dialog" aria-modal="true" aria-label="Корзина"><div className="drawer-head"><div><span className="kicker">ВАШ ВЫБОР</span><h3>Корзина <sup>{count}</sup></h3></div><button className="close-btn" onClick={()=>setCartOpen(false)} aria-label="Закрыть"><X/></button></div>{cart.length===0?<div className="empty-cart"><ShoppingBag size={34}/><h4>Пока здесь пусто</h4><p>Добавьте любимые позиции из каталога — и соберём ваш заказ.</p><button className="btn btn-gold" onClick={()=>setCartOpen(false)}>В каталог <ArrowRight/></button></div>:<><div className="cart-lines">{cart.map(l=><div className="cart-line" key={l.product.id}><img src={l.product.image} alt=""/><div className="cart-line-info"><b>{l.product.name}</b><span>{money(l.product.price)} / {l.product.unit}</span><div className="qty"><button onClick={()=>change(l.product.id,l.product.unit==='кг'?-0.5:-1)} aria-label="Уменьшить"><Minus size={13}/></button><span>{l.qty.toLocaleString('ru-RU',{maximumFractionDigits:1})}</span><button onClick={()=>change(l.product.id,l.product.unit==='кг'?0.5:1)} aria-label="Увеличить"><Plus size={13}/></button></div></div><strong>{money(l.product.price*l.qty)}</strong></div>)}</div><div className="cart-total"><span>ИТОГО</span><b>{money(total)}</b></div><button className="btn btn-gold full" onClick={()=>setCheckout(true)}>Оформить заказ <ArrowUpRight/></button><p className="cart-note">Цены предварительные. Наличие, вес, доставка и итоговая сумма подтверждаются менеджером перед приготовлением.</p></>}</aside></div>}
-    {checkout&&<div className="overlay modal-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setCheckout(false);setSent(false)}}}><div className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title"><button className="close-btn modal-close" onClick={()=>{setCheckout(false);setSent(false)}} aria-label="Закрыть"><X/></button>{sent?<div className="success-state"><div className="success-icon"><Check/></div><h3>Заказ отправлен</h3><p>Заявка передана менеджеру. Он свяжется с вами для подтверждения наличия, доставки и итоговой стоимости.</p><button className="btn btn-gold full" onClick={()=>{setCheckout(false);setCartOpen(false);setSent(false)}}>Понятно</button></div>:<><p className="kicker">ПОСЛЕДНИЙ ШАГ</p><h3 id="checkout-title">Оформление<br/><i>заказа.</i></h3><p className="modal-total">Ваш заказ на сумму <b>{money(total)}</b></p><form onSubmit={submitOrder}><label>Ваше имя<input required name="name" autoComplete="name" placeholder="Как к вам обращаться?"/></label><label>Телефон<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (___) ___-__-__" pattern="[+0-9() -]{10,}"/></label><label>Комментарий<textarea name="comment" placeholder="Адрес, удобное время и пожелания" rows={3}/></label><label className="consent"><input type="checkbox" required/> <span>Согласен на обработку персональных данных и ознакомлен с <a href="/privacy.html" target="_blank" rel="noreferrer">политикой конфиденциальности</a></span></label>{orderError&&<p className="form-error" role="alert">{orderError}</p>}<button className="btn btn-gold full" type="submit" disabled={sending}>{sending?'Отправляем…':'Отправить заказ'} <ArrowUpRight/></button><small>После отправки заявка поступит менеджеру для подтверждения наличия, доставки и итоговой стоимости.</small></form></>}</div></div>}
+    {checkout&&<div className="overlay modal-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setCheckout(false);setSent(false)}}}><div className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title"><button className="close-btn modal-close" onClick={()=>{setCheckout(false);setSent(false)}} aria-label="Закрыть"><X/></button>{sent?<div className="success-state"><div className="success-icon"><Check/></div><h3>Черновик заявки подготовлен</h3><p>Открылось ваше почтовое приложение с готовой заявкой и составом заказа. Проверьте адрес получателя и нажмите «Отправить». До этого заявка не считается отправленной.</p><button className="btn btn-gold full" onClick={()=>{setCheckout(false);setCartOpen(false);setSent(false)}}>Понятно</button></div>:<><p className="kicker">ПОСЛЕДНИЙ ШАГ</p><h3 id="checkout-title">Оформление<br/><i>заказа.</i></h3><p className="modal-total">Ваш заказ на сумму <b>{money(total)}</b></p><form onSubmit={submitOrder}><label>Ваше имя<input required name="name" autoComplete="name" placeholder="Как к вам обращаться?"/></label><label>Телефон<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (___) ___-__-__" pattern="[+0-9() -]{10,}"/></label><label>Комментарий<textarea name="comment" placeholder="Адрес, удобное время и пожелания" rows={3}/></label><label className="consent"><input type="checkbox" required/> <span>Согласен на обработку персональных данных и ознакомлен с <a href="/privacy.html" target="_blank" rel="noreferrer">политикой конфиденциальности</a></span></label>{orderError&&<p className="form-error" role="alert">{orderError}</p>}<button className="btn btn-gold full" type="submit"  >Отправить заявку по email <ArrowUpRight/></button><small>Откроется почтовое приложение. Вам останется указать адрес получателя (если он не подставлен) и отправить письмо вручную.</small></form></>}</div></div>}
     <div className="mobile-bottom"><button onClick={()=>setCartOpen(true)}><ShoppingBag size={18}/> Корзина <b>{count}</b></button><a href="#catalog">Выбрать раков <ArrowUpRight size={17}/></a></div>
   </>;
 }
