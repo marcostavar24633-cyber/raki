@@ -152,16 +152,17 @@ export default function App(){
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce) return;
-    // Apply the scroll dissolve to every main-page section/block and its visible content.
-    // Hero copy is selected item-by-item so one entering line never hides the whole headline.
-    const selector='main > section,main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main button,main img,main picture,main figure,main .eyebrow,main .hero-buttons,main .hero-photo-layer,main .hero-stamp,main .ticker > div,main .product-card,main .format-card,main .process-item,main .value-card,main .size-guide-grid article,main .quick-view-photo,main .craft-image,main .contact-panel,main .delivery-points > div,main .calc-grid > div,main .faq-list details,main .guest-notes-grid > div';
-    const visualContainers='.product-card,.format-card,.process-item,.value-card,.size-guide-grid article,.quick-view-photo,.craft-image,.contact-panel';
-    const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
-      .filter(node=>{
-        // Keep section backgrounds as independent blocks, while avoiding nested opacity multiplication.
-        if(node.matches('main > section')) return true;
-        return !node.parentElement?.closest(visualContainers);
-      });
+    // Cover the entire visible site: header, all main sections, footer and floating UI.
+    // Each selected element is evaluated by its own lower edge as it enters the top fade zone.
+    const selector='header,header *,main,main *,footer,footer *,[role="dialog"],[role="dialog"] *,[role="complementary"],[role="complementary"] *';
+    const atomicContainers='section,article,aside,nav,form,figure,details,[role="dialog"],[role="complementary"],.product-card,.format-card,.process-item,.value-card,.contact-panel,.craft-image,.quick-view-photo';
+    const allNodes=Array.from(document.querySelectorAll<HTMLElement>(selector));
+    const nodes=allNodes.filter(node=>{
+      // Keep atomic visual blocks as one unit; animate their inner text/media separately only when not inside them.
+      return !node.parentElement?.closest(atomicContainers);
+    });
+    // Add every atomic block itself so backgrounds, cards and panels also dissolve.
+    allNodes.forEach(node=>{if(node.matches(atomicContainers)) nodes.push(node)});
     nodes.forEach(node=>node.dataset.scrollTextFade='true');
     let frame=0;
     const update=()=>{
