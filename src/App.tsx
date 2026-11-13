@@ -159,8 +159,8 @@ export default function App(){
     let frame=0;
     const update=()=>{
       frame=0;
-      const fadeStart=180;
-      const fadeEnd=50;
+      const fadeStart=260;
+      const fadeEnd=100;
       nodes.forEach(node=>{
         const top=node.getBoundingClientRect().top;
         const opacity=Math.max(0,Math.min(1,(top-fadeEnd)/(fadeStart-fadeEnd)));
