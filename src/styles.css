@@ -466,3 +466,14 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   .product-image img,.craft-image img,.quick-view-photo img,.value-photo-img{transition:none!important}
 }
+/* Preserve the circular product-photo language requested for the catalog */
+.product-image{
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+}
+.cart-line img{
+  border-radius:50%;
+}
+@media(max-width:1000px){.product-image{aspect-ratio:1}}
+@media(max-width:700px){.product-image{aspect-ratio:1}}
