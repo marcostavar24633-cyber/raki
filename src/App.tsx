@@ -152,23 +152,26 @@ export default function App(){
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce) return;
-    // Apply one shared top-edge treatment to text, photographs and complete visual cards.
-    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main a,main button,main span,main strong,main em,main b,main img,main picture,main figure,main .product-card,main .format-card,main .process-item,main .value-card,main .size-guide-grid article,main .quick-view-photo,main .craft-image,main .contact-panel,main .hero-copy,main .hero-photo-layer,main .hero-stamp';
+    // Fade each content item as its trailing edge enters the marked top zone.
+    // Do not select a whole hero-copy wrapper: that made all of its text vanish at once.
+    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main button,main img,main picture,main figure,main .product-card,main .format-card,main .process-item,main .value-card,main .size-guide-grid article,main .quick-view-photo,main .craft-image,main .contact-panel,main .hero-photo-layer,main .hero-stamp';
+    const visualContainers='.product-card,.format-card,.process-item,.value-card,.size-guide-grid article,.quick-view-photo,.craft-image,.contact-panel';
     const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
-      .filter(node=>!node.parentElement?.closest(selector));
+      .filter(node=>!node.parentElement?.closest(visualContainers));
     nodes.forEach(node=>node.dataset.scrollTextFade='true');
     let frame=0;
     const update=()=>{
       frame=0;
-      const slowStart=300;
-      const fadeEnd=60;
+      const zoneStart=300;
+      const zoneEnd=60;
       nodes.forEach(node=>{
-        const top=node.getBoundingClientRect().top;
-        const progress=Math.max(0,Math.min(1,(slowStart-top)/(slowStart-fadeEnd)));
+        const rect=node.getBoundingClientRect();
+        // Use the bottom edge so a paragraph/card does not disappear when only its first line enters the zone.
+        const edge=rect.bottom;
+        const progress=Math.max(0,Math.min(1,(zoneStart-edge)/(zoneStart-zoneEnd)));
         const eased=progress*progress*(3-2*progress);
         const opacity=1-eased;
-        // Counter-motion reduces the apparent speed in the final 150px before the top edge.
-        const slowOffset=Math.min(48,Math.max(0,slowStart-top)*.16);
+        const slowOffset=Math.min(48,Math.max(0,zoneStart-edge)*.16);
         node.style.setProperty('--scroll-text-opacity',opacity.toFixed(3));
         node.style.setProperty('--scroll-slow-offset',slowOffset.toFixed(1)+'px');
       });
