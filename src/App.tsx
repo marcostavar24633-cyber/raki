@@ -53,6 +53,15 @@ export default function App(){
     return ()=>{intro.kill();photo.kill()};
   },[]);
   useEffect(()=>{
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce || !('IntersectionObserver' in window)) return;
+    const nodes=Array.from(document.querySelectorAll<HTMLElement>('.section,.craft,.delivery,.final-cta,.product-card,.value-card'));
+    nodes.forEach(node=>node.classList.add('reveal-ready'));
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.12,rootMargin:'0px 0px -45px 0px'});
+    nodes.forEach(node=>observer.observe(node));
+    return ()=>observer.disconnect();
+  },[]);
+  useEffect(()=>{
     const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!finePointer || reducedMotion) return;
