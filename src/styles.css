@@ -1031,3 +1031,7 @@ main [data-scroll-text-fade="true"]{
   background-position:center;
   background-size:cover;
 }
+
+
+/* Compact mobile header: keep the brand, cart and menu inside narrow screens. */
+@media(max-width:700px){.header-actions{gap:8px}.sound-toggle{display:none!important}.logo-image-only{flex-basis:112px;width:112px}.logo-image-only .logo-cart{width:112px}}
