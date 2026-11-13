@@ -21,15 +21,7 @@ test('mobile layout stays within the viewport', async ({ page }) => {
 
 test('cart can be populated and checkout validates contacts before preparing a Telegram message', async ({ page }) => {
   await page.addInitScript(() => {
-    (window as any).__openedShareUrl = '';
     Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
-    Object.defineProperty(window, 'open', {
-      configurable: true,
-      value: (url: string) => {
-        (window as any).__openedShareUrl = String(url);
-        return { opener: null } as Window;
-      }
-    });
   });
 
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -48,9 +40,11 @@ test('cart can be populated and checkout validates contacts before preparing a T
   await expect(dialog.getByRole('alert')).toContainText('от 10 до 15 цифр');
 
   await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
+  const popupPromise = page.waitForEvent('popup');
   await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
+  const popup = await popupPromise;
   await expect(dialog.getByText('Меню отправки открыто')).toBeVisible();
-  const shareUrl = await page.evaluate(() => (window as any).__openedShareUrl as string);
+  const shareUrl = popup.url();
   expect(shareUrl).toContain('https://t.me/share/url?url=&text=');
   expect(decodeURIComponent(shareUrl)).toContain('Тестовый покупатель');
 });
