@@ -39,21 +39,22 @@ npm run preview
 - Калькулятор ориентировочного количества раков.
 - Форма заказа с проверкой данных.
 - Серверный расчёт цен по ID товара в `api/order.ts`.
-- Передача заявок в Telegram через серверную функцию Vercel.
+- Передача заявок в Telegram через Cloudflare Pages Function (`functions/api/order.ts`).
 - Мобильная навигация и нижняя панель действий.
 - Уважение `prefers-reduced-motion`.
 
 ## Где менять каталог и цены
 Каталог отображения находится в `src/App.tsx`, серверный каталог для расчёта заказа — в `api/order.ts`. При изменении цены обязательно обновляйте оба места. Сервер не принимает цену из браузера.
 
-## Подключение Telegram на Vercel
-1. Создайте Telegram-бота через `@BotFather`.
-2. Добавьте бота в целевой чат или группу.
-3. Получите ID целевого чата.
-4. В Vercel → Project → Settings → Environment Variables добавьте `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`.
-5. Повторно разверните проект.
+## Публикация на Cloudflare Pages (без Vercel)
+1. Откройте https://dash.cloudflare.com/ и войдите в аккаунт или создайте бесплатный.
+2. В меню Workers & Pages выберите Create application → Pages → Connect to Git.
+3. Подключите GitHub и выберите репозиторий `marcostavar24633-cyber/raki`, ветку `main`.
+4. Укажите Framework preset: **Vite**; Build command: `npm run build`; Build output directory: `dist`.
+5. Создайте проект и дождитесь успешной сборки. Cloudflare выдаст адрес вида `https://rakovarnya-73.pages.dev`.
+6. В настройках Pages → Settings → Variables and Secrets добавьте `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` как секреты для Production, затем запустите новый deployment.
 
-Шаблон переменных находится в `.env.example`. Реальный токен нельзя помещать в исходный код или отправлять в публичный репозиторий. Обычный `npm run dev` запускает Vite без серверной функции; для локальной проверки API используйте `vercel dev` и локальный `.env.local`.
+Функция заказов размещена в `functions/api/order.ts` и обрабатывает запросы сайта на `/api/order`. Не используйте `api/order.ts` как Cloudflare-функцию: этот файл сохранён для совместимости с прежним вариантом Vercel. Реальный токен Telegram нельзя помещать в исходный код или публичный репозиторий. Локальный Vite-сервер не исполняет Pages Functions; для локальной проверки используйте Wrangler Pages dev.
 
 ## Что обязательно заменить перед коммерческим запуском
 - Модельные цены и состав набора.
@@ -91,13 +92,8 @@ npm run preview
 
 Добавлен workflow `.github/workflows/ci.yml`. После загрузки в GitHub он устанавливает зависимости и запускает `npm run build` при push и pull request в `main`/`master`. Результат сборки будет виден во вкладке Actions.
 
-## Публикация на Vercel
+## Публикация
 
-1. Загрузите содержимое папки проекта в новый GitHub-репозиторий.
-2. В Vercel выберите Add New → Project и импортируйте репозиторий.
-3. Framework Preset: Vite; Build Command: `npm run build`; Output Directory: `dist`.
-4. Добавьте `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` в Environment Variables проекта Vercel.
-5. Выполните Deploy и проверьте тестовый заказ после настройки Telegram.
-6. Не добавляйте `.env.local`, токен бота или реальные персональные данные в GitHub.
+Для текущей версии используйте Cloudflare Pages по инструкции выше. Не добавляйте `.env.local`, токен бота или реальные персональные данные в GitHub.
 
 Примечание: production-сборка в текущей среде не подтверждена, так как npm registry недоступен. GitHub Actions выполнит независимую сборку после публикации исходников.
