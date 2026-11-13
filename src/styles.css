@@ -959,3 +959,19 @@ main [data-scroll-text-fade="true"]{
 
 /* Cart phone action */
 .drawer .cart-call{margin-top:12px;gap:10px;border-color:#9b7952;color:#293d33;background:rgba(255,255,255,.24);text-decoration:none}.drawer .cart-call:hover{background:#293d33;color:#f2ede4;border-color:#293d33}.drawer .cart-call svg{flex:0 0 auto}
+
+
+/* Зелёно-золотая бегущая линия по контуру карточек каталога */
+.product-card{position:relative!important;isolation:isolate!important;overflow:hidden!important;border:1px solid rgba(194,166,105,.28)!important;box-shadow:0 10px 30px rgba(0,0,0,.18)!important}
+.product-card::after{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:5!important;
+  padding:2px!important;border-radius:inherit!important;pointer-events:none!important;opacity:.9!important;
+  background:conic-gradient(from 0deg,transparent 0deg 275deg,rgba(57,255,105,.08) 292deg,#39ff78 310deg,#c9a45f 326deg,#fff0a8 334deg,#39ff78 344deg,transparent 360deg)!important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;mask-composite:exclude!important;
+  animation:grekaGreenGoldRun 2.7s linear infinite!important;
+}
+@keyframes grekaGreenGoldRun{to{transform:rotate(360deg)}}
+.product-card:hover,.product-card:focus-within{border-color:rgba(201,164,95,.65)!important;box-shadow:0 0 18px rgba(57,255,120,.13),0 12px 34px rgba(0,0,0,.24)!important}
+.product-card:hover::after,.product-card:focus-within::after{opacity:1!important;animation-duration:1.8s!important}
+@media(prefers-reduced-motion:reduce){.product-card::after{animation:none!important;opacity:.75!important}}
