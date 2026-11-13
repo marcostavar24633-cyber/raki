@@ -588,3 +588,71 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   .hero-photo.hero-photo-layer{transition:none!important}
 }
+
+/* Product cards: square image windows, restrained corner radius */
+.product-card{
+  border-radius:13px!important;
+  padding:10px 10px 18px!important;
+  overflow:hidden;
+  position:relative;
+}
+.product-image{
+  width:100%!important;
+  max-width:none!important;
+  aspect-ratio:1 / 1!important;
+  height:auto!important;
+  margin:0!important;
+  border-radius:11px!important;
+  clip-path:none!important;
+  overflow:hidden;
+}
+.product-image img{border-radius:0!important}
+.product-card,.product-image{isolation:isolate}
+@media(max-width:700px){
+  .product-card{border-radius:11px!important;padding:8px 8px 14px!important}
+  .product-image{aspect-ratio:1 / 1!important;border-radius:9px!important}
+}
+
+/* Neon-lime light sweeps around the product card perimeter on hover */
+.product-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  padding:1.5px;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  background:conic-gradient(from 0deg,transparent 0 72%,#a6ff00 82%,#d6ff73 87%,transparent 94% 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  transition:opacity .25s ease;
+}
+.product-card:hover::after,.product-card:focus-within::after{
+  opacity:1;
+  animation:neonPerimeterRun 2.4s linear infinite;
+}
+@keyframes neonPerimeterRun{to{transform:rotate(360deg)}}
+.product-card:hover{
+  border-color:rgba(166,255,0,.28)!important;
+  box-shadow:0 0 16px rgba(166,255,0,.08),0 16px 42px rgba(0,0,0,.22)!important;
+}
+.product-card:hover .product-info h3{color:#c9f27b!important}
+
+/* Subtle scroll parallax on editorial/publication photography */
+.values .value-photo-img,.craft-image img{
+  transform:translate3d(0,var(--scroll-parallax-y,0px),0) scale(1.08);
+  will-change:transform;
+}
+.value-card:hover .value-photo-img,.craft-image:hover img{
+  transform:translate3d(0,var(--scroll-parallax-y,0px),0) scale(1.13);
+}
+@media(max-width:700px){
+  .values .value-photo-img,.craft-image img{
+    transform:translate3d(0,var(--scroll-parallax-y,0px),0) scale(1.05);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .product-card::after{animation:none!important;display:none!important}
+  .values .value-photo-img,.craft-image img{transform:none!important;will-change:auto}
+}
