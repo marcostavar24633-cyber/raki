@@ -32,6 +32,27 @@ const restoreCart=():CartLine[]=>{
 };
 export default function App(){
   const [cart,setCart]=useState<CartLine[]>(restoreCart);
+  const [soundEnabled,setSoundEnabled]=useState(false);
+  const playAddSound=()=>{
+    if(!soundEnabled) return;
+    try{
+      const AudioContextClass=window.AudioContext||(window as typeof window & {webkitAudioContext?:typeof AudioContext}).webkitAudioContext;
+      if(!AudioContextClass) return;
+      const context=new AudioContextClass();
+      const now=context.currentTime;
+      [660,880].forEach((frequency,index)=>{
+        const oscillator=context.createOscillator();
+        const gain=context.createGain();
+        oscillator.type='sine'; oscillator.frequency.setValueAtTime(frequency,now+index*.075);
+        gain.gain.setValueAtTime(.0001,now+index*.075);
+        gain.gain.exponentialRampToValueAtTime(.045,now+index*.075+.018);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+index*.075+.19);
+        oscillator.connect(gain); gain.connect(context.destination);
+        oscillator.start(now+index*.075); oscillator.stop(now+index*.075+.2);
+      });
+      window.setTimeout(()=>{void context.close()},450);
+    }catch{/* Audio is optional; ordering must never depend on it. */}
+  };
   const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[category,setCategory]=useState('all'),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
   useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
   useEffect(()=>{
@@ -133,7 +154,7 @@ export default function App(){
   // Вес в корзине и API принимается шагом 0,5 кг: калькулятор соблюдает то же правило.
   const recommendedKg=Math.max(0.5,Math.round(quantity*0.6*2)/2);
   const visible=useMemo(()=>category==='all'?products:products.filter(p=>p.category===category),[category]);
-  const add=(p:Product,amount=1)=>setCart(old=>{const line=old.find(l=>l.product.id===p.id);return line?old.map(l=>l.product.id===p.id?{...l,qty:Number((l.qty+amount).toFixed(1))}:l):[...old,{product:p,qty:amount}]});
+  const add=(p:Product,amount=1)=>{playAddSound();setCart(old=>{const line=old.find(l=>l.product.id===p.id);return line?old.map(l=>l.product.id===p.id?{...l,qty:Number((l.qty+amount).toFixed(1))}:l ):[...old,{product:p,qty:amount}]});};
   const change=(id:number,delta:number)=>setCart(old=>old.map(l=>l.product.id===id?{...l,qty:Number((l.qty+delta).toFixed(1))}:l).filter(l=>l.qty>0));
   const slides=[{eyebrow:'РАКОВАРНЯ · ГАСТРОНОМИЯ',title:<>Вкус, который<br/><i>невозможно</i> спутать.</>,desc:'Живые и варёные раки. Настоящий продукт, правильное приготовление и удовольствие, которым хочется делиться.'},{eyebrow:'ОТБОРНЫЙ ПРОДУКТ · ЧЕСТНЫЙ ВКУС',title:<>Хороший повод<br/><i>собраться</i> вместе.</>,desc:'Выбирайте свежий улов, фирменные рецепты и наборы для вечера в хорошей компании.'},{eyebrow:'МАСТЕРСТВО ПРИГОТОВЛЕНИЯ',title:<>Момент, который<br/><i>запомнится</i>.</>,desc:'Точная работа со вкусом, выразительные специи и внимание к каждой детали.'}];
   const submitOrder=(e:React.FormEvent<HTMLFormElement>)=>{
@@ -165,7 +186,7 @@ export default function App(){
   };
   return <>
     <div className="announcement">РАКОВАРНЯ 73 · ЖИВЫЕ И ВАРЁНЫЕ РАКИ <span>—</span> УЛЬЯНОВСК И ОБЛАСТЬ</div>
-    <header className="header"><a className="logo" href="#top"><span className="logo-mark">Р.</span><span>РАКОВАРНЯ 73<small>КУЛЬТУРА НАСТОЯЩЕГО ВКУСА</small></span></a><nav className={menuOpen?'nav open':'nav'}><a href="#catalog" onClick={()=>setMenuOpen(false)}>Каталог</a><a href="#story" onClick={()=>setMenuOpen(false)}>О нас</a><a href="#craft" onClick={()=>setMenuOpen(false)}>Приготовление</a><a href="#delivery" onClick={()=>setMenuOpen(false)}>Доставка</a><a href="#contacts" onClick={()=>setMenuOpen(false)}>Контакты</a></nav><div className="header-actions"><button className="cart-trigger" onClick={()=>setCartOpen(true)} aria-label="Открыть корзину"><ShoppingBag size={18}/><span>Корзина</span><b>{count}</b></button><button className="menu-trigger" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Меню">{menuOpen?<X/>:<Menu/>}</button></div></header>
+    <header className="header"><a className="logo" href="#top"><span className="logo-mark">Р.</span><span>РАКОВАРНЯ 73<small>КУЛЬТУРА НАСТОЯЩЕГО ВКУСА</small></span></a><nav className={menuOpen?'nav open':'nav'}><a href="#catalog" onClick={()=>setMenuOpen(false)}>Каталог</a><a href="#story" onClick={()=>setMenuOpen(false)}>О нас</a><a href="#craft" onClick={()=>setMenuOpen(false)}>Приготовление</a><a href="#delivery" onClick={()=>setMenuOpen(false)}>Доставка</a><a href="#contacts" onClick={()=>setMenuOpen(false)}>Контакты</a></nav><div className="header-actions"><button className="sound-toggle" onClick={()=>setSoundEnabled(value=>!value)} aria-pressed={soundEnabled} aria-label={soundEnabled?"Выключить звук интерфейса":"Включить звук интерфейса"} title={soundEnabled?"Звук включён":"Звук выключен"}><span className="sound-indicator"/>{soundEnabled?"Звук вкл.":"Звук выкл."}</button><button className="cart-trigger" onClick={()=>setCartOpen(true)} aria-label="Открыть корзину"><ShoppingBag size={18}/><span>Корзина</span><b>{count}</b></button><button className="menu-trigger" onClick={()=>setMenuOpen(!menuOpen)} aria-label="Меню">{menuOpen?<X/>:<Menu/>}</button></div></header>
     <main id="top">
       <section className="hero"><div className="hero-photo" style={{backgroundImage:`linear-gradient(90deg,rgba(9,13,11,.94) 0%,rgba(9,13,11,.72) 42%,rgba(9,13,11,.12) 100%),url('https://images.pexels.com/photos/19503800/pexels-photo-19503800/free-photo-of-boiled-crayfish-dish.jpeg?auto=compress&cs=tinysrgb&w=2200')`}}/><div className="hero-grain"/><div className="hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/>{slides[activeSlide].eyebrow}</div><h1>{slides[activeSlide].title}</h1><p>{slides[activeSlide].desc}</p><div className="hero-buttons"><a className="btn btn-gold" href="#catalog">Выбрать раков <ArrowUpRight size={17}/></a><a className="text-link" href="#story">Наша философия <ArrowDown size={15}/></a></div></div><div className="hero-side"><span>{String(activeSlide+1).padStart(2,'0')} / 03</span><span className="vertical-label">FRESH CATCH · CRAFTED WITH CARE</span></div><div className="hero-bottom"><span>УЛЬЯНОВСК И ОБЛАСТЬ</span><div className="slide-controls"><button onClick={()=>setActiveSlide((activeSlide+2)%3)} aria-label="Предыдущий слайд"><ChevronLeft/></button><div className="slide-progress"><i style={{width:`${(activeSlide+1)*33.333}%`}}/></div><button onClick={()=>setActiveSlide((activeSlide+1)%3)} aria-label="Следующий слайд"><ChevronRight/></button></div><span>ПРОКРУТИТЕ ВНИЗ ↓</span></div></div><div className="hero-stamp"><span>FRESH</span><b>✳</b><span>CRAFT</span></div></section>
       <section className="ticker"><div>ЖИВОЙ УЛОВ <i>✳</i> ФИРМЕННЫЕ РЕЦЕПТЫ <i>✳</i> ЧЕСТНЫЙ ВЕС <i>✳</i> ВКУС, КОТОРЫЙ ОБЪЕДИНЯЕТ <i>✳</i> ЖИВОЙ УЛОВ <i>✳</i></div></section>
