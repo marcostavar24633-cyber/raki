@@ -520,3 +520,22 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
     letter-spacing:.12em;
   }
 }
+
+/* Seamless crossfade between hero photographs */
+.hero{isolation:isolate}
+.hero-photo.hero-photo-layer{
+  z-index:0;
+  opacity:0;
+  transform:scale(1.055);
+  transition:opacity 1.35s cubic-bezier(.22,.61,.36,1),transform 7s ease-out;
+  will-change:opacity,transform;
+}
+.hero-photo.hero-photo-layer.is-active{
+  opacity:1;
+  transform:scale(1.015);
+}
+.hero-grain{z-index:1}
+.hero-inner,.hero-stamp{z-index:2}
+@media(prefers-reduced-motion:reduce){
+  .hero-photo.hero-photo-layer{transition:none!important;transform:none!important}
+}
