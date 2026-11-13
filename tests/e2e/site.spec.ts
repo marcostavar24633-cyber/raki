@@ -40,11 +40,14 @@ test('cart can be populated and checkout validates contacts before preparing a T
   await expect(dialog.getByRole('alert')).toContainText('от 10 до 15 цифр');
 
   await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
-  const telegramRequestPromise = page.waitForRequest(request => request.url().startsWith('https://t.me/share/url?url=&text='));
+  let telegramShareUrl = '';
+  await page.context().route('https://t.me/**', async route => {
+    telegramShareUrl = route.request().url();
+    await route.fulfill({ status: 200, contentType: 'text/html', body: 'Telegram share test stub' });
+  });
   await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
-  const telegramRequest = await telegramRequestPromise;
-  await expect(dialog.getByText(/Меню отправки открыто|Заявка скопирована/)).toBeVisible();
-  const shareUrl = telegramRequest.url();
+  await expect(dialog.getByText('Меню отправки открыто')).toBeVisible();
+  const shareUrl = telegramShareUrl;
   expect(shareUrl).toContain('https://t.me/share/url?url=&text=');
   expect(decodeURIComponent(shareUrl)).toContain('Тестовый покупатель');
 });
