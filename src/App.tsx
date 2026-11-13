@@ -71,10 +71,45 @@ export default function App(){
     return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener('keydown',onKeyDown)};
   },[cartOpen,checkout,quickView]);
   useEffect(()=>{
-    const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduceMotion) return;
-    const photo=gsap.fromTo('.hero-photo',{scale:1.14},{scale:1.035,duration:2.2,ease:'power2.out'});
-    return ()=>{photo.kill();};
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const hero=document.querySelector<HTMLElement>('.hero');
+    if(!hero) return;
+    let frame=0;
+    let pointerX=0;
+    let pointerY=0;
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const update=()=>{
+      frame=0;
+      const rect=hero.getBoundingClientRect();
+      const distance=Math.max(-100,Math.min(100,-rect.top*.22));
+      hero.style.setProperty('--hero-parallax-y',distance+'px');
+      hero.style.setProperty('--hero-parallax-x',pointerX+'px');
+      hero.style.setProperty('--hero-pointer-y',pointerY+'px');
+    };
+    const schedule=()=>{if(!frame) frame=requestAnimationFrame(update)};
+    const onMove=(event:PointerEvent)=>{
+      if(!finePointer) return;
+      const rect=hero.getBoundingClientRect();
+      pointerX=((event.clientX-rect.left)/rect.width-.5)*-14;
+      pointerY=((event.clientY-rect.top)/rect.height-.5)*-10;
+      schedule();
+    };
+    const onLeave=()=>{pointerX=0;pointerY=0;schedule()};
+    update();
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+    hero.addEventListener('pointermove',onMove,{passive:true});
+    hero.addEventListener('pointerleave',onLeave);
+    return ()=>{
+      window.removeEventListener('scroll',schedule);
+      window.removeEventListener('resize',schedule);
+      hero.removeEventListener('pointermove',onMove);
+      hero.removeEventListener('pointerleave',onLeave);
+      if(frame) cancelAnimationFrame(frame);
+      hero.style.removeProperty('--hero-parallax-y');
+      hero.style.removeProperty('--hero-parallax-x');
+      hero.style.removeProperty('--hero-pointer-y');
+    };
   },[]);
   useEffect(()=>{
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -82,42 +117,6 @@ export default function App(){
     gsap.fromTo(targets,{y:26,opacity:0,filter:'blur(5px)'},{y:0,opacity:1,filter:'blur(0px)',duration:.85,stagger:.11,ease:'power3.out',overwrite:true});
     gsap.fromTo('.hero-stamp',{scale:.82,opacity:0,rotate:-8},{scale:1,opacity:1,rotate:12,duration:1,ease:'back.out(1.5)',delay:.18,overwrite:true});
   },[activeSlide]);
-  useEffect(()=>{
-    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hero=document.querySelector<HTMLElement>('.hero');
-    const photo=document.querySelector<HTMLElement>('.hero-photo');
-    if(!finePointer || reduced || !hero || !photo) return;
-    const moveX=gsap.quickTo(photo,'x',{duration:.8,ease:'power3.out'});
-    const moveY=gsap.quickTo(photo,'y',{duration:.8,ease:'power3.out'});
-    const onMove=(event:PointerEvent)=>{
-      const rect=hero.getBoundingClientRect();
-      moveX(((event.clientX-rect.left)/rect.width-.5)*-16);
-      moveY(((event.clientY-rect.top)/rect.height-.5)*-12);
-    };
-    const reset=()=>{moveX(0);moveY(0)};
-    hero.addEventListener('pointermove',onMove,{passive:true});
-    hero.addEventListener('pointerleave',reset);
-    return ()=>{hero.removeEventListener('pointermove',onMove);hero.removeEventListener('pointerleave',reset);gsap.killTweensOf(photo)};
-  },[]);
-  useEffect(()=>{
-    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if(reduce || finePointer) return;
-    const hero=document.querySelector<HTMLElement>('.hero');
-    const photo=document.querySelector<HTMLElement>('.hero-photo');
-    if(!hero || !photo) return;
-    const moveY=gsap.quickTo(photo,'y',{duration:.45,ease:'power2.out'});
-    const update=()=>{
-      const rect=hero.getBoundingClientRect();
-      const progress=Math.max(0,Math.min(1,(window.innerHeight-rect.top)/(window.innerHeight+rect.height)));
-      moveY((progress-.5)*-34);
-    };
-    update();
-    window.addEventListener('scroll',update,{passive:true});
-    window.addEventListener('resize',update);
-    return ()=>{window.removeEventListener('scroll',update);window.removeEventListener('resize',update);gsap.killTweensOf(photo)};
-  },[]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce) return;
