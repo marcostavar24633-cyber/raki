@@ -984,3 +984,6 @@ main [data-scroll-text-fade="true"]{
   border-color:rgba(194,166,105,.24)!important;
   box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
 }
+
+/* Approximate number of crayfish per kilogram in product cards */
+.product-count{display:inline-flex;align-items:center;margin:-10px 0 17px;padding:6px 10px;border:1px solid rgba(194,166,105,.28);border-radius:999px;color:#d5b58b;font-size:9px;letter-spacing:.04em;background:rgba(173,128,80,.07)}
