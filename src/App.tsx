@@ -102,6 +102,24 @@ export default function App(){
   },[]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if(reduce || finePointer) return;
+    const hero=document.querySelector<HTMLElement>('.hero');
+    const photo=document.querySelector<HTMLElement>('.hero-photo');
+    if(!hero || !photo) return;
+    const moveY=gsap.quickTo(photo,'y',{duration:.45,ease:'power2.out'});
+    const update=()=>{
+      const rect=hero.getBoundingClientRect();
+      const progress=Math.max(0,Math.min(1,(window.innerHeight-rect.top)/(window.innerHeight+rect.height)));
+      moveY((progress-.5)*-34);
+    };
+    update();
+    window.addEventListener('scroll',update,{passive:true});
+    window.addEventListener('resize',update);
+    return ()=>{window.removeEventListener('scroll',update);window.removeEventListener('resize',update);gsap.killTweensOf(photo)};
+  },[]);
+  useEffect(()=>{
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce || !('IntersectionObserver' in window)) return;
     const nodes=Array.from(document.querySelectorAll<HTMLElement>('.section,.craft,.delivery,.final-cta,.product-card,.value-card'));
     nodes.forEach(node=>node.classList.add('reveal-ready'));
