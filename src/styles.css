@@ -664,3 +664,16 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   [data-top-fade="true"]{opacity:1!important}
 }
+
+/* Hero typography moves more slowly through the upper scroll zone */
+.hero-copy{
+  transform:translate3d(0,var(--hero-text-drift,0px),0);
+  will-change:transform;
+}
+[data-top-fade="true"]{
+  transition:opacity .18s linear;
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-copy{transform:none!important;will-change:auto}
+  [data-top-fade="true"]{transition:none!important;opacity:1!important}
+}
