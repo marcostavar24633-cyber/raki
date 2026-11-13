@@ -121,6 +121,12 @@ jobs:
           NODE
       - name: TypeScript and production build
         run: npm run build
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run browser regression tests
+        run: npx playwright test
       - name: Commit optimized images and references
         run: |
           git config user.name "github-actions[bot]"
