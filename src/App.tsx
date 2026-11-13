@@ -51,7 +51,7 @@ export default function App(){
     }catch{/* Audio is optional; ordering must never depend on it. */}
   };
   const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|''>(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
-  useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
+  useEffect(()=>{try{localStorage.setItem('rak-cart',JSON.stringify(cart))}catch{/* Storage can be unavailable; the in-memory cart remains usable. */}},[cart]);
   useEffect(()=>{
     const panelOpen=cartOpen||checkout||!!quickView;
     if(!panelOpen) return;
@@ -237,8 +237,8 @@ export default function App(){
   // Вес в корзине и API принимается шагом 0,5 кг: калькулятор соблюдает то же правило.
   const recommendedKg=Math.max(0.5,Math.round(quantity*0.6*2)/2);
   const visible=products;
-  const add=(p:Product,amount=1)=>{playAddSound();setCart(old=>{const line=old.find(l=>l.product.id===p.id);return line?old.map(l=>l.product.id===p.id?{...l,qty:Number((l.qty+amount).toFixed(1))}:l ):[...old,{product:p,qty:amount}]});};
-  const change=(id:number,delta:number)=>setCart(old=>old.map(l=>l.product.id===id?{...l,qty:Number((l.qty+delta).toFixed(1))}:l).filter(l=>l.qty>0));
+  const add=(p:Product,amount=1)=>{playAddSound();setCart(old=>{const line=old.find(l=>l.product.id===p.id);return line?old.map(l=>l.product.id===p.id?{...l,qty:Math.min(100,Number((l.qty+amount).toFixed(1)))}:l):[...old,{product:p,qty:Math.min(100,amount)}]});};
+  const change=(id:number,delta:number)=>setCart(old=>old.map(l=>l.product.id===id?{...l,qty:Math.min(100,Math.max(0,Number((l.qty+delta).toFixed(1))))}:l).filter(l=>l.qty>0));
   const slides=[{eyebrow:'РАКОВАРНЯ · ГАСТРОНОМИЯ',title:<>Вкус, который<br/><i>невозможно</i> спутать.</>,desc:'Свежие речные раки для хорошего вечера. Выберите категорию и количество для своего стола.',image:'/raki/%D0%90%D0%BF%D0%BF%D0%B5%D1%82%D0%B8%D1%82%D0%BD%D0%B0%D1%8F%20%D1%82%D0%B0%D1%80%D0%B5%D0%BB%D0%BA%D0%B0%20%D1%80%D0%B0%D0%BA%D0%BE%D0%B2%20%D1%81%20%D1%83%D0%BA%D1%80%D0%BE%D0%BF%D0%BE%D0%BC%20%D0%B8%20%D0%BB%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%BC.webp'},{eyebrow:'ОТБОРНЫЙ ПРОДУКТ · ЧЕСТНЫЙ ВКУС',title:<>Хороший повод<br/><i>собраться</i> вместе.</>,desc:'Отборный речной продукт, внимание к деталям и вкус, ради которого собираются за одним столом.',image:'/raki/%D0%A0%D0%B0%D0%BA%D0%B8%20%D1%81%20%D1%83%D0%BA%D1%80%D0%BE%D0%BF%D0%BE%D0%BC%20%D0%B8%20%D0%BB%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%82%D1%91%D0%BC%D0%BD%D0%BE%D0%B9%20%D1%82%D0%B0%D1%80%D0%B5%D0%BB%D0%BA%D0%B5.webp'},{eyebrow:'МАСТЕРСТВО ПРИГОТОВЛЕНИЯ',title:<>Момент, который<br/><i>запомнится</i>.</>,desc:'Для самостоятельного приготовления — фирменный рецепт от «Ехал Грека».',image:'/raki/%D0%A0%D0%B0%D0%BA%D0%B8%20%D1%81%20%D1%83%D0%BA%D1%80%D0%BE%D0%BF%D0%BE%D0%BC%20%D0%B8%20%D1%81%D0%BF%D0%B5%D1%86%D0%B8%D1%8F%D0%BC%D0%B8.webp'}];
   const submitOrder=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
