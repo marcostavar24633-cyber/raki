@@ -757,15 +757,15 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 }
 
 
-/* Slow, viewport-aware text dissolve: all text, including hero copy, clears before 100px from the top */
+/* Slow, viewport-aware text dissolve: all text, including hero copy, clears before 40px from the top */
 main [data-scroll-text-fade="true"]{
   opacity:var(--scroll-text-opacity,1);
-  transition:opacity 1.35s cubic-bezier(.16,1,.3,1);
+  transition:opacity 1.7s cubic-bezier(.16,1,.3,1);
   will-change:opacity;
 }
 @media(max-width:700px){
   main [data-scroll-text-fade="true"]{
-    transition:opacity 1.45s cubic-bezier(.16,1,.3,1);
+    transition:opacity 1.85s cubic-bezier(.16,1,.3,1);
   }
 }
 @media(prefers-reduced-motion:reduce){
