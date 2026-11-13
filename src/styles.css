@@ -975,3 +975,12 @@ main [data-scroll-text-fade="true"]{
 .product-card:hover,.product-card:focus-within{border-color:rgba(201,164,95,.65)!important;box-shadow:0 0 18px rgba(57,255,120,.13),0 12px 34px rgba(0,0,0,.24)!important}
 .product-card:hover::after,.product-card:focus-within::after{opacity:1!important;animation-duration:1.8s!important}
 @media(prefers-reduced-motion:reduce){.product-card::after{animation:none!important;opacity:.75!important}}
+
+
+/* Убрать любые движущиеся эффекты по контуру карточек */
+.product-card::after{content:none!important;display:none!important;animation:none!important;opacity:0!important}
+.product-card,.product-card:hover,.product-card:active,.product-card:focus,.product-card:focus-within{
+  animation:none!important;
+  border-color:rgba(194,166,105,.24)!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+}
