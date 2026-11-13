@@ -297,17 +297,14 @@ export default function App(){
         return;
       }
       const telegramShareUrl='https://t.me/share/url?url=&text='+encodeURIComponent(shareText);
-      const opened=window.open(telegramShareUrl,'_blank');
-      if(!opened){
-        if(navigator.clipboard?.writeText){
-          await navigator.clipboard.writeText(shareText);
-          setShareMethod('copy');
-          setSent(true);
-          return;
-        }
-        setOrderError('Браузер заблокировал открытие Telegram. Разрешите всплывающие окна и повторите отправку.');
-        return;
-      }
+      const telegramLink=document.createElement('a');
+      telegramLink.href=telegramShareUrl;
+      telegramLink.target='_blank';
+      telegramLink.rel='noopener noreferrer';
+      telegramLink.style.display='none';
+      document.body.appendChild(telegramLink);
+      telegramLink.click();
+      telegramLink.remove();
       setShareMethod('share');
       setSent(true);
     }catch(error){
