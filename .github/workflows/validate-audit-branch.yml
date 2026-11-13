@@ -6,7 +6,7 @@ on:
       - audit/fix-navigation-and-legal-links
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -14,11 +14,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: audit/fix-navigation-and-legal-links
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Convert public PNG photos to WebP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webp
+          find public -maxdepth 1 -type f -iname '*.png' ! -name 'design-reference.png' -print0 | while IFS= read -r -d '' file; do
+            output="${file%.png}.webp"
+            if [ ! -f "$output" ]; then
+              cwebp -quiet -q 82 -m 6 -resize 1800 1800 "$file" -o "$output"
+            fi
+          done
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          for (const file of ['src/App.tsx', 'src/styles.css', 'index.html']) {
+            const source = fs.readFileSync(file, 'utf8');
+            const updated = source.replace(/\.png/g, '.webp');
+            if (updated !== source) fs.writeFileSync(file, updated);
+          }
+          NODE
       - name: Install dependencies
         run: npm install
       - name: TypeScript and production build
         run: npm run build
+      - name: Commit optimized images and references
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/*.webp src/App.tsx src/styles.css index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Optimize site photos to WebP"
+            git push origin HEAD:audit/fix-navigation-and-legal-links
+          fi
