@@ -5,12 +5,17 @@ on:
     branches:
       - audit/fix-navigation-and-legal-links
 
+concurrency:
+  group: audit-branch-validation
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,8 +44,12 @@ jobs:
             if (updated !== source) fs.writeFileSync(file, updated);
           }
           NODE
+          mkdir -p source-images
+          find public -maxdepth 1 -type f -iname '*.png' ! -name 'ehal-greka-header.png' -print0 | while IFS= read -r -d '' file; do
+            mv "$file" source-images/
+          done
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Dependency vulnerability report
         run: |
           npm audit --json > /tmp/npm-audit.json || true
@@ -64,8 +73,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/*.webp src/App.tsx src/styles.css index.html package.json package-lock.json
+          git add -A public source-images src/App.tsx src/styles.css index.html package.json package-lock.json
           if ! git diff --cached --quiet; then
-            git commit -m "Optimize site photos to WebP"
+            git commit -m "Optimize site photos and archive PNG originals"
             git push origin HEAD:audit/fix-navigation-and-legal-links
           fi
