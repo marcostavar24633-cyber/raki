@@ -88,6 +88,29 @@ export default function App(){
     const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!finePointer || reducedMotion) return;
+    const cards=Array.from(document.querySelectorAll<HTMLElement>('.product-card'));
+    const move=(event:PointerEvent)=>{
+      const card=event.currentTarget as HTMLElement;
+      const rect=card.getBoundingClientRect();
+      const x=(event.clientX-rect.left)/rect.width;
+      const y=(event.clientY-rect.top)/rect.height;
+      card.style.setProperty('--tilt-x',((.5-y)*3.2).toFixed(2)+'deg');
+      card.style.setProperty('--tilt-y',((x-.5)*3.2).toFixed(2)+'deg');
+      card.style.setProperty('--card-spot-x',(x*100).toFixed(1)+'%');
+      card.style.setProperty('--card-spot-y',(y*100).toFixed(1)+'%');
+    };
+    const reset=(event:PointerEvent)=>{
+      const card=event.currentTarget as HTMLElement;
+      card.style.setProperty('--tilt-x','0deg');
+      card.style.setProperty('--tilt-y','0deg');
+    };
+    cards.forEach(card=>{card.addEventListener('pointermove',move);card.addEventListener('pointerleave',reset)});
+    return ()=>cards.forEach(card=>{card.removeEventListener('pointermove',move);card.removeEventListener('pointerleave',reset)});
+  },[category]);
+  useEffect(()=>{
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!finePointer || reducedMotion) return;
     const dot=document.createElement('span');
     const ring=document.createElement('span');
     dot.className='lux-cursor-dot'; ring.className='lux-cursor-ring';
