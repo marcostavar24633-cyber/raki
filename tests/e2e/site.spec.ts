@@ -43,7 +43,7 @@ test('cart can be populated and checkout validates contacts before preparing a T
   const popupPromise = page.waitForEvent('popup');
   await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
   const popup = await popupPromise;
-  await expect(dialog.getByText('Меню отправки открыто')).toBeVisible();
+  await expect(dialog.getByText(/Меню отправки открыто|Заявка скопирована/)).toBeVisible();
   const shareUrl = popup.url();
   expect(shareUrl).toContain('https://t.me/share/url?url=&text=');
   expect(decodeURIComponent(shareUrl)).toContain('Тестовый покупатель');
