@@ -730,3 +730,28 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 /* Keep typography visually locked while scrolling: no JS-driven text opacity or drift */
 [data-top-fade="true"]{opacity:1!important;transition:none!important}
 .hero-copy{transform:none!important;will-change:auto!important}
+
+/* Reversible cinematic reveal for every content block: enter softly, fade away on exit */
+.reveal-ready{
+  opacity:0;
+  transform:translate3d(0,28px,0);
+  filter:blur(6px);
+  transition:opacity .9s cubic-bezier(.22,.61,.36,1),
+             transform .9s cubic-bezier(.22,.61,.36,1),
+             filter .9s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity,transform,filter;
+}
+.reveal-ready.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+  filter:blur(0);
+}
+@media(max-width:700px){
+  .reveal-ready{transform:translate3d(0,18px,0);filter:blur(4px);transition-duration:.75s}
+}
+@media(prefers-reduced-motion:reduce){
+  .reveal-ready,.reveal-ready.is-visible{
+    opacity:1!important;transform:none!important;filter:none!important;
+    transition:none!important;will-change:auto!important;
+  }
+}
