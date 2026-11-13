@@ -76,10 +76,10 @@ jobs:
           const css = fs.readFileSync('src/styles.css', 'utf8');
           const html = fs.readFileSync('index.html', 'utf8');
           const failures = [];
-          const ids = [...app.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1]);
+          const ids = [...app.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
           const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
           if (duplicates.length) failures.push('Duplicate JSX ids: ' + [...new Set(duplicates)].join(', '));
-          const availableIds = new Set([...ids, ...[...html.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1])]);
+          const availableIds = new Set([...ids, ...[...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])]);
           const anchors = [...app.matchAll(/href="#([^"]+)"/g)].map(match => match[1]);
           for (const anchor of [...new Set(anchors)]) {
             if (!availableIds.has(anchor)) failures.push('Missing in-page anchor: #' + anchor);
@@ -87,8 +87,8 @@ jobs:
           for (const file of ['public/privacy.html', 'public/terms.html']) {
             if (!fs.existsSync(file)) failures.push('Missing legal page: ' + file);
           }
-          const assetSources = [app, css, html].join('\\n');
-          for (const match of assetSources.matchAll(/\\/raki\\/([^"'\\x60)]+?\\.(?:webp|png|jpg|jpeg|svg))/g)) {
+          const assetSources = [app, css, html].join('\n');
+          for (const match of assetSources.matchAll(/\/raki\/([^"'\x60)]+?\.(?:webp|png|jpg|jpeg|svg))/g)) {
             let name;
             try { name = decodeURIComponent(match[1]); } catch { name = match[1]; }
             if (!fs.existsSync(path.join('public', name))) failures.push('Missing public asset: ' + name);
@@ -97,7 +97,7 @@ jobs:
           if (!app.includes("if(!name){setOrderError('Укажите, пожалуйста, ваше имя.')")) failures.push('Checkout name validation is missing');
           if (!app.includes("localStorage.setItem('rak-cart'")) failures.push('Cart persistence is missing');
           if (failures.length) {
-            console.error(failures.map(item => 'FAIL: ' + item).join('\\n'));
+            console.error(failures.map(item => 'FAIL: ' + item).join('\n'));
             process.exit(1);
           }
           console.log('Audit smoke checks passed: anchors, legal pages, referenced assets, duplicate ids and checkout guards.');
