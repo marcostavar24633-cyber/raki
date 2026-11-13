@@ -279,3 +279,24 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   .product-card,.product-image img,.craft-image img{transition:none!important}
 }
+
+
+/* RAKOVARNYA 73 — restrained motion polish */
+.product-card{transform:translateZ(0);transition:transform .55s cubic-bezier(.2,.75,.2,1),border-color .35s,box-shadow .45s}
+.product-card:hover{transform:translateY(-7px) scale(1.012)}
+.product-card .product-image img{transition:transform 1.15s cubic-bezier(.2,.75,.2,1),filter .65s}
+.product-card:hover .product-image img{transform:scale(1.09) translateY(-2px);filter:saturate(1.12) contrast(1.04)}
+.product-card .quick-add{transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,box-shadow .3s}
+.product-card:hover .quick-add{transform:rotate(90deg) scale(1.06);box-shadow:0 8px 28px rgba(255,113,133,.2)}
+.btn,.add-link,.filters button,.slide-controls button{transition-timing-function:cubic-bezier(.2,.75,.2,1)}
+.btn-gold,.btn-outline{isolation:isolate}
+.btn-gold:before,.btn-outline:before{content:"";position:absolute;z-index:-1;inset:-40% auto -40% -55%;width:35%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent);transition:left .75s cubic-bezier(.2,.75,.2,1)}
+.btn-gold:hover:before,.btn-outline:hover:before{left:125%}
+.checkout-steps i{position:relative;overflow:hidden;border-radius:9px}
+.checkout-steps i:after{content:"";position:absolute;inset:0;width:45%;background:linear-gradient(90deg,transparent,#ad8050,transparent);transform:translateX(-120%);animation:stepFlow 2.8s ease-in-out infinite}
+.checkout-steps .step-current b{animation:stepPulse 2.4s ease-in-out infinite;box-shadow:0 0 0 0 rgba(173,128,80,.28)}
+.checkout-steps .step-done b{box-shadow:0 0 0 4px rgba(41,61,51,.08)}
+@keyframes stepFlow{0%,25%{transform:translateX(-120%);opacity:0}55%{opacity:.9}100%{transform:translateX(260%);opacity:0}}
+@keyframes stepPulse{0%,100%{box-shadow:0 0 0 0 rgba(173,128,80,.22)}50%{box-shadow:0 0 0 6px rgba(173,128,80,0)}}
+@media(max-width:700px){.product-card:hover{transform:none}.product-card:active{transform:scale(.985)}.product-card:hover .product-image img{transform:scale(1.035)}}
+@media(prefers-reduced-motion:reduce){.product-card,.product-card .product-image img,.product-card .quick-add,.btn-gold:before,.btn-outline:before,.checkout-steps i:after,.checkout-steps .step-current b{animation:none!important;transition:none!important;transform:none!important}}
