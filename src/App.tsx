@@ -152,20 +152,25 @@ export default function App(){
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce) return;
-    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main a,main button,main span,main strong,main em,main b';
+    // Apply one shared top-edge treatment to text, photographs and complete visual cards.
+    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small,main a,main button,main span,main strong,main em,main b,main img,main picture,main figure,main .product-card,main .format-card,main .process-item,main .value-card,main .size-guide-grid article,main .quick-view-photo,main .craft-image,main .contact-panel,main .hero-copy';
     const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
       .filter(node=>!node.parentElement?.closest(selector));
     nodes.forEach(node=>node.dataset.scrollTextFade='true');
     let frame=0;
     const update=()=>{
       frame=0;
-      const fadeStart=260;
-      const fadeEnd=40;
+      const slowStart=150;
+      const fadeEnd=60;
       nodes.forEach(node=>{
         const top=node.getBoundingClientRect().top;
-        const progress=Math.max(0,Math.min(1,(top-fadeEnd)/(fadeStart-fadeEnd)));
-        const opacity=progress*progress*(3-2*progress);
+        const progress=Math.max(0,Math.min(1,(slowStart-top)/(slowStart-fadeEnd)));
+        const eased=progress*progress*(3-2*progress);
+        const opacity=1-eased;
+        // Counter-motion reduces the apparent speed in the final 150px before the top edge.
+        const slowOffset=Math.min(32,Math.max(0,slowStart-top)*.34);
         node.style.setProperty('--scroll-text-opacity',opacity.toFixed(3));
+        node.style.setProperty('--scroll-slow-offset',slowOffset.toFixed(1)+'px');
       });
     };
     const requestUpdate=()=>{if(!frame) frame=requestAnimationFrame(update)};
@@ -176,7 +181,11 @@ export default function App(){
       window.removeEventListener('scroll',requestUpdate);
       window.removeEventListener('resize',requestUpdate);
       if(frame) cancelAnimationFrame(frame);
-      nodes.forEach(node=>{delete node.dataset.scrollTextFade;node.style.removeProperty('--scroll-text-opacity')});
+      nodes.forEach(node=>{
+        delete node.dataset.scrollTextFade;
+        node.style.removeProperty('--scroll-text-opacity');
+        node.style.removeProperty('--scroll-slow-offset');
+      });
     };
   },[]);
   useEffect(()=>{
