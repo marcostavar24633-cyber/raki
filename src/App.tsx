@@ -53,6 +53,20 @@ export default function App(){
     return ()=>{intro.kill();photo.kill()};
   },[]);
   useEffect(()=>{
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!finePointer || reducedMotion) return;
+    const dot=document.createElement('span');
+    const ring=document.createElement('span');
+    dot.className='lux-cursor-dot'; ring.className='lux-cursor-ring';
+    document.body.append(dot,ring); document.body.classList.add('has-lux-cursor');
+    let frame=0, x=window.innerWidth/2, y=window.innerHeight/2;
+    const move=(event:PointerEvent)=>{x=event.clientX;y=event.clientY;dot.style.transform='translate3d('+x+'px,'+y+'px,0) translate(-50%,-50%)';if(!frame) frame=requestAnimationFrame(()=>{ring.style.transform='translate3d('+x+'px,'+y+'px,0) translate(-50%,-50%)';frame=0;});};
+    const hover=(event:PointerEvent)=>{const target=event.target as HTMLElement|null;document.body.classList.toggle('cursor-hover',!!target?.closest('a,button,[role=button],input,textarea'));};
+    window.addEventListener('pointermove',move,{passive:true}); document.addEventListener('pointerover',hover);
+    return ()=>{window.removeEventListener('pointermove',move);document.removeEventListener('pointerover',hover);if(frame)cancelAnimationFrame(frame);dot.remove();ring.remove();document.body.classList.remove('has-lux-cursor','cursor-hover');};
+  },[]);
+  useEffect(()=>{
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const id=window.setInterval(()=>setActiveSlide(s=>(s+1)%3),6500);
     return ()=>window.clearInterval(id);
