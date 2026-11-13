@@ -1,0 +1,48 @@
+import { test, expect } from '@playwright/test';
+
+test('mobile layout stays within the viewport', async ({ page }) => {
+  for (const width of [320, 360, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/');
+    await expect(page.locator('main')).toBeVisible();
+    const overflow = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      document: document.documentElement.scrollWidth
+    }));
+    expect(overflow.document, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(overflow.viewport + 1);
+    await expect(page.locator('.header')).toBeVisible();
+    await expect(page.locator('.cart-trigger')).toBeVisible();
+  }
+});
+
+test('cart can be populated and checkout validates contacts before preparing a Telegram message', async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__openedShareUrl = '';
+    window.open = ((url: string) => {
+      (window as any).__openedShareUrl = url;
+      return {} as Window;
+    }) as typeof window.open;
+  });
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+  await expect(page.getByRole('dialog', { name: 'Корзина' })).toBeVisible();
+  await page.getByRole('button', { name: /Оформить заказ/ }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Оформление заказа.' });
+  await expect(dialog).toBeVisible();
+  await dialog.locator('input[name="name"]').fill('Тестовый покупатель');
+  await dialog.locator('input[name="phone"]').fill('+1 (2) 3-4');
+  await dialog.getByRole('checkbox').check();
+  await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
+  await expect(dialog.getByRole('alert')).toContainText('от 10 до 15 цифр');
+
+  await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
+  await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
+  await expect(dialog.getByText('Меню отправки открыто')).toBeVisible();
+  const shareUrl = await page.evaluate(() => (window as any).__openedShareUrl as string);
+  expect(shareUrl).toContain('https://t.me/share/url?url=&text=');
+  expect(decodeURIComponent(shareUrl)).toContain('Тестовый покупатель');
+});
