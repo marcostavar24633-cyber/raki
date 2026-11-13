@@ -993,3 +993,27 @@ main [data-scroll-text-fade="true"]{
 .product-call{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border:1px solid rgba(194,166,105,.38);border-radius:999px;color:#d8bd99;font-size:9px;white-space:nowrap;transition:background .25s,border-color .25s,color .25s}
 .product-call:hover{background:var(--bronze);border-color:var(--bronze);color:#111510}
 @media(max-width:480px){.product-actions{gap:7px}.product-call{padding:7px 8px;font-size:8px}.product-call svg{width:12px;height:12px}}
+
+
+/* Live vs boiled editorial choice section */
+.choice-section{padding-top:clamp(70px,9vw,130px);padding-bottom:clamp(70px,9vw,130px)}
+.choice-heading{display:grid;grid-template-columns:1fr minmax(260px,.7fr);gap:40px;align-items:end;margin:28px 0 42px}
+.choice-heading h2{margin:0;font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-.055em}
+.choice-heading h2 i{font-family:Georgia,serif;font-weight:400;color:var(--bronze)}
+.choice-heading>p{max-width:470px;margin:0;color:var(--muted,#aaa99f);font-size:14px;line-height:1.8}
+.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.choice-card{position:relative;min-width:0;overflow:hidden;border:1px solid rgba(194,166,105,.2);border-radius:18px;background:rgba(255,255,255,.025)}
+.choice-card>img{display:block;width:100%;height:clamp(220px,30vw,390px);object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.choice-card:hover>img{transform:scale(1.035)}
+.choice-card-content{padding:26px 28px 30px}
+.choice-number{color:#b99a68;font-size:9px;letter-spacing:.16em}
+.choice-card h3{margin:14px 0 10px;font-size:clamp(25px,3vw,36px);font-weight:500}
+.choice-card p{max-width:540px;margin:0 0 22px;color:var(--muted,#aaa99f);font-size:13px;line-height:1.8}
+.choice-card .under-link{display:inline-flex}
+@media(max-width:700px){
+ .choice-heading{grid-template-columns:1fr;gap:18px;margin-bottom:26px}
+ .choice-grid{grid-template-columns:1fr;gap:16px}
+ .choice-card>img{height:245px}
+ .choice-card-content{padding:21px 20px 24px}
+}
+@media(prefers-reduced-motion:reduce){.choice-card>img{transition:none}}
