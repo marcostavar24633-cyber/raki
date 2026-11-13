@@ -189,3 +189,7 @@
     transition:none!important;
   }
 }
+
+/* Hero copy enters only after the page mounts; GSAP controls the reveal. */
+.hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{opacity:0;}
+@media (prefers-reduced-motion: reduce){.hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{opacity:1;transform:none;filter:none;}}
