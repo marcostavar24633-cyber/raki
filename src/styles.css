@@ -300,3 +300,52 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @keyframes stepPulse{0%,100%{box-shadow:0 0 0 0 rgba(173,128,80,.22)}50%{box-shadow:0 0 0 6px rgba(173,128,80,0)}}
 @media(max-width:700px){.product-card:hover{transform:none}.product-card:active{transform:scale(.985)}.product-card:hover .product-image img{transform:scale(1.035)}}
 @media(prefers-reduced-motion:reduce){.product-card,.product-card .product-image img,.product-card .quick-add,.btn-gold:before,.btn-outline:before,.checkout-steps i:after,.checkout-steps .step-current b{animation:none!important;transition:none!important;transform:none!important}}
+
+
+/* New conversion sections — RAKOVARNYA 73 */
+.section-heading{display:flex;justify-content:space-between;align-items:end;gap:34px;margin:0 0 42px}
+.section-heading h2{margin:0;font-size:clamp(42px,6vw,78px);line-height:.98;letter-spacing:-.055em;font-weight:500}
+.section-heading h2 i,.format-card h3 i,.guest-notes h2 i,.contact-panel h2 i{font-family:Georgia,serif;font-weight:400}
+.section-intro{max-width:390px;color:rgba(238,231,218,.64);font-size:13px;line-height:1.8;margin:0 0 5px}
+.format-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.format-card{position:relative;min-height:320px;padding:30px;border:1px solid rgba(230,218,196,.13);border-radius:28px 28px 22px 22px;background:linear-gradient(155deg,rgba(255,255,255,.045),rgba(255,255,255,.008));display:flex;flex-direction:column;align-items:flex-start;transition:transform .45s,border-color .35s,background .35s}
+.format-card:hover{transform:translateY(-6px);border-color:rgba(199,164,119,.55)}
+.format-card-featured{background:linear-gradient(145deg,rgba(173,128,80,.18),rgba(255,113,133,.055));border-color:rgba(199,164,119,.38)}
+.format-no{font-size:9px;letter-spacing:.16em;color:#c7a477}
+.format-card h3{font-size:clamp(30px,3.5vw,44px);line-height:1.02;font-weight:500;letter-spacing:-.04em;margin:30px 0 13px}
+.format-card p,.process-item p{color:rgba(238,231,218,.62);font-size:12px;line-height:1.75;margin:0 0 22px}
+.format-card strong{font-size:22px;font-weight:500;margin-top:auto;color:#e9d3b2}
+.format-card strong small{font-size:11px;color:rgba(238,231,218,.55)}
+.format-card a{display:inline-flex;align-items:center;gap:9px;margin-top:18px;color:#f0d5b0;text-decoration:none;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.order-process{background:rgba(255,255,255,.018);border-top:1px solid rgba(230,218,196,.08);border-bottom:1px solid rgba(230,218,196,.08)}
+.process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.process-item{padding:22px 24px 8px 0;border-top:1px solid rgba(199,164,119,.35);margin-right:22px}
+.process-item>b{display:block;color:#c7a477;font-size:11px;letter-spacing:.14em;margin-bottom:30px}
+.process-item h3{font-size:17px;font-weight:500;margin:0 0 10px}
+.guest-notes{display:grid;grid-template-columns:1fr .8fr;gap:70px;align-items:center}
+.guest-notes-copy{max-width:570px}
+.guest-notes h2,.contact-panel h2{font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-.055em;font-weight:500;margin:14px 0 22px}
+.guest-notes-copy>p:not(.kicker),.contact-panel>div>p:not(.kicker){color:rgba(238,231,218,.66);font-size:13px;line-height:1.85;max-width:490px}
+.guest-facts{border-left:1px solid rgba(199,164,119,.35);padding-left:32px}
+.guest-facts>div{display:flex;align-items:center;gap:22px;padding:17px 0;border-bottom:1px solid rgba(230,218,196,.1)}
+.guest-facts b{font-family:Georgia,serif;font-size:37px;font-weight:400;color:#c7a477}
+.guest-facts span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(238,231,218,.68)}
+.faq-section{background:#e9e2d6;color:#1c211d}
+.faq-section .section-index,.faq-section .kicker{color:#806647}
+.faq-section .section-heading h2{color:#20251f}
+.faq-section .section-intro{color:rgba(32,37,31,.66)}
+.faq-list{max-width:900px;margin-left:auto;border-top:1px solid rgba(32,37,31,.2)}
+.faq-list details{border-bottom:1px solid rgba(32,37,31,.2);padding:0 4px}
+.faq-list summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:21px 0;font-size:15px;font-weight:500}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary span{font-size:23px;color:#9a754d;transition:transform .25s}
+.faq-list details[open] summary span{transform:rotate(45deg)}
+.faq-list details p{max-width:720px;margin:0;padding:0 40px 22px 0;color:rgba(32,37,31,.72);font-size:12px;line-height:1.8}
+.contact-panel{display:grid;grid-template-columns:1fr .8fr;gap:60px;align-items:center;border:1px solid rgba(199,164,119,.22);border-radius:34px;margin-top:70px;margin-bottom:70px;padding:clamp(28px,5vw,64px);background:radial-gradient(ellipse at 85% 10%,rgba(173,128,80,.16),transparent 42%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.008))}
+.contact-phone{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 0 18px;border-bottom:1px solid rgba(199,164,119,.35);font-size:clamp(22px,3vw,34px);color:#f0d5b0;text-decoration:none;letter-spacing:-.03em}
+.contact-actions{display:flex;flex-direction:column;gap:22px}
+.contact-actions .btn{align-self:flex-start}
+.contact-actions>span{font-size:8px;letter-spacing:.12em;line-height:1.7;color:rgba(238,231,218,.48)}
+@media(max-width:850px){.format-grid{grid-template-columns:1fr 1fr}.format-card:last-child{grid-column:1/-1;min-height:270px}.guest-notes{gap:35px}.process-grid{grid-template-columns:1fr 1fr;row-gap:26px}.process-item:nth-child(2){margin-right:0}}
+@media(max-width:600px){.section-heading{display:block;margin-bottom:28px}.section-intro{margin-top:18px;font-size:12px}.format-grid{grid-template-columns:1fr;gap:12px}.format-card,.format-card:last-child{grid-column:auto;min-height:265px;padding:24px}.format-card h3{margin-top:22px}.process-grid{grid-template-columns:1fr;gap:18px}.process-item{margin:0;padding:16px 0 0}.process-item>b{margin-bottom:15px}.guest-notes{grid-template-columns:1fr;gap:30px}.guest-facts{padding-left:18px}.guest-facts b{font-size:31px}.faq-list summary{font-size:13px;padding:18px 0}.faq-list details p{font-size:11px}.contact-panel{grid-template-columns:1fr;gap:28px;margin:42px 0;padding:25px 21px;border-radius:25px}.contact-actions .btn{width:100%;justify-content:center}.contact-phone{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.format-card,.faq-list summary span{transition:none!important}.format-card:hover{transform:none}}
