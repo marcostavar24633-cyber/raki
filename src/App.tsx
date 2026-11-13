@@ -150,6 +150,35 @@ export default function App(){
     return ()=>{observer.disconnect();nodes.forEach(node=>node.classList.remove('reveal-ready','is-visible'))};
   },[]);
   useEffect(()=>{
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    const selector='main h1,main h2,main h3,main h4,main p,main li,main blockquote,main figcaption,main label,main small';
+    const nodes=Array.from(document.querySelectorAll<HTMLElement>(selector))
+      .filter(node=>!node.parentElement?.closest(selector));
+    nodes.forEach(node=>node.dataset.scrollTextFade='true');
+    let frame=0;
+    const update=()=>{
+      frame=0;
+      const fadeStart=260;
+      const fadeEnd=100;
+      nodes.forEach(node=>{
+        const top=node.getBoundingClientRect().top;
+        const opacity=Math.max(0,Math.min(1,(top-fadeEnd)/(fadeStart-fadeEnd)));
+        node.style.setProperty('--scroll-text-opacity',opacity.toFixed(3));
+      });
+    };
+    const requestUpdate=()=>{if(!frame) frame=requestAnimationFrame(update)};
+    update();
+    window.addEventListener('scroll',requestUpdate,{passive:true});
+    window.addEventListener('resize',requestUpdate);
+    return ()=>{
+      window.removeEventListener('scroll',requestUpdate);
+      window.removeEventListener('resize',requestUpdate);
+      if(frame) cancelAnimationFrame(frame);
+      nodes.forEach(node=>{delete node.dataset.scrollTextFade;node.style.removeProperty('--scroll-text-opacity')});
+    };
+  },[]);
+  useEffect(()=>{
     const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!finePointer || reducedMotion) return;
