@@ -268,7 +268,10 @@ export default function App(){
     const form=new FormData(e.currentTarget);
     const name=String(form.get('name')||'').trim();
     const phone=String(form.get('phone')||'').trim();
+    const phoneDigits=phone.replace(/\D/g,'');
     const comment=String(form.get('comment')||'').trim();
+    if(!name){setOrderError('Укажите, пожалуйста, ваше имя.');return;}
+    if(phoneDigits.length<10||phoneDigits.length>15){setOrderError('Проверьте номер телефона: укажите от 10 до 15 цифр.');return;}
     const lines=cart.map(({product,qty})=>`— ${product.name}: ${qty.toLocaleString('ru-RU',{maximumFractionDigits:1})} ${product.unit} × ${money(product.price)} = ${money(product.price*qty)}`);
     const subject='Заявка с сайта РАКОВАРНЯ «ЕХАЛ ГРЕКА»';
     const body=[
