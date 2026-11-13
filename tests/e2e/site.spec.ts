@@ -23,10 +23,13 @@ test('cart can be populated and checkout validates contacts before preparing a T
   await page.addInitScript(() => {
     (window as any).__openedShareUrl = '';
     Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
-    window.open = ((url: string) => {
-      (window as any).__openedShareUrl = url;
-      return {} as Window;
-    }) as typeof window.open;
+    Object.defineProperty(window, 'open', {
+      configurable: true,
+      value: (url: string) => {
+        (window as any).__openedShareUrl = String(url);
+        return { opener: null } as Window;
+      }
+    });
   });
 
   await page.setViewportSize({ width: 1280, height: 900 });
