@@ -656,3 +656,11 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
   .product-card::after{animation:none!important;display:none!important}
   .values .value-photo-img,.craft-image img{transform:none!important;will-change:auto}
 }
+
+/* Text gently dissolves as it reaches the top edge of the viewport */
+[data-top-fade="true"]{
+  opacity:var(--top-scroll-opacity,1);
+}
+@media(prefers-reduced-motion:reduce){
+  [data-top-fade="true"]{opacity:1!important}
+}
