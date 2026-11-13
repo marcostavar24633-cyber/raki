@@ -49,3 +49,24 @@
 .checkout-modal input:not([type=checkbox]),.checkout-modal textarea{transition:border-color .25s,box-shadow .25s,background .25s}
 .checkout-modal input:focus,.checkout-modal textarea:focus{box-shadow:0 0 0 3px rgba(157,121,80,.12);background:rgba(255,255,255,.28)}
 @media(prefers-reduced-motion:reduce){.reveal-ready{opacity:1;transform:none;transition:none}}
+
+
+/* Cinematic hero treatment */
+.hero{isolation:isolate}
+.hero-photo{will-change:transform;transform-origin:center center}
+.hero-photo::before,.hero-photo::after{content:"";position:absolute;inset:0;pointer-events:none}
+.hero-photo::before{background:radial-gradient(ellipse at 72% 42%,rgba(198,157,105,.17),transparent 48%),linear-gradient(115deg,rgba(12,18,14,.16),transparent 45%,rgba(12,18,14,.2));mix-blend-mode:screen}
+.hero-photo::after{inset:-35% -65%;background:linear-gradient(105deg,transparent 38%,rgba(235,211,174,.075) 48%,rgba(255,239,211,.13) 50%,rgba(235,211,174,.055) 52%,transparent 62%);transform:translateX(-55%) rotate(-8deg);animation:heroLightSweep 13s ease-in-out 2s infinite}
+.hero-grain{z-index:1;mix-blend-mode:soft-light}
+.hero-copy{perspective:900px}
+.hero-copy h1{transform-origin:left center;text-shadow:0 8px 44px rgba(0,0,0,.18)}
+.hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{will-change:transform,opacity,filter}
+.hero-stamp{box-shadow:0 0 0 7px rgba(201,164,116,.045),0 0 38px rgba(201,164,116,.12);backdrop-filter:blur(2px)}
+.hero-stamp::before{content:"";position:absolute;inset:7px;border:1px solid rgba(201,164,116,.2);border-radius:50%}
+.hero-side>span:first-child{font-variant-numeric:tabular-nums;color:#e2c39b}
+.slide-progress{overflow:hidden;border-radius:9px;background:rgba(255,255,255,.28)}
+.slide-progress i{box-shadow:0 0 12px rgba(201,164,116,.7)}
+.slide-controls button{backdrop-filter:blur(8px)}
+@keyframes heroLightSweep{0%,22%{transform:translateX(-65%) rotate(-8deg);opacity:0}35%{opacity:1}62%{transform:translateX(65%) rotate(-8deg);opacity:.75}78%,100%{transform:translateX(65%) rotate(-8deg);opacity:0}}
+@media(max-width:700px){.hero-photo::after{animation-duration:18s;opacity:.65}.hero-copy h1{text-shadow:0 5px 30px rgba(0,0,0,.3)}}
+@media(prefers-reduced-motion:reduce){.hero-photo::after{animation:none;display:none}}
