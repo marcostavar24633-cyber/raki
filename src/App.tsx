@@ -297,7 +297,8 @@ export default function App(){
         return;
       }
       const telegramShareUrl='https://t.me/share/url?url=&text='+encodeURIComponent(shareText);
-      const opened=window.open(telegramShareUrl,'_blank','noopener,noreferrer');
+      const opened=window.open(telegramShareUrl,'_blank');
+      if(opened) opened.opener=null;
       if(!opened){
         if(navigator.clipboard?.writeText){
           await navigator.clipboard.writeText(shareText);
