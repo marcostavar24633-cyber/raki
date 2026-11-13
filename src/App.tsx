@@ -141,11 +141,13 @@ export default function App(){
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce || !('IntersectionObserver' in window)) return;
-    const nodes=Array.from(document.querySelectorAll<HTMLElement>('.section,.craft,.delivery,.final-cta,.product-card,.value-card'));
+    const nodes=Array.from(document.querySelectorAll<HTMLElement>('main .section,main .craft,main .delivery,main .final-cta,main .intro,main .catalog,main .calculator,main .values,main .product-card,main .value-card'));
     nodes.forEach(node=>node.classList.add('reveal-ready'));
-    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}}),{threshold:.12,rootMargin:'0px 0px -45px 0px'});
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      entry.target.classList.toggle('is-visible',entry.isIntersecting);
+    }),{threshold:.08,rootMargin:'-8% 0px -8% 0px'});
     nodes.forEach(node=>observer.observe(node));
-    return ()=>observer.disconnect();
+    return ()=>{observer.disconnect();nodes.forEach(node=>node.classList.remove('reveal-ready','is-visible'))};
   },[]);
   useEffect(()=>{
     const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
