@@ -49,7 +49,7 @@ export default function App(){
     const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduceMotion) return;
     const photo=gsap.fromTo('.hero-photo',{scale:1.14},{scale:1.035,duration:2.2,ease:'power2.out'});
-    return ()=>photo.kill();
+    return ()=>{photo.kill();};
   },[]);
   useEffect(()=>{
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
