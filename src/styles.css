@@ -28,3 +28,24 @@
 .cursor-hover .lux-cursor-ring{width:54px;height:54px;border-color:rgba(232,197,151,.95);background:rgba(201,164,116,.09);box-shadow:0 0 24px rgba(201,164,116,.18)}
 @media(max-width:700px),(hover:none),(pointer:coarse){.lux-cursor-dot,.lux-cursor-ring{display:none!important}.has-lux-cursor,.has-lux-cursor *{cursor:auto!important}}
 @media(prefers-reduced-motion:reduce){.lux-cursor-dot,.lux-cursor-ring{display:none!important}.btn,.product-card,.product-image img,.value-card{transition:none!important}}
+
+
+/* Cinematic reveal and refined cart */
+.reveal-ready{opacity:0;transform:translate3d(0,24px,0);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.75,.2,1)}
+.reveal-ready.is-visible{opacity:1;transform:translate3d(0,0,0)}
+.product-card.reveal-ready:nth-child(2){transition-delay:.08s}.product-card.reveal-ready:nth-child(3){transition-delay:.16s}.product-card.reveal-ready:nth-child(4){transition-delay:.24s}
+.drawer{box-shadow:-24px 0 80px rgba(0,0,0,.28);border-left:1px solid rgba(190,154,111,.28);background:linear-gradient(145deg,#f5f0e7 0%,#eae3d7 100%)}
+.drawer-head{border-color:rgba(128,102,72,.28)}
+.drawer-head h3{letter-spacing:-.025em}
+.cart-line{transition:background .25s,padding .25s;border-color:rgba(128,102,72,.2)}
+.cart-line:hover{background:rgba(173,128,80,.055);padding-left:8px;padding-right:8px}
+.cart-line img{box-shadow:0 5px 16px rgba(35,29,20,.13)}
+.qty button{transition:background .2s,color .2s,border-color .2s,transform .2s}
+.qty button:hover{background:#293d33;color:#f2ede4;border-color:#293d33;transform:scale(1.08)}
+.cart-total{border-color:rgba(128,102,72,.32)}
+.cart-total b{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:#293d33}
+.drawer>.btn-gold{box-shadow:0 8px 24px rgba(91,68,39,.18)}
+.checkout-modal{box-shadow:0 30px 100px rgba(0,0,0,.32);border:1px solid rgba(173,128,80,.28)}
+.checkout-modal input:not([type=checkbox]),.checkout-modal textarea{transition:border-color .25s,box-shadow .25s,background .25s}
+.checkout-modal input:focus,.checkout-modal textarea:focus{box-shadow:0 0 0 3px rgba(157,121,80,.12);background:rgba(255,255,255,.28)}
+@media(prefers-reduced-motion:reduce){.reveal-ready{opacity:1;transform:none;transition:none}}
