@@ -987,3 +987,9 @@ main [data-scroll-text-fade="true"]{
 
 /* Approximate number of crayfish per kilogram in product cards */
 .product-count{display:inline-flex;align-items:center;margin:-10px 0 17px;padding:6px 10px;border:1px solid rgba(194,166,105,.28);border-radius:999px;color:#d5b58b;font-size:9px;letter-spacing:.04em;background:rgba(173,128,80,.07)}
+
+/* Product card actions: add to cart and direct phone call */
+.product-actions{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.product-call{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border:1px solid rgba(194,166,105,.38);border-radius:999px;color:#d8bd99;font-size:9px;white-space:nowrap;transition:background .25s,border-color .25s,color .25s}
+.product-call:hover{background:var(--bronze);border-color:var(--bronze);color:#111510}
+@media(max-width:480px){.product-actions{gap:7px}.product-call{padding:7px 8px;font-size:8px}.product-call svg{width:12px;height:12px}}
