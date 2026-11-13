@@ -48,9 +48,32 @@ export default function App(){
   useEffect(()=>{
     const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduceMotion) return;
-    const intro=gsap.fromTo('.hero-copy > *',{y:34,opacity:0},{y:0,opacity:1,duration:1,stagger:.12,ease:'power3.out',delay:.2});
-    const photo=gsap.fromTo('.hero-photo',{scale:1.12},{scale:1,duration:1.8,ease:'power2.out'});
-    return ()=>{intro.kill();photo.kill()};
+    const photo=gsap.fromTo('.hero-photo',{scale:1.14},{scale:1.035,duration:2.2,ease:'power2.out'});
+    return ()=>photo.kill();
+  },[]);
+  useEffect(()=>{
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const targets=gsap.utils.toArray<HTMLElement>('.hero-copy .eyebrow, .hero-copy h1, .hero-copy > p, .hero-copy .hero-buttons');
+    gsap.fromTo(targets,{y:26,opacity:0,filter:'blur(5px)'},{y:0,opacity:1,filter:'blur(0px)',duration:.85,stagger:.11,ease:'power3.out',overwrite:true});
+    gsap.fromTo('.hero-stamp',{scale:.82,opacity:0,rotate:-8},{scale:1,opacity:1,rotate:12,duration:1,ease:'back.out(1.5)',delay:.18,overwrite:true});
+  },[activeSlide]);
+  useEffect(()=>{
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hero=document.querySelector<HTMLElement>('.hero');
+    const photo=document.querySelector<HTMLElement>('.hero-photo');
+    if(!finePointer || reduced || !hero || !photo) return;
+    const moveX=gsap.quickTo(photo,'x',{duration:.8,ease:'power3.out'});
+    const moveY=gsap.quickTo(photo,'y',{duration:.8,ease:'power3.out'});
+    const onMove=(event:PointerEvent)=>{
+      const rect=hero.getBoundingClientRect();
+      moveX(((event.clientX-rect.left)/rect.width-.5)*-16);
+      moveY(((event.clientY-rect.top)/rect.height-.5)*-12);
+    };
+    const reset=()=>{moveX(0);moveY(0)};
+    hero.addEventListener('pointermove',onMove,{passive:true});
+    hero.addEventListener('pointerleave',reset);
+    return ()=>{hero.removeEventListener('pointermove',onMove);hero.removeEventListener('pointerleave',reset);gsap.killTweensOf(photo)};
   },[]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
