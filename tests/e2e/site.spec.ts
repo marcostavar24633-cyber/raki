@@ -18,6 +18,7 @@ test('mobile layout stays within the viewport', async ({ page }) => {
 test('cart can be populated and checkout validates contacts before preparing a Telegram message', async ({ page }) => {
   await page.addInitScript(() => {
     (window as any).__openedShareUrl = '';
+    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
     window.open = ((url: string) => {
       (window as any).__openedShareUrl = url;
       return {} as Window;
