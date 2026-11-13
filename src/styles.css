@@ -928,3 +928,21 @@ main [data-scroll-text-fade="true"]{
     box-shadow:0 0 5px rgba(57,255,20,.08),0 10px 30px rgba(0,0,0,.18)!important;
   }
 }
+
+
+/* Unified scroll-edge dissolve and slow zone for all visible content.
+   Elements begin easing at 150px from the top and are fully dissolved by 60px. */
+main [data-scroll-text-fade="true"]{
+  opacity:var(--scroll-text-opacity,1);
+  translate:0 var(--scroll-slow-offset,0px);
+  transition:opacity .12s linear;
+  will-change:opacity,translate;
+}
+@media(prefers-reduced-motion:reduce){
+  main [data-scroll-text-fade="true"]{
+    opacity:1!important;
+    translate:none!important;
+    transition:none!important;
+    will-change:auto;
+  }
+}
