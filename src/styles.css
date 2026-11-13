@@ -539,3 +539,52 @@ h1,h2,.intro h2,.catalog h2,.craft h2,.calculator h2,.delivery h2,.final-cta h2{
 @media(prefers-reduced-motion:reduce){
   .hero-photo.hero-photo-layer{transition:none!important;transform:none!important}
 }
+
+/* One consistent rounded geometry for every image and visual card */
+:root{--unified-radius:28px}
+.product-card,
+.format-card,
+.size-guide-grid article,
+.process-item,
+.value-card,
+.craft-image,
+.product-image,
+.quick-view-modal,
+.quick-view-photo,
+.cart-line img,
+.values .value-photo,
+.values .value-image-two,
+.contact-panel{
+  border-radius:var(--unified-radius)!important;
+}
+.product-card,.format-card,.size-guide-grid article,.process-item,
+.value-card,.craft-image,.product-image,.quick-view-modal,
+.quick-view-photo,.values .value-photo,.values .value-image-two{
+  overflow:hidden;
+}
+.product-image img,
+.craft-image img,
+.quick-view-photo img,
+.value-photo-img{
+  border-radius:inherit!important;
+}
+.values .value-photo-img{inset:0!important}
+.values .value-photo,.values .value-image-two{margin:0!important;padding:0!important}
+.values .photo-caption{left:22px!important;bottom:22px!important}
+.cart-line img{border-radius:var(--unified-radius)!important}
+.hero{border-radius:var(--unified-radius);overflow:hidden}
+.hero-photo.hero-photo-layer{
+  transition:opacity 3s cubic-bezier(.22,.61,.36,1),transform 7s ease-out!important;
+}
+@media(max-width:700px){
+  :root{--unified-radius:22px}
+  .product-card,.format-card,.size-guide-grid article,.process-item,
+  .value-card,.craft-image,.product-image,.quick-view-modal,
+  .quick-view-photo,.values .value-photo,.values .value-image-two,
+  .contact-panel,.cart-line img,.hero{
+    border-radius:var(--unified-radius)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-photo.hero-photo-layer{transition:none!important}
+}
