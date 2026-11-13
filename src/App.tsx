@@ -164,7 +164,7 @@ export default function App(){
     let frame=0;
     const update=()=>{
       frame=0;
-      const zoneStart=390;
+      const zoneStart=100;
       const zoneEnd=50;
       nodes.forEach(node=>{
         const rect=node.getBoundingClientRect();
