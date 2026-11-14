@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Метод не поддерживается.' });
 
   const contentType = req.headers?.['content-type'];
-  if (typeof contentType !== 'string' || !contentType.toLowerCase().includes('application/json')) {
+  if (typeof contentType !== 'string' || contentType.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
     return res.status(415).json({ error: 'Ожидается JSON-запрос.' });
   }
   let serializedBody: string;
@@ -39,6 +39,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
   if (!turnstileSecret) return res.status(503).json({ error: 'Защита формы временно не настроена. Свяжитесь с нами другим способом.' });
 
+
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+    return res.status(400).json({ error: 'Некорректные данные заказа.' });
+  }
+  const body = req.body as Partial<OrderPayload>;
+
   const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
   if (!turnstileToken || turnstileToken.length > 2048) {
     return res.status(400).json({ error: 'Пройдите проверку безопасности и повторите отправку.' });
@@ -48,26 +54,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const verificationResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: turnstileSecret, response: turnstileToken }),
+      body: JSON.stringify({
+        secret: turnstileSecret,
+        response: turnstileToken,
+        remoteip: Array.isArray(req.headers?.['x-forwarded-for'])
+          ? req.headers?.['x-forwarded-for']?.[0]
+          : req.headers?.['x-forwarded-for']?.split(',')[0]?.trim(),
+      }),
       signal: AbortSignal.timeout(8_000),
     });
     if (!verificationResponse.ok) {
       return res.status(503).json({ error: 'Проверка безопасности временно недоступна. Попробуйте позже.' });
     }
-    const verification = await verificationResponse.json() as { success?: boolean; hostname?: string };
+    const verification = await verificationResponse.json() as { success?: boolean; hostname?: string; action?: string };
     const requestHost = req.headers?.host;
     const hostname = Array.isArray(requestHost) ? requestHost[0] : requestHost;
-    if (verification.success !== true || (hostname && verification.hostname !== hostname.split(':')[0])) {
+    if (!hostname || verification.success !== true ||
+      verification.hostname !== hostname.split(':')[0].toLowerCase() || verification.action !== 'order') {
       return res.status(403).json({ error: 'Проверка безопасности не пройдена или истекла. Пройдите её ещё раз.' });
     }
   } catch {
     return res.status(503).json({ error: 'Не удалось выполнить проверку безопасности. Попробуйте позже.' });
   }
-
-  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
-    return res.status(400).json({ error: 'Некорректные данные заказа.' });
-  }
-  const body = req.body as Partial<OrderPayload>;
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
   const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
   const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
@@ -104,6 +112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const telegramResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML', disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(10_000),
     });
     const telegramResult = await telegramResponse.json() as { ok?: boolean };
     if (!telegramResponse.ok || !telegramResult.ok) {
