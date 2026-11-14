@@ -57,9 +57,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify({
         secret: turnstileSecret,
         response: turnstileToken,
-        remoteip: Array.isArray(req.headers?.['x-forwarded-for'])
-          ? req.headers?.['x-forwarded-for']?.[0]
-          : req.headers?.['x-forwarded-for']?.split(',')[0]?.trim(),
       }),
       signal: AbortSignal.timeout(8_000),
     });
