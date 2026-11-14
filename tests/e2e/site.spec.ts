@@ -66,6 +66,19 @@ test('initial hero image is not hidden by the slide entrance animation', async (
   await expect(heroLayer).toHaveCSS('animation-name', 'none');
 });
 
+test('mobile hero carousel stays stable until the visitor changes slides', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const slideNumber = page.locator('.hero-side > span').first();
+  await expect(slideNumber).toHaveText('01 / 03');
+  await page.waitForTimeout(6800);
+  await expect(slideNumber).toHaveText('01 / 03');
+
+  await page.locator('.slide-controls button[aria-label="Следующий слайд"]').click();
+  await expect(slideNumber).toHaveText('02 / 03');
+});
+
 test('mobile hero copy stays visible when desktop-only GSAP is disabled', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
