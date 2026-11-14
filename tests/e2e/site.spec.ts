@@ -410,3 +410,17 @@ test('mobile FAQ headings keep WCAG AA text contrast', async ({ page }) => {
     expect(item.ratio, `${item.selector} contrast ratio`).toBeGreaterThanOrEqual(4.5);
   }
 });
+
+
+test('FAQ contact guidance matches the available phone contact', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const faqIntro = page.locator('.faq-section .section-intro');
+  await expect(faqIntro).toContainText('позвоните перед оформлением');
+  await expect(faqIntro).not.toContainText('напишите');
+
+  const contactPhone = page.locator('.contact-panel a[href^="tel:"]');
+  await expect(contactPhone).toHaveAttribute('href', 'tel:+79510937272');
+  await expect(contactPhone).toContainText('+7 (951) 093-72-72');
+});
