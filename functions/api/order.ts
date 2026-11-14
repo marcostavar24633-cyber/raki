@@ -57,6 +57,28 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
 
   const body = raw as Partial<OrderPayload>;
 
+  const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
+  const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
+  const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
+  const items = Array.isArray(body.items) ? body.items : [];
+  const phoneDigits = phone.replace(/\D/g, '');
+
+  if (!name || phoneDigits.length < 10 || phoneDigits.length > 15 || !items.length || items.length > 30) {
+    return json({ error: 'Проверьте имя, телефон и состав заказа.' }, 400);
+  }
+
+  const validItems = items.every((item) => item && Number.isInteger(item.productId) && catalog[item.productId] &&
+    Number.isFinite(item.quantity) && item.quantity > 0 && item.quantity <= 100 &&
+    Math.round(item.quantity * 10) === item.quantity * 10 &&
+    (catalog[item.productId].unit === 'кг'
+      ? Math.round(item.quantity * 2) === item.quantity * 2
+      : Number.isInteger(item.quantity)));
+  if (!validItems || new Set(items.map((item) => item.productId)).size !== items.length) return json({ error: 'В заказе обнаружены некорректные или повторяющиеся позиции.' }, 400);
+
+  const pricedItems = items.map((item) => ({ ...catalog[item.productId], quantity: item.quantity }));
+  const total = pricedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  if (!Number.isFinite(total) || total > 100000000) return json({ error: 'Некорректная сумма заказа.' }, 400);
+
   const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
   if (!turnstileToken || turnstileToken.length > 2048) {
     return json({ error: 'Пройдите проверку безопасности и повторите отправку.' }, 400);
@@ -85,27 +107,6 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   } catch {
     return json({ error: 'Не удалось выполнить проверку безопасности. Попробуйте позже.' }, 503);
   }
-  const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
-  const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
-  const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
-  const items = Array.isArray(body.items) ? body.items : [];
-  const phoneDigits = phone.replace(/\D/g, '');
-
-  if (!name || phoneDigits.length < 10 || phoneDigits.length > 15 || !items.length || items.length > 30) {
-    return json({ error: 'Проверьте имя, телефон и состав заказа.' }, 400);
-  }
-
-  const validItems = items.every((item) => item && Number.isInteger(item.productId) && catalog[item.productId] &&
-    Number.isFinite(item.quantity) && item.quantity > 0 && item.quantity <= 100 &&
-    Math.round(item.quantity * 10) === item.quantity * 10 &&
-    (catalog[item.productId].unit === 'кг'
-      ? Math.round(item.quantity * 2) === item.quantity * 2
-      : Number.isInteger(item.quantity)));
-  if (!validItems || new Set(items.map((item) => item.productId)).size !== items.length) return json({ error: 'В заказе обнаружены некорректные или повторяющиеся позиции.' }, 400);
-
-  const pricedItems = items.map((item) => ({ ...catalog[item.productId], quantity: item.quantity }));
-  const total = pricedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  if (!Number.isFinite(total) || total > 100000000) return json({ error: 'Некорректная сумма заказа.' }, 400);
 
   const lines = pricedItems.map((item) => `• ${escapeHtml(item.name)} — ${item.quantity} ${escapeHtml(item.unit)} × ${item.price.toLocaleString('ru-RU')} ₽`).join('\n');
   const message = [
