@@ -69,8 +69,16 @@ export default function App(){
     const onKeyDown=(event:KeyboardEvent)=>{
       if(event.key==='Escape'){
         if(quickView) setQuickView(null);
-        else if(checkout){setCheckout(false);setSent(false);setOrderError('');}
-        else setCartOpen(false);
+        else if(checkout){
+          setCheckout(false);setSent(false);setOrderError('');
+          requestAnimationFrame(()=>{
+            const cartDialog=document.querySelector<HTMLElement>('[role="dialog"][aria-label="Корзина"]');
+            cartDialog?.querySelector<HTMLElement>('.btn-gold.full')?.focus();
+          });
+        }else{
+          setCartOpen(false);
+          requestAnimationFrame(()=>document.querySelector<HTMLElement>('.cart-trigger')?.focus());
+        }
         return;
       }
       if(event.key!=='Tab'||!dialog) return;
