@@ -38,11 +38,11 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   await dialog.locator('input[name="phone"]').fill('+1 (2) 3-4');
   await dialog.locator('textarea[name="comment"]').fill('Позвонить после 18:00');
   await dialog.getByRole('checkbox').check();
-  await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
+  await dialog.getByRole('button', { name: /Подготовить заявку/ }).click();
   await expect(dialog.getByRole('alert')).toContainText('от 10 до 15 цифр');
 
   await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
-  await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
+  await dialog.getByRole('button', { name: /Подготовить заявку/ }).click();
   await expect(dialog.getByRole('heading', { name: 'Заявка подготовлена' })).toBeVisible();
   const telegramLink = dialog.getByRole('link', { name: 'Открыть Telegram' });
   const telegramShareUrl = await telegramLink.getAttribute('href');
@@ -55,6 +55,17 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   expect(message).toContain('Предварительный итог:');
   expect(message).toContain('Позвонить после 18:00');
   expect(message).toContain('Прошу связаться для подтверждения наличия');
+});
+
+test('checkout action label does not promise a specific messaging app', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+  await page.getByRole('button', { name: /Оформить заказ/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Оформление заказа' });
+  await expect(dialog.getByRole('button', { name: 'Подготовить заявку' })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Отправить в Telegram' })).toHaveCount(0);
 });
 
 test('initial hero image is not hidden by the slide entrance animation', async ({ page }) => {
@@ -368,7 +379,7 @@ test('checkout dialog keeps keyboard focus inside the active modal', async ({ pa
 
   await expect(closeButton).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(checkout.getByRole('button', { name: /Отправить в Telegram/ })).toBeFocused();
+  await expect(checkout.getByRole('button', { name: /Подготовить заявку/ })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(closeButton).toBeFocused();
 });
