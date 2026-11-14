@@ -1181,3 +1181,20 @@ main [data-scroll-text-fade="true"]{
   transform:scale(1.015);
   animation:none!important;
 }
+
+
+/* Defer off-screen section rendering on phones while preserving document flow. */
+@media (max-width:700px) and (prefers-reduced-motion:no-preference){
+  .intro{content-visibility:auto;contain-intrinsic-size:auto 680px}
+  .values{content-visibility:auto;contain-intrinsic-size:auto 900px}
+  .catalog{content-visibility:auto;contain-intrinsic-size:auto 1180px}
+  .choice-section{content-visibility:auto;contain-intrinsic-size:auto 820px}
+  .craft{content-visibility:auto;contain-intrinsic-size:auto 920px}
+  .calculator{content-visibility:auto;contain-intrinsic-size:auto 860px}
+  .delivery{content-visibility:auto;contain-intrinsic-size:auto 760px}
+  .order-process{content-visibility:auto;contain-intrinsic-size:auto 860px}
+  .guest-notes{content-visibility:auto;contain-intrinsic-size:auto 720px}
+  .faq-section{content-visibility:auto;contain-intrinsic-size:auto 800px}
+  .contact-panel{content-visibility:auto;contain-intrinsic-size:auto 780px}
+  .final-cta{content-visibility:auto;contain-intrinsic-size:auto 620px}
+}
