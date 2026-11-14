@@ -179,7 +179,9 @@ export default function App(){
   },[]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduce || !('IntersectionObserver' in window)) return;
+    const mobile=window.matchMedia('(max-width: 700px)').matches;
+    // Keep mobile startup lean: reveal transitions are decorative, not essential content.
+    if(reduce || mobile || !('IntersectionObserver' in window)) return;
     const nodes=Array.from(document.querySelectorAll<HTMLElement>('main .section,main .craft,main .delivery,main .final-cta,main .intro,main .catalog,main .calculator,main .values,main .product-card,main .value-card'));
     nodes.forEach(node=>node.classList.add('reveal-ready'));
     const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
