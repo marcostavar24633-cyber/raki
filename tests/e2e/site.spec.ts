@@ -123,7 +123,7 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
 
   const choiceImage = page.locator('.choice-live picture img');
   await choiceImage.scrollIntoViewIfNeeded();
-  await expect(page.locator('.choice-live picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /section-480-mobile\\.webp 480w, .*mobile-720\\.webp 720w/);
+  await expect(page.locator('.choice-live picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /section-480-mobile\.webp 480w, .*mobile-720\.webp 720w/);
   await expect(page.locator('.choice-live picture source[media="(max-width: 700px)"]')).toHaveAttribute('sizes', '(max-width: 700px) calc(100vw - 36px), 42vw');
   await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-480-mobile.webp');
   const boiledChoiceImage = page.locator('.choice-boiled picture img');
@@ -170,7 +170,7 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
 
   const choiceImage = page.locator('.choice-live picture img');
   await choiceImage.scrollIntoViewIfNeeded();
-  await expect(page.locator('.choice-live picture source[media="(min-width: 701px)"]')).toHaveAttribute('srcset', /section-640\\.webp 640w, .*section-900\\.webp 900w/);
+  await expect(page.locator('.choice-live picture source[media="(min-width: 701px)"]')).toHaveAttribute('srcset', /section-640\.webp 640w, .*section-900\.webp 900w/);
   await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-640.webp');
   const boiledChoiceImage = page.locator('.choice-boiled picture img');
   await boiledChoiceImage.scrollIntoViewIfNeeded();
