@@ -19,13 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Install dependencies
         run: npm install
       - name: Audit npm dependencies
@@ -34,10 +34,10 @@ jobs:
         run: npm run build
       - name: Optimize public images to WebP
         run: |
-          npm install --no-save --no-package-lock sharp
+          npm install --no-save --no-package-lock sharp@0.33.5
           node scripts/optimize-images.mjs
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
