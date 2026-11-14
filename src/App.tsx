@@ -4,10 +4,10 @@ import { ArrowDown, Check, Eye, ChevronLeft, ChevronRight, Clock3, Fish, Menu, M
 type Product = { id:number; name:string; subtitle:string; price:number; unit:string; image:string; mobileImage:string; tag?:string; category:'live' };
 type CartLine = { product:Product; qty:number };
 const products:Product[] = [
-  {id:1,name:'Живые раки — мелкие',subtitle:'Мелкие речные раки. Цена указана за 1 кг.',price:1600,unit:'кг',image:'/raki/Рак с укропом на керамической тарелке мелкий.webp',mobileImage:'/raki/Рак с укропом на керамической тарелке мелкий-mobile.webp',tag:'Мелкий размер · ≈ 30 шт. / 1 кг',category:'live'},
-  {id:5,name:'Живые раки — средние',subtitle:'Средние речные раки. Цена указана за 1 кг.',price:2600,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке средний.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке средний-mobile.webp',tag:'Средний размер · ≈ 20 шт. / 1 кг',category:'live'},
-  {id:6,name:'Живые раки — крупные',subtitle:'Крупные речные раки. Цена указана за 1 кг.',price:2900,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке крупный.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке крупный-mobile.webp',tag:'Крупный размер · ≈ 12 шт. / 1 кг',category:'live'},
-  {id:7,name:'Живые раки — отборные',subtitle:'Отборные речные раки. Цена указана за 1 кг.',price:3200,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке отборный.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке отборный-mobile.webp',tag:'Отборный размер · ≈ 7 шт. / 1 кг',category:'live'}
+  {id:1,name:'Живые раки — мелкие',subtitle:'Мелкие речные раки. Цена указана за 1 кг.',price:1600,unit:'кг',image:'/raki/Рак с укропом на керамической тарелке мелкий.webp',mobileImage:'/raki/Рак с укропом на керамической тарелке мелкий-card.webp',tag:'Мелкий размер · ≈ 30 шт. / 1 кг',category:'live'},
+  {id:5,name:'Живые раки — средние',subtitle:'Средние речные раки. Цена указана за 1 кг.',price:2600,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке средний.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке средний-card.webp',tag:'Средний размер · ≈ 20 шт. / 1 кг',category:'live'},
+  {id:6,name:'Живые раки — крупные',subtitle:'Крупные речные раки. Цена указана за 1 кг.',price:2900,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке крупный.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке крупный-card.webp',tag:'Крупный размер · ≈ 12 шт. / 1 кг',category:'live'},
+  {id:7,name:'Живые раки — отборные',subtitle:'Отборные речные раки. Цена указана за 1 кг.',price:3200,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке отборный.webp',mobileImage:'/raki/Аппетитный рак с укропом на тарелке отборный-card.webp',tag:'Отборный размер · ≈ 7 шт. / 1 кг',category:'live'}
 ];
 const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
 const restoreCart=():CartLine[]=>{
