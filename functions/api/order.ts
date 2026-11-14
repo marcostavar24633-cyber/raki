@@ -65,7 +65,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     (catalog[item.productId].unit === 'кг'
       ? Math.round(item.quantity * 2) === item.quantity * 2
       : Number.isInteger(item.quantity)));
-  if (!validItems) return json({ error: 'В заказе обнаружены некорректные позиции.' }, 400);
+  if (!validItems || new Set(items.map((item) => item.productId)).size !== items.length) return json({ error: 'В заказе обнаружены некорректные или повторяющиеся позиции.' }, 400);
 
   const pricedItems = items.map((item) => ({ ...catalog[item.productId], quantity: item.quantity }));
   const total = pricedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
