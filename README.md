@@ -51,12 +51,12 @@ npm run preview
 
 ## Публикация напрямую через GitHub Pages (без Vercel и Cloudflare)
 
-В репозитории настроен GitHub Actions workflow `.github/workflows/deploy-pages.yml`: при каждом push в `main` он устанавливает зависимости, собирает сайт и публикует папку `dist` в GitHub Pages.
+В репозитории настроен GitHub Actions workflow `.github/workflows/pages.yml`: при каждом push в `main` он устанавливает зависимости, собирает сайт и публикует папку `dist` в GitHub Pages.
 
 1. Откройте репозиторий: https://github.com/marcostavar24633-cyber/raki
 2. Перейдите в **Settings → Pages**.
 3. В разделе **Build and deployment** выберите **Source: GitHub Actions** и сохраните.
-4. Откройте вкладку **Actions**, выберите workflow **Deploy to GitHub Pages** и дождитесь зелёного статуса.
+4. Откройте вкладку **Actions**, выберите workflow **Deploy static site to GitHub Pages** и дождитесь зелёного статуса.
 5. Адрес проекта: https://marcostavar24633-cyber.github.io/raki/
 
 Vite настроен на путь `/raki/`, необходимый для публикации проекта в подпапке GitHub Pages. После каждого следующего push сайт будет обновляться автоматически.
