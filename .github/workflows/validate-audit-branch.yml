@@ -95,6 +95,13 @@ jobs:
               cwebp -quiet -q 76 -m 6 -resize 720 720 "$source" -o "$output"
             fi
           done
+          for name in "Аппетитная тарелка раков с укропом и лимоном" "Раки с укропом и лимоном на тёмной тарелке" "Раки с укропом и специями"; do
+            source="public/${name}.webp"
+            output="public/${name}-mobile-480.webp"
+            if [ -f "$source" ] && [ ! -f "$output" ]; then
+              cwebp -quiet -q 74 -m 6 -resize 480 480 "$source" -o "$output"
+            fi
+          done
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           for (const file of ['src/App.tsx', 'src/styles.css', 'index.html']) {
@@ -125,7 +132,9 @@ jobs:
                 ? '-card-720.webp'
                 : name.endsWith('-mobile-720.webp')
                   ? '-mobile-720.webp'
-                  : name.endsWith('-section-480-mobile.webp')
+                  : name.endsWith('-mobile-480.webp')
+                    ? '-mobile-480.webp'
+                    : name.endsWith('-section-480-mobile.webp')
                 ? '-section-480-mobile.webp'
                 : name.endsWith('-section-640.webp')
                   ? '-section-640.webp'
