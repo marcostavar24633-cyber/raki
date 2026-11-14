@@ -116,4 +116,16 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
   const craftImage = page.locator('.craft-image picture img');
   await craftImage.scrollIntoViewIfNeeded();
   await expect.poll(async () => craftImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-1-mobile-720.webp');
+
+  const valuePhoto = page.locator('.value-photo .value-photo-img');
+  await valuePhoto.scrollIntoViewIfNeeded();
+  await expect.poll(async () => valuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-2-mobile-720.webp');
+
+  const secondValuePhoto = page.locator('.value-image-two .value-photo-img');
+  await secondValuePhoto.scrollIntoViewIfNeeded();
+  await expect.poll(async () => secondValuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-4-mobile-720.webp');
+
+  const deliveryBackground = page.locator('.delivery-bg');
+  await deliveryBackground.scrollIntoViewIfNeeded();
+  await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-mobile-720.webp');
 });
