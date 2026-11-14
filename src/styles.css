@@ -1097,6 +1097,7 @@ main [data-scroll-text-fade="true"]{
     transition:none!important;
   }
   .hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{will-change:auto;filter:none}
+  .hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{opacity:1!important;transform:none!important;filter:none!important}
 }
 
 
@@ -1172,11 +1173,3 @@ main [data-scroll-text-fade="true"]{
   .product-info h3,.quick-view-copy h3,.format-card h3{line-height:1.12}
 }
 
-
-/* LCP: render the preloaded hero image immediately; keep decorative motion separate. */
-.hero-photo.hero-photo-layer,
-.hero-photo.hero-photo-layer.is-active{
-  opacity:1!important;
-  animation:none!important;
-  transition:transform .32s ease-out!important;
-}
