@@ -56,6 +56,12 @@ export default function App(){
   const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|'manual-no-telegram'|'phone'|'server'|''>(''); const [orderText,setOrderText]=useState(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[isSubmitting,setIsSubmitting]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
   useEffect(()=>{try{localStorage.setItem('rak-cart',JSON.stringify(cart))}catch{/* Storage may be disabled; cart remains usable for this session. */}},[cart]);
   useEffect(()=>{
+    const root=document.documentElement;
+    root.style.setProperty('--value-photo-image',`url("${asset('/raki/Гора свежих раков на мокром камне-2.png')}")`);
+    root.style.setProperty('--value-photo-image-two',`url("${asset('/raki/Макросъёмка речного рака на мокром камне-4.png')}")`);
+    root.style.setProperty('--delivery-image',`url("${asset('/raki/Раки с укропом и лимоном в чугунной сковороде-1.png')}")`);
+  },[]);
+  useEffect(()=>{
     if(!menuOpen) return;
     const onKeyDown=(event:KeyboardEvent)=>{if(event.key==='Escape') setMenuOpen(false)};
     window.addEventListener('keydown',onKeyDown);
