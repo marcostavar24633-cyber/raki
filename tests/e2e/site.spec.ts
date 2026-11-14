@@ -41,16 +41,12 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   await expect(dialog.getByRole('alert')).toContainText('от 10 до 15 цифр');
 
   await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
-  let telegramShareUrl = '';
-  await page.context().route('https://t.me/**', async route => {
-    telegramShareUrl = route.request().url();
-    await route.fulfill({ status: 200, contentType: 'text/html', body: 'Telegram share test stub' });
-  });
   await dialog.getByRole('button', { name: /Отправить в Telegram/ }).click();
-  await expect(dialog.getByText('Меню отправки открыто')).toBeVisible();
-
+  await expect(dialog.getByRole('heading', { name: 'Заявка подготовлена' })).toBeVisible();
+  const telegramLink = dialog.getByRole('link', { name: 'Открыть Telegram' });
+  const telegramShareUrl = await telegramLink.getAttribute('href');
   expect(telegramShareUrl).toContain('https://t.me/share/url?url=&text=');
-  const parsedUrl = new URL(telegramShareUrl);
+  const parsedUrl = new URL(telegramShareUrl || '');
   const message = parsedUrl.searchParams.get('text') || '';
   expect(message).toContain('Тестовый покупатель');
   expect(message).toContain('+7 999 123-45-67');
