@@ -1,3 +1,5 @@
+declare const process: { env: Record<string, string | undefined> };
+
 type VercelRequest = { method?: string; headers?: Record<string, string | string[] | undefined>; body: unknown };
 type VercelResponse = { status(code: number): VercelResponse; json(payload: unknown): VercelResponse };
 
