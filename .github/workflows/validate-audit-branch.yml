@@ -153,7 +153,22 @@ jobs:
               lcpMs: audit('largest-contentful-paint'),
               cls: audit('cumulative-layout-shift'),
               tbtMs: audit('total-blocking-time'),
-              speedIndexMs: audit('speed-index')
+              speedIndexMs: audit('speed-index'),
+              findings: Object.entries(report.audits)
+                .filter(([id, item]) => item.score !== null && item.score < 0.9 && ['opportunity', 'table', 'list'].includes(item.details?.type))
+                .sort((a, b) => (b[1].details?.overallSavingsMs ?? 0) - (a[1].details?.overallSavingsMs ?? 0))
+                .slice(0, 10)
+                .map(([id, item]) => ({
+                  id,
+                  title: item.title,
+                  score: item.score,
+                  displayValue: item.displayValue,
+                  savingsMs: item.details?.overallSavingsMs ?? 0,
+                  savingsBytes: item.details?.overallSavingsBytes ?? 0
+                })),
+              lcpElement: report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet
+                ?? report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.node?.snippet
+                ?? null
             }));
           }
           NODE
