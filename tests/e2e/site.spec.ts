@@ -335,7 +335,7 @@ test('all in-page navigation links resolve and legal pages are reachable', async
   expect(privacyResponse.status()).toBe(200);
   const privacyHtml = await privacyResponse.text();
   expect(privacyHtml).toContain('Политика обработки персональных данных');
-  expect(privacyHtml).toContain('Шаблон для заполнения');
+  expect(privacyHtml).toContain('шаблон для заполнения');
 
   const termsResponse = await request.get('/raki/terms.html');
   expect(termsResponse.status()).toBe(200);
