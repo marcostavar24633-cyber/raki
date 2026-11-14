@@ -123,7 +123,9 @@ jobs:
               ? '-desktop.webp'
               : name.endsWith('-card-720.webp')
                 ? '-card-720.webp'
-                : name.endsWith('-section-480-mobile.webp')
+                : name.endsWith('-mobile-720.webp')
+                  ? '-mobile-720.webp'
+                  : name.endsWith('-section-480-mobile.webp')
                 ? '-section-480-mobile.webp'
                 : name.endsWith('-section-640.webp')
                   ? '-section-640.webp'
