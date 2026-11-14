@@ -56,16 +56,37 @@ export default function App(){
     const panelOpen=cartOpen||checkout||!!quickView;
     if(!panelOpen) return;
     const previousOverflow=document.body.style.overflow;
+    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
     document.body.style.overflow='hidden';
+    const dialogs=Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]'));
+    const dialog=dialogs[dialogs.length-1];
+    const getFocusable=()=>dialog?Array.from(dialog.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(el=>el.getAttribute('aria-hidden')!=='true'): [];
+    const focusFrame=window.requestAnimationFrame(()=>{
+      const focusable=getFocusable();
+      (focusable[0]||dialog)?.focus();
+    });
     const onKeyDown=(event:KeyboardEvent)=>{
       if(event.key==='Escape'){
         if(quickView) setQuickView(null);
         else if(checkout) setCheckout(false);
         else setCartOpen(false);
+        return;
+      }
+      if(event.key==='Tab'&&dialog){
+        const focusable=getFocusable();
+        if(!focusable.length){event.preventDefault();dialog.focus();return;}
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){event.preventDefault();first.focus();}
       }
     };
     window.addEventListener('keydown',onKeyDown);
-    return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener('keydown',onKeyDown)};
+    return ()=>{
+      window.cancelAnimationFrame(focusFrame);
+      document.body.style.overflow=previousOverflow;
+      window.removeEventListener('keydown',onKeyDown);
+      if(previousFocus?.isConnected) previousFocus.focus();
+    };
   },[cartOpen,checkout,quickView]);
   useEffect(()=>{
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
