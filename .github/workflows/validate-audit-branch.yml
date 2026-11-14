@@ -94,7 +94,7 @@ jobs:
           }
           for (const name of fs.readdirSync('public')) {
             const isDesktopVariant = name.endsWith('-desktop.webp');
-            const originalName = isDesktopVariant ? name.replace(/-desktop\\.webp$/, '.webp') : name;
+            const originalName = isDesktopVariant ? name.replace(/-desktop\.webp$/, '.webp') : name;
             const referencedDesktopVariant = isDesktopVariant && used.has(originalName);
             if (name.endsWith('.webp') && !name.endsWith('-mobile.webp') && !used.has(name) && !referencedDesktopVariant) {
               fs.renameSync(path.join('public', name), path.join('source-images', name));
