@@ -93,3 +93,14 @@ test('page has basic accessible landmarks, image alternatives and named buttons'
   expect(audit.imagesWithoutAlt, 'Every image must declare alt text (empty is allowed for decorative images)').toEqual([]);
   expect(audit.buttonsWithoutName, 'Every button must have an accessible name').toEqual([]);
 });
+
+test('mobile viewport selects the lightweight hero image variant', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const heroImage = page.locator('.hero-picture img');
+  await expect(heroImage).toHaveAttribute('fetchpriority', 'high');
+  await expect(page.locator('.hero-picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /-mobile\\.webp/);
+  await expect.poll(async () => heroImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-mobile.webp');
+  await expect(page.locator('.product-image img').first()).toHaveAttribute('srcset', /-mobile\\.webp/);
+});
