@@ -121,12 +121,50 @@ jobs:
           NODE
       - name: TypeScript and production build
         run: npm run build
-      - name: Install Playwright and Chromium
+      - name: Install browser test and Lighthouse tools
         run: |
-          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npm install --no-save --package-lock=false @playwright/test@1.55.0 lighthouse@12.8.2
           npx playwright install --with-deps chromium
       - name: Run browser regression tests
         run: npx playwright test
+      - name: Run Lighthouse mobile and desktop audits
+        run: |
+          npm run preview -- --host 127.0.0.1 > /tmp/vite-preview.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/raki/ > /dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:4173/raki/ > /dev/null
+          CHROME_PATH="$(node -e "const { chromium } = require('playwright'); process.stdout.write(chromium.executablePath())")"
+          npx lighthouse http://127.0.0.1:4173/raki/ --chrome-path="$CHROME_PATH" --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --output=json --output-path=/tmp/lighthouse-mobile.json --quiet
+          npx lighthouse http://127.0.0.1:4173/raki/ --chrome-path="$CHROME_PATH" --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --preset=desktop --output=json --output-path=/tmp/lighthouse-desktop.json --quiet
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          for (const [device, file] of [['mobile', '/tmp/lighthouse-mobile.json'], ['desktop', '/tmp/lighthouse-desktop.json']]) {
+            const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const score = name => Math.round((report.categories[name]?.score ?? 0) * 100);
+            const audit = id => report.audits[id]?.numericValue ?? null;
+            console.log(JSON.stringify({
+              device,
+              performance: score('performance'),
+              accessibility: score('accessibility'),
+              bestPractices: score('best-practices'),
+              seo: score('seo'),
+              lcpMs: audit('largest-contentful-paint'),
+              cls: audit('cumulative-layout-shift'),
+              tbtMs: audit('total-blocking-time'),
+              speedIndexMs: audit('speed-index')
+            }));
+          }
+          NODE
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: /tmp/lighthouse-*.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Commit optimized images and references
         run: |
           git config user.name "github-actions[bot]"
