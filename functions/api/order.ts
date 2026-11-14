@@ -1,9 +1,10 @@
 interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
+  TURNSTILE_SECRET_KEY: string;
 }
 type OrderItemInput = { productId: number; quantity: number };
-type OrderPayload = { name: string; phone: string; comment?: string; items: OrderItemInput[] };
+type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
 
 const catalog: Record<number, { name: string; unit: string; price: number }> = {
   1: { name: 'Живые раки — мелкие', unit: 'кг', price: 1900 },
@@ -28,7 +29,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     return json({ error: 'Источник запроса не разрешён.' }, 403);
   }
 
-  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID || !env.TURNSTILE_SECRET_KEY) {
     return json({ error: 'Приём заказов временно не настроен. Свяжитесь с нами другим способом.' }, 503);
   }
 
@@ -55,6 +56,35 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const body = raw as Partial<OrderPayload>;
+
+  const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
+  if (!turnstileToken || turnstileToken.length > 2048) {
+    return json({ error: 'Пройдите проверку безопасности и повторите отправку.' }, 400);
+  }
+
+  // Fail closed: no order is sent unless Cloudflare Siteverify accepts this single-use token.
+  try {
+    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET_KEY,
+        response: turnstileToken,
+        remoteip: request.headers.get('CF-Connecting-IP') || undefined,
+      }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!verifyResponse.ok) {
+      return json({ error: 'Проверка безопасности временно недоступна. Попробуйте позже.' }, 503);
+    }
+    const verification = await verifyResponse.json() as { success?: boolean; hostname?: string };
+    const requestHostname = new URL(request.url).hostname;
+    if (verification.success !== true || verification.hostname !== requestHostname) {
+      return json({ error: 'Проверка безопасности не пройдена или истекла. Пройдите её ещё раз.' }, 403);
+    }
+  } catch {
+    return json({ error: 'Не удалось выполнить проверку безопасности. Попробуйте позже.' }, 503);
+  }
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
   const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
   const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
