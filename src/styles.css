@@ -1184,7 +1184,7 @@ main [data-scroll-text-fade="true"]{
 
 
 /* Defer off-screen section rendering on phones while preserving document flow. */
-@media (max-width:700px) and (prefers-reduced-motion:no-preference){
+@media (max-width:700px){
   .intro{content-visibility:auto;contain-intrinsic-size:auto 680px}
   .values{content-visibility:auto;contain-intrinsic-size:auto 900px}
   .catalog{content-visibility:auto;contain-intrinsic-size:auto 1180px}
