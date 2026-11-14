@@ -139,6 +139,9 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
 
   const heroImage = page.locator('.hero-picture img');
   await expect(heroImage).toHaveAttribute('fetchpriority', 'high');
+  await expect(page.locator('.hero-grain')).toBeHidden();
+  await expect.poll(async () => page.locator('.hero-photo.hero-photo-layer').evaluate(node => getComputedStyle(node).transform)).toBe('none');
+  await expect.poll(async () => page.locator('.hero-photo.hero-photo-layer').evaluate(node => getComputedStyle(node, '::after').display)).toBe('none');
   const heroPreload = page.locator('link[rel="preload"][as="image"][media="(max-width: 700px)"]');
   await expect.poll(async () => heroPreload.evaluate(link => new URL((link as HTMLLinkElement).href).pathname)).toContain('%D0%90');
   await expect.poll(async () => heroPreload.evaluate(link => new URL((link as HTMLLinkElement).href).pathname)).not.toContain('%25D0');
