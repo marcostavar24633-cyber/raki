@@ -11,7 +11,7 @@ const products:Product[] = [
   {id:7,name:'Живые раки — отборные',subtitle:'Отборные речные раки. Цена указана за 1 кг.',price:3500,unit:'кг',image:asset('/raki/Аппетитный рак с укропом на тарелке отборный.png'),tag:'Отборный размер · ≈ 7 шт. / 1 кг',category:'live'}
 ];
 const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
-const asset=(path:string)=>`${import.meta.env.BASE_URL}${path.replace(/^\\/raki\\//,'')}`;
+const asset=(path:string)=>`${import.meta.env.BASE_URL}${path.replace(/^\/raki\//,'')}`;
 const MAX_CART_KG=100;
 const restoreCart=():CartLine[]=>{
   try{
