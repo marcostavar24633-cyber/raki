@@ -51,7 +51,7 @@ export default function App(){
     }catch{/* Audio is optional; ordering must never depend on it. */}
   };
   const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|'phone'|''>(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
-  useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
+  useEffect(()=>{try{localStorage.setItem('rak-cart',JSON.stringify(cart))}catch{/* Storage may be disabled; cart remains usable for this session. */}},[cart]);
   useEffect(()=>{
     const panelOpen=cartOpen||checkout||!!quickView;
     if(!panelOpen) return;
@@ -247,6 +247,9 @@ export default function App(){
     const name=String(form.get('name')||'').trim();
     const phone=String(form.get('phone')||'').trim();
     const comment=String(form.get('comment')||'').trim();
+    if(!name){setOrderError('Укажите, пожалуйста, ваше имя.');return;}
+    const phoneDigits=phone.replace(/\D/g,'');
+    if(phoneDigits.length<10||phoneDigits.length>15){setOrderError('Проверьте номер телефона: введите от 10 до 15 цифр.');return;}
     const lines=cart.map(({product,qty})=>`— ${product.name}: ${qty.toLocaleString('ru-RU',{maximumFractionDigits:1})} ${product.unit} × ${money(product.price)} = ${money(product.price*qty)}`);
     const subject='Заявка с сайта РАКОВАРНЯ «ЕХАЛ ГРЕКА»';
     const body=[
