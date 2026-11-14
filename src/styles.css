@@ -1100,24 +1100,26 @@ main [data-scroll-text-fade="true"]{
 }
 
 
-/* Mobile readability pass: raise secondary labels without changing the layout hierarchy. */
+/* Mobile readability pass: keep secondary text legible on narrow screens. */
 @media(max-width:700px){
   .announcement,.eyebrow,.hero-bottom,.section-index,.intro-note,
   .catalog-foot,.cta-bottom,.photo-caption,.product-image-caption,
   .product-unit,.weight-price,.product-tag,.product-index,
-  .checkout-steps span,.checkout-steps b{
-    font-size:8px;
+  .checkout-steps span,.checkout-steps b,
+  .size-guide-grid article>span,.size-guide-grid article>em,.size-guide-note,
+  .contact-actions>span{
+    font-size:10px;
   }
-  .footer-bottom{font-size:9px;line-height:1.65}
+  .footer-bottom{font-size:10px;line-height:1.65}
   .filters button,.product-info p,.product-call,.add-link,
   .calc-label,.calc-result span,.cart-note,.quick-view-note,
-  .delivery-points small{font-size:9px}
+  .delivery-points small,.faq-list details p{font-size:11px}
   .product-photo-note,.product-count{font-size:10px}
   .checkout-modal form label:not(.consent),.consent{font-size:10px}
 }
 @media(max-width:520px){
-  .filters button{font-size:9px;padding:10px 11px}
-  .product-unit,.checkout-steps span{font-size:8px}
+  .filters button{font-size:10px;padding:10px 11px}
+  .product-unit,.checkout-steps span{font-size:10px}
 }
 
 /* Desktop image delivery: use bounded 1400px variants instead of full originals. */
