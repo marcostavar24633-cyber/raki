@@ -1,9 +1,42 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, Check, Eye, ChevronLeft, ChevronRight, Clock3, Fish, Menu, Minus, Plus, ShoppingBag, Truck, Phone, X } from 'lucide-react';
 import { gsap } from 'gsap';
 
 type Product = { id:number; name:string; subtitle:string; price:number; unit:string; image:string; tag?:string; category:'live' };
 type CartLine = { product:Product; qty:number };
+type TurnstileApi = {
+  render: (container: HTMLElement, options: {
+    sitekey: string;
+    theme?: 'light' | 'dark' | 'auto';
+    callback: (token: string) => void;
+    'error-callback'?: () => void;
+    'expired-callback'?: () => void;
+  }) => string;
+  reset: (widgetId?: string) => void;
+  remove: (widgetId: string) => void;
+};
+declare global { interface Window { turnstile?: TurnstileApi } }
+let turnstileScriptPromise: Promise<void> | null = null;
+const loadTurnstileScript = () => {
+  if (window.turnstile) return Promise.resolve();
+  if (!turnstileScriptPromise) {
+    turnstileScriptPromise = new Promise<void>((resolve, reject) => {
+      let script = document.querySelector<HTMLScriptElement>('script[data-turnstile-script]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.dataset.turnstileScript = 'true';
+        document.head.appendChild(script);
+      }
+      script.addEventListener('load', () => resolve(), { once: true });
+      script.addEventListener('error', () => reject(new Error('Не удалось загрузить проверку безопасности.')), { once: true });
+    });
+  }
+  return turnstileScriptPromise;
+};
+
 const asset=(path:string)=>`${import.meta.env.BASE_URL}${path.replace(/^\/raki\//,'')}`;
 const products:Product[] = [
   {id:1,name:'Живые раки — мелкие',subtitle:'Мелкие речные раки. Цена указана за 1 кг.',price:1900,unit:'кг',image:asset('/raki/Рак с укропом на керамической тарелке мелкий.png'),tag:'Мелкий размер · ≈ 30 шт. / 1 кг',category:'live'},
@@ -31,6 +64,39 @@ const restoreCart=():CartLine[]=>{
 };
 export default function App(){
   const [cart,setCart]=useState<CartLine[]>(restoreCart);
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
+  const turnstileContainerRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetRef = useRef<string | null>(null);
+  const [turnstileToken,setTurnstileToken]=useState('');
+  const resetTurnstile = () => {
+    setTurnstileToken('');
+    if (turnstileWidgetRef.current && window.turnstile) window.turnstile.reset(turnstileWidgetRef.current);
+  };
+  useEffect(() => {
+    if (!checkout || import.meta.env.BASE_URL !== '/' || !turnstileSiteKey || !turnstileContainerRef.current) return;
+    let disposed = false;
+    let widgetId: string | null = null;
+    loadTurnstileScript().then(() => {
+      if (disposed || !turnstileContainerRef.current || !window.turnstile) return;
+      widgetId = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: turnstileSiteKey,
+        theme: 'dark',
+        callback: (token) => setTurnstileToken(token),
+        'error-callback': () => { setTurnstileToken(''); setOrderError('Не удалось выполнить проверку безопасности. Обновите проверку и попробуйте снова.'); },
+        'expired-callback': () => { setTurnstileToken(''); setOrderError('Проверка безопасности истекла. Пройдите её ещё раз.'); }
+      });
+      turnstileWidgetRef.current = widgetId;
+    }).catch(() => {
+      if (!disposed) setOrderError('Не удалось загрузить проверку безопасности. Обновите страницу и попробуйте снова.');
+    });
+    return () => {
+      disposed = true;
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+      if (turnstileWidgetRef.current === widgetId) turnstileWidgetRef.current = null;
+      setTurnstileToken('');
+    };
+  }, [checkout, turnstileSiteKey]);
+
   const [cartNotice,setCartNotice]=useState('');
   const [soundEnabled,setSoundEnabled]=useState(false);
   const playAddSound=()=>{
@@ -291,6 +357,10 @@ export default function App(){
     e.preventDefault();
     if(isSubmitting) return;
     if(!cart.length){setOrderError('Корзина пуста. Добавьте товары перед оформлением.');return;}
+    if(import.meta.env.BASE_URL==='/' && (!turnstileSiteKey || !turnstileToken)){
+      setOrderError(!turnstileSiteKey ? 'Защита формы ещё не настроена. Попробуйте связаться с нами по телефону.' : 'Пройдите проверку безопасности перед отправкой заказа.');
+      return;
+    }
     setOrderError('');
     const form=new FormData(e.currentTarget);
     const name=String(form.get('name')||'').trim();
@@ -324,11 +394,12 @@ export default function App(){
       const response=await fetch('/api/order',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name,phone,comment,items:cart.map(({product,qty})=>({productId:product.id,quantity:qty}))})
+        body:JSON.stringify({name,phone,comment,turnstileToken,items:cart.map(({product,qty})=>({productId:product.id,quantity:qty}))})
       });
       let result:{ok?:boolean;error?:string}={};
       try{result=await response.json() as {ok?:boolean;error?:string};}catch{/* Invalid response is treated as failure. */}
       if(!response.ok||result.ok!==true){
+        resetTurnstile();
         await prepareManualFallback(result.error||'Сервер не подтвердил доставку заказа. Заявка не отправлена автоматически; отправьте подготовленный текст вручную.');
         return;
       }
@@ -337,6 +408,7 @@ export default function App(){
       setCart([]);
       setCartNotice('');
     }catch{
+      resetTurnstile();
       await prepareManualFallback('Не удалось связаться с сервером. Заявка не отправлена автоматически; корзина сохранена, отправьте текст вручную.');
     }finally{
       setIsSubmitting(false);
@@ -367,7 +439,7 @@ export default function App(){
     <footer className="footer"><a className="logo" href="#top"><span className="logo-mark">Р.</span><span>РАКОВАРНЯ «ЕХАЛ ГРЕКА»<small>КУЛЬТУРА НАСТОЯЩЕГО ВКУСА</small></span></a><p>Настоящий продукт.<br/>Правильное приготовление.</p><div className="footer-links"><a href="#catalog">Каталог</a><a href="#choice">Форматы</a><a href="#order-process">Как заказать</a><a href="#faq">Вопросы</a><a href="#delivery">Доставка</a><a href={`${import.meta.env.BASE_URL}terms.html`}>Условия заказа</a><a href={`${import.meta.env.BASE_URL}privacy.html`}>Персональные данные</a></div><div className="footer-bottom"><span>© 2026 РАКОВАРНЯ «ЕХАЛ ГРЕКА»</span><span>УЛЬЯНОВСК · ПРЕДВАРИТЕЛЬНЫЙ КАТАЛОГ И ЦЕНЫ</span><a href="#top">НАВЕРХ ↑</a></div></footer>
     {quickView&&<div className="overlay quick-view-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setQuickView(null)}}><section className="quick-view-modal" role="dialog" aria-modal="true" aria-label={"Товар: "+quickView.name}><button className="close-btn quick-view-close" onClick={()=>setQuickView(null)} aria-label="Закрыть"><X/></button><div className="quick-view-photo"><img decoding="async" src={quickView.image} alt={quickView.name}/><span>РАКОВАРНЯ «ЕХАЛ ГРЕКА» · ВЫБОР ПРОДУКТА</span></div><div className="quick-view-copy"><span className="kicker">НА ФОТО — ВАРЁНЫЙ РАК · В ПРОДАЖЕ ЖИВЫЕ</span><h3>{quickView.name}</h3><p>{quickView.subtitle}</p><strong>{money(quickView.price)} <small>/ {quickView.unit}</small></strong><button className="btn btn-gold full" onClick={()=>{add(quickView);setQuickView(null);setCartOpen(true)}}>Добавить в корзину </button><small className="quick-view-note">Количество, наличие и итоговая стоимость подтверждаются при согласовании заказа.</small></div></section></div>}
     {cartOpen&&<div className="overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setCartOpen(false)}}><aside className="drawer" role="dialog" aria-modal="true" aria-label="Корзина"><div className="drawer-head"><div><span className="kicker">ВАШ ВЫБОР</span><h3>Корзина <sup>{count}</sup></h3></div><button className="close-btn" onClick={()=>setCartOpen(false)} aria-label="Закрыть"><X/></button></div>{cart.length===0?<div className="empty-cart"><ShoppingBag size={34}/><h4>Пока здесь пусто</h4><p>Добавьте любимые позиции из каталога — и соберём ваш заказ.</p><button className="btn btn-gold" onClick={()=>setCartOpen(false)}>В каталог </button></div>:<><div className="cart-lines">{cart.map(l=><div className="cart-line" key={l.product.id}><img decoding="async" src={l.product.image} alt=""/><div className="cart-line-info"><b>{l.product.name}</b><span>{money(l.product.price)} / {l.product.unit}</span><div className="qty"><button onClick={()=>change(l.product.id,l.product.unit==='кг'?-0.5:-1)} aria-label="Уменьшить"><Minus size={13}/></button><span>{l.qty.toLocaleString('ru-RU',{maximumFractionDigits:1})} {l.product.unit}</span><button onClick={()=>change(l.product.id,l.product.unit==='кг'?0.5:1)} aria-label="Увеличить" disabled={l.product.unit==='кг'&&l.qty>=MAX_CART_KG} title={l.product.unit==='кг'&&l.qty>=MAX_CART_KG?`Максимум ${MAX_CART_KG} кг`:undefined}><Plus size={13}/></button></div></div><strong>{money(l.product.price*l.qty)}</strong></div>)}</div>{cartNotice&&<p className="form-error" role="status" aria-live="polite">{cartNotice}</p>}<div className="cart-total"><span>ИТОГО</span><b>{money(total)}</b></div><button className="btn btn-gold full" onClick={()=>setCheckout(true)}>Оформить заказ </button><p className="cart-note">Цены предварительные. Наличие, вес, доставка и итоговая сумма подтверждаются менеджером перед приготовлением.</p></>}<a className="btn btn-outline full cart-call" href="tel:+79510937272"><Phone size={17}/> Позвонить и оформить заказ</a></aside></div>}
-    {checkout&&<div className="overlay modal-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setCheckout(false);setSent(false)}}}><div className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title"><button className="close-btn modal-close" onClick={()=>{setCheckout(false);setSent(false)}} aria-label="Закрыть"><X/></button>{sent?<div className="success-state"><div className="success-icon"><Check/></div><h3>{shareMethod==='server'?'Заявка доставлена менеджеру':'Заявка подготовлена к отправке'}</h3><p>{shareMethod==='server'?'Сервер подтвердил, что Telegram принял сообщение. Менеджер свяжется с вами для подтверждения наличия, доставки и окончательной стоимости.':orderError}</p>{shareMethod!=='server'&&<><a className="btn btn-outline full" href="https://t.me/+79510937272" target="_blank" rel="noreferrer">Открыть Telegram продавца</a><label className="manual-order-copy">ТЕКСТ ЗАКАЗА<textarea readOnly value={orderText} rows={8} onFocus={e=>e.currentTarget.select()} aria-label="Текст заказа для ручного копирования"/><small>Выделите текст, скопируйте и отправьте в Telegram. Корзина сохранена до подтверждения отправки.</small></label></>}<button className="btn btn-gold full" onClick={()=>{setCheckout(false);setCartOpen(false);setSent(false)}}>Понятно</button></div>:<><p className="kicker">ПОСЛЕДНИЙ ШАГ</p><h3 id="checkout-title">Оформление<br/><i>заказа.</i></h3><p className="modal-total">Ваш заказ на сумму <b>{money(total)}</b></p><div className="checkout-steps" aria-label="Этапы оформления"><span className="step-done"><b>01</b> КОРЗИНА</span><i/><span className="step-current"><b>02</b> КОНТАКТЫ</span><i/><span><b>03</b> TELEGRAM</span></div><form onSubmit={submitOrder}><label>Ваше имя<input required name="name" autoComplete="name" placeholder="Как к вам обращаться?"/></label><label>Телефон<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (___) ___-__-__" pattern="[+0-9() -]{10,}"/></label><label>Комментарий<textarea name="comment" placeholder="Адрес, удобное время и пожелания" rows={3}/></label><label className="consent"><input type="checkbox" required/> <span>Согласен на обработку персональных данных и ознакомлен с <a href={`${import.meta.env.BASE_URL}privacy.html`} target="_blank" rel="noreferrer">политикой конфиденциальности</a></span></label>{orderError&&<p className="form-error" role="alert">{orderError}</p>}<button className="btn btn-gold full" type="submit" disabled={isSubmitting}>{isSubmitting?'Отправляем…':'Отправить заказ'}</button><small>На серверной версии заявка передаётся менеджеру через Telegram. На GitHub Pages отправьте подготовленный текст вручную.</small></form></>}</div></div>}
+    {checkout&&<div className="overlay modal-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setCheckout(false);setSent(false)}}}><div className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title"><button className="close-btn modal-close" onClick={()=>{setCheckout(false);setSent(false)}} aria-label="Закрыть"><X/></button>{sent?<div className="success-state"><div className="success-icon"><Check/></div><h3>{shareMethod==='server'?'Заявка доставлена менеджеру':'Заявка подготовлена к отправке'}</h3><p>{shareMethod==='server'?'Сервер подтвердил, что Telegram принял сообщение. Менеджер свяжется с вами для подтверждения наличия, доставки и окончательной стоимости.':orderError}</p>{shareMethod!=='server'&&<><a className="btn btn-outline full" href="https://t.me/+79510937272" target="_blank" rel="noreferrer">Открыть Telegram продавца</a><label className="manual-order-copy">ТЕКСТ ЗАКАЗА<textarea readOnly value={orderText} rows={8} onFocus={e=>e.currentTarget.select()} aria-label="Текст заказа для ручного копирования"/><small>Выделите текст, скопируйте и отправьте в Telegram. Корзина сохранена до подтверждения отправки.</small></label></>}<button className="btn btn-gold full" onClick={()=>{setCheckout(false);setCartOpen(false);setSent(false)}}>Понятно</button></div>:<><p className="kicker">ПОСЛЕДНИЙ ШАГ</p><h3 id="checkout-title">Оформление<br/><i>заказа.</i></h3><p className="modal-total">Ваш заказ на сумму <b>{money(total)}</b></p><div className="checkout-steps" aria-label="Этапы оформления"><span className="step-done"><b>01</b> КОРЗИНА</span><i/><span className="step-current"><b>02</b> КОНТАКТЫ</span><i/><span><b>03</b> TELEGRAM</span></div><form onSubmit={submitOrder}><label>Ваше имя<input required name="name" autoComplete="name" placeholder="Как к вам обращаться?"/></label><label>Телефон<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 (___) ___-__-__" pattern="[+0-9() -]{10,}"/></label><label>Комментарий<textarea name="comment" placeholder="Адрес, удобное время и пожелания" rows={3}/></label>{import.meta.env.BASE_URL==='/'&&<div className="turnstile-field"><span>ПРОВЕРКА БЕЗОПАСНОСТИ</span>{turnstileSiteKey?<div ref={turnstileContainerRef} className="turnstile-container"/>:<p className="form-error">Проверка ещё не настроена. Автоматическая отправка временно недоступна.</p>}</div>}<label className="consent"><input type="checkbox" required/> <span>Согласен на обработку персональных данных и ознакомлен с <a href={`${import.meta.env.BASE_URL}privacy.html`} target="_blank" rel="noreferrer">политикой конфиденциальности</a></span></label>{orderError&&<p className="form-error" role="alert">{orderError}</p>}<button className="btn btn-gold full" type="submit" disabled={isSubmitting}>{isSubmitting?'Отправляем…':'Отправить заказ'}</button><small>На серверной версии заявка передаётся менеджеру через Telegram. На GitHub Pages отправьте подготовленный текст вручную.</small></form></>}</div></div>}
     <div className="mobile-bottom"><button onClick={()=>setCartOpen(true)}><ShoppingBag size={18}/> Корзина <b>{count}</b></button><a href="#catalog">Выбрать раков </a></div>
   </>;
 }
