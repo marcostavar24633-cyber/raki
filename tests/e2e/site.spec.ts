@@ -76,6 +76,24 @@ test('boiled crayfish service does not display an unverified fixed fee', async (
   await expect(boiledCard).not.toContainText('100 ₽');
 });
 
+test('native share confirmation does not claim the seller received the message', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { configurable: true, value: async () => undefined });
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+  await page.getByRole('button', { name: /Оформить заказ/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Оформление заказа' });
+  await dialog.locator('input[name="name"]').fill('Тестовый покупатель');
+  await dialog.locator('input[name="phone"]').fill('+7 999 123-45-67');
+  await dialog.getByRole('checkbox').check();
+  await dialog.getByRole('button', { name: 'Подготовить заявку' }).click();
+  await expect(dialog.getByRole('heading', { name: 'Меню отправки открыто' })).toBeVisible();
+  await expect(dialog).toContainText('Сайт не получает подтверждение доставки сообщения продавцу.');
+});
+
 test('initial hero image is not hidden by the slide entrance animation', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
