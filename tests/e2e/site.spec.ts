@@ -260,6 +260,13 @@ test('mobile defers off-screen section rendering without changing desktop', asyn
   })), sections);
   expect(mobileStyles.filter(item => item.contentVisibility !== 'auto'), JSON.stringify(mobileStyles)).toEqual([]);
 
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const reducedMotionStyles = await page.evaluate((selectors) => selectors.map(selector => ({
+    selector,
+    contentVisibility: getComputedStyle(document.querySelector(selector)!).contentVisibility
+  })), sections);
+  expect(reducedMotionStyles.filter(item => item.contentVisibility !== 'auto'), JSON.stringify(reducedMotionStyles)).toEqual([]);
+
   await page.setViewportSize({ width: 1280, height: 900 });
   const desktopStyles = await page.evaluate((selectors) => selectors.map(selector => ({
     selector,
