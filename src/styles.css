@@ -1134,3 +1134,40 @@ main [data-scroll-text-fade="true"]{
     background-image:linear-gradient(90deg,rgba(14,19,16,.96),rgba(14,19,16,.8) 50%,rgba(14,19,16,.48)),url('/raki/%D0%A0%D0%B0%D0%BA%D0%B8%20%D1%81%20%D1%83%D0%BA%D1%80%D0%BE%D0%BF%D0%BE%D0%BC%20%D0%B8%20%D0%BB%D0%B8%D0%BC%D0%BE%D0%BD%D0%BE%D0%BC%20%D0%B2%20%D1%87%D1%83%D0%B3%D1%83%D0%BD%D0%BD%D0%BE%D0%B9%20%D1%81%D0%BA%D0%BE%D0%B2%D0%BE%D1%80%D0%BE%D0%B4%D0%B5-1-section-900.webp');
   }
 }
+
+
+/* Mobile typography accessibility: keep functional and explanatory text comfortably readable. */
+@media(max-width:700px){
+  .announcement,.logo small,.eyebrow,.kicker,.section-index,.hero-side,
+  .hero-bottom,.hero-stamp,.under-link,.intro-note,.photo-caption,
+  .value-number,.product-index,.product-tag,.product-unit,.weight-price,
+  .catalog-foot,.craft-steps b,.calc-label,.calc-result span,.calc-disclaimer,
+  .cta-bottom,.footer-bottom,.drawer-head .kicker,.drawer-head sup,
+  .cart-line-info span,.cart-total span,.cart-note,.checkout-steps span,
+  .checkout-steps b,.checkout-modal form label:not(.consent),.consent,
+  .checkout-modal form>small,.mobile-bottom b,.product-image-caption,
+  .quick-view-photo span,.quick-view-copy>strong small,.quick-view-note,
+  .format-no,.format-card strong small,.process-item>b,.guest-facts span,
+  .contact-actions>span,.size-guide-grid article>span,
+  .size-guide-grid article>small,.size-guide-grid article>em,
+  .size-guide-note,.product-count,.product-call,.product-photo-note,
+  .choice-number{
+    font-size:11px!important;
+    line-height:1.5;
+  }
+  .nav a,.footer-links a,.cart-trigger,.cart-trigger b,.btn,.text-link,
+  .hero-copy>p,.value-card p,.catalog-description,.filters button,
+  .product-info p,.product-bottom small,.add-link,.craft-copy,
+  .craft-steps div,.calc-description,.delivery-points b,
+  .delivery-points small,.mobile-bottom button,.mobile-bottom a,
+  .form-error,.quick-view-copy p,.format-card p,.format-card a,
+  .guest-notes,.faq-list details p,.size-guide-grid article>p,
+  .checkout-modal input:not([type=checkbox]),
+  .checkout-modal textarea,.empty-cart p,.cart-line>strong,
+  .modal-total,.success-state p{
+    font-size:12px!important;
+    line-height:1.6;
+  }
+  .logo small{font-size:9px!important}
+  .product-info h3,.quick-view-copy h3,.format-card h3{line-height:1.12}
+}
