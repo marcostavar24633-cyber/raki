@@ -142,6 +142,9 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
   const heroPreload = page.locator('link[rel="preload"][as="image"][media="(max-width: 700px)"]');
   await expect.poll(async () => heroPreload.evaluate(link => new URL((link as HTMLLinkElement).href).pathname)).toContain('%D0%90');
   await expect.poll(async () => heroPreload.evaluate(link => new URL((link as HTMLLinkElement).href).pathname)).not.toContain('%25D0');
+  const preloadSrcset = await heroPreload.getAttribute('imagesrcset');
+  expect(preloadSrcset).toContain('Аппетитная тарелка раков с укропом и лимоном-mobile-720.webp');
+  expect(preloadSrcset).not.toContain('%D0%');
   await expect(page.locator('.hero-picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /-mobile-480\.webp 480w, .*mobile-720\.webp 720w/);
   await expect.poll(async () => heroImage.evaluate(image => (image as HTMLImageElement).currentSrc ? new URL((image as HTMLImageElement).currentSrc).pathname : '')).toMatch(/-mobile-(480|720)\.webp/);
   const productImage = page.locator('.product-image img').first();
