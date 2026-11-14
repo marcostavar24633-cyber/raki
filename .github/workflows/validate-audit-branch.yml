@@ -49,7 +49,7 @@ jobs:
               cwebp -quiet -q 74 -m 6 -resize 480 480 "$source" -o "$output"
             fi
           done
-          for name in "Гора свежих раков на мокром камне-2" "Раки с укропом и лимоном в чугунной сковороде-1"; do
+          for name in "Гора свежих раков на мокром камне-2" "Раки с укропом и лимоном в чугунной сковороде-1" "Макросъёмка речного рака на мокром камне-4"; do
             source="public/${name}-mobile.webp"
             output="public/${name}-mobile-720.webp"
             if [ -f "$source" ] && [ ! -f "$output" ]; then
