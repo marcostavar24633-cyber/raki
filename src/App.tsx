@@ -9,7 +9,8 @@ const products:Product[] = [
   {id:6,name:'Живые раки — крупные',subtitle:'Крупные речные раки. Цена указана за 1 кг.',price:2900,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке крупный.webp',mobileImage:encodeURI('/raki/Аппетитный рак с укропом на тарелке крупный-card.webp'),tag:'Крупный размер · ≈ 12 шт. / 1 кг',category:'live'},
   {id:7,name:'Живые раки — отборные',subtitle:'Отборные речные раки. Цена указана за 1 кг.',price:3500,unit:'кг',image:'/raki/Аппетитный рак с укропом на тарелке отборный.webp',mobileImage:encodeURI('/raki/Аппетитный рак с укропом на тарелке отборный-card.webp'),tag:'Отборный размер · ≈ 7 шт. / 1 кг',category:'live'}
 ];
-const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
+const moneyFormatter=new Intl.NumberFormat('ru-RU');
+const money=(n:number)=>moneyFormatter.format(n)+' ₽';
 const restoreCart=():CartLine[]=>{
   try{
     const raw=JSON.parse(localStorage.getItem('rak-cart')||'[]');
