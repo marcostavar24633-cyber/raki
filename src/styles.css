@@ -1250,3 +1250,9 @@ main [data-scroll-text-fade="true"]{
 .choice-card h3,
 .choice-card .under-link{color:#f2ede4}
 .choice-card p{color:#c1c3bc}
+
+
+/* Final FAQ contrast overrides: the FAQ section uses a light paper background. */
+.faq-section .section-index{color:#735331!important}
+.faq-section .section-heading .kicker{color:#735331!important}
+.faq-section .section-heading h2 i{color:#76512f!important}
