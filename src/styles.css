@@ -1173,3 +1173,11 @@ main [data-scroll-text-fade="true"]{
   .product-info h3,.quick-view-copy h3,.format-card h3{line-height:1.12}
 }
 
+
+
+/* Keep the first hero image visible immediately: do not animate the LCP element on initial load. */
+.hero-photo.hero-photo-layer.is-active.is-initial{
+  opacity:1;
+  transform:scale(1.015);
+  animation:none!important;
+}
