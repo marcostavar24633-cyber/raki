@@ -129,3 +129,48 @@ Vite настроен на путь `/raki/`, необходимый для пу
 - Для подключения добавьте URL-префикс сайта в Google Search Console и Яндекс Вебмастер, получите выданный сервисом уникальный HTML-файл или meta-тег подтверждения и добавьте его в репозиторий. Не используйте чужие или придуманные verification-токены.
 - После подтверждения отправьте sitemap в каждом сервисе и проверьте статус индексирования главной страницы.
 - GitHub Pages проекта размещён в подпапке `/raki/` на общем домене `github.io`. Проект не управляет корневым `/robots.txt` домена `github.io`; для полного контроля над корневой robots.txt и адресом сайта рекомендуется собственный домен.
+
+## Контрольный список запуска (этап 46)
+
+Не отмечайте пункт как выполненный только по факту наличия кода или успешной сборки. Для запуска автоматического приёма заказов нужны подтверждения из рабочего аккаунта Cloudflare и отдельного тестового Telegram-чата.
+
+### До первого production deployment Cloudflare
+- [ ] Создан Pages-проект из репозитория `marcostavar24633-cyber/raki`, ветка `main`.
+- [ ] Build command: `npm run build:cloudflare`; output: `dist`; Node.js: `22`.
+- [ ] В production environment добавлен публичный build variable `VITE_TURNSTILE_SITE_KEY`.
+- [ ] В production environment как Secrets добавлены `TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+- [ ] В Turnstile разрешён точный hostname production Pages-домена и каждого реально подключённого custom domain.
+- [ ] После добавления/изменения build variable выполнена новая production-сборка.
+- [ ] В checkout отображается Turnstile; токен создаётся с action `order`.
+
+### Проверки API до включения реальных заказов
+- [ ] GET на `/api/order` возвращает 405.
+- [ ] Cross-origin POST отклоняется (403).
+- [ ] Неверный Content-Type отклоняется (415).
+- [ ] Некорректный JSON отклоняется (400).
+- [ ] Отсутствующие серверные secrets приводят к 503, а не к отправке.
+- [ ] Пустой, просроченный, поддельный или повторно использованный Turnstile token отклоняется.
+- [ ] Проверяются hostname и action `order` из Siteverify.
+- [ ] Неизвестный productId, повторяющиеся позиции, некорректный шаг веса и чрезмерные количества отклоняются.
+- [ ] Цена и итоговая сумма рассчитываются сервером; значения из браузера не используются как источник цены.
+- [ ] При недоступности Siteverify или Telegram заявка не показывается как успешно доставленная.
+- [ ] Успешный тест выполнен только с фиктивными данными и отдельным тестовым Telegram-чатом; сообщение реально получено.
+
+### Rate limiting для Cloudflare Pages
+
+Turnstile — проверка на автоматизацию, но не ограничитель количества запросов. Дополнительный rate limit можно подключить непосредственно к Pages Function через Cloudflare Workers Rate Limiting binding. В отличие от внешней базы данных, отдельное хранилище проекта для этого не требуется.
+
+Текущий обработчик пока **не использует** такой binding. Перед его включением владелец аккаунта должен выделить уникальный положительный числовой `namespace_id` для этого проекта, после чего binding можно добавить в `wrangler.toml` и использовать в `functions/api/order.ts`. Не копируйте чужой namespace ID и не публикуйте секреты. Cloudflare указывает, что такие лимиты приблизительные и учитываются отдельно в каждой локации; это не строгий глобальный лимит. Смотрите [документацию Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) и [настройку Pages Functions](https://developers.cloudflare.com/pages/functions/wrangler-configuration/).
+
+Для собственного домена, подключённого к Cloudflare Zone, можно также настроить WAF Rate Limiting rule для `POST /api/order`. Не считайте, что zone-level WAF rule автоматически действует на стандартном `pages.dev` hostname.
+
+### Статус на момент этапа 46
+- [x] Cloudflare и Vercel обработчики проверяют данные заказа до расходования Turnstile token.
+- [x] CI компилирует Cloudflare Pages Function и проверяет типы Vercel endpoint.
+- [x] GitHub Pages build и deployment прошли успешно.
+- [ ] Cloudflare Pages project и production secrets ещё не подтверждены.
+- [ ] Реальная доставка в отдельный Telegram test chat ещё не подтверждена.
+- [ ] Rate limiting binding ещё не настроен.
+- [ ] Ассортимент, цены, доставка и юридические документы ещё требуют подтверждения владельцем.
+
+**Режим GitHub Pages остаётся ручным:** он не вызывает серверный API и не отправляет заявку автоматически. До завершения production checklist не рекламируйте форму как работающий автоматический канал приёма заказов.
