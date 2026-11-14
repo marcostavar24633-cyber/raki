@@ -68,6 +68,14 @@ test('checkout action label does not promise a specific messaging app', async ({
   await expect(dialog.getByRole('button', { name: 'Отправить в Telegram' })).toHaveCount(0);
 });
 
+test('boiled crayfish service does not display an unverified fixed fee', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  const boiledCard = page.locator('.choice-boiled');
+  await expect(boiledCard).toContainText('Стоимость приготовления, возможность и время уточняйте при заказе.');
+  await expect(boiledCard).not.toContainText('100 ₽');
+});
+
 test('initial hero image is not hidden by the slide entrance animation', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
