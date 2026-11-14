@@ -7,6 +7,7 @@ type CartLine = { product:Product; qty:number };
 type TurnstileApi = {
   render: (container: HTMLElement, options: {
     sitekey: string;
+    action?: string;
     theme?: 'light' | 'dark' | 'auto';
     callback: (token: string) => void;
     'error-callback'?: () => void;
@@ -105,6 +106,7 @@ export default function App(){
       if (disposed || !turnstileContainerRef.current || !window.turnstile) return;
       widgetId = window.turnstile.render(turnstileContainerRef.current, {
         sitekey: turnstileSiteKey,
+        action: 'order',
         theme: 'dark',
         callback: (token) => setTurnstileToken(token),
         'error-callback': () => { setTurnstileToken(''); setOrderError('Не удалось выполнить проверку безопасности. Обновите проверку и попробуйте снова.'); },
