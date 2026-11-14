@@ -1211,3 +1211,21 @@ main [data-scroll-text-fade="true"]{
   }
   .hero-photo.hero-photo-layer::after{display:none!important;animation:none!important}
 }
+
+
+/* Mobile LCP: keep the first hero frame static and remove decorative paint-heavy overlays. */
+@media (max-width:700px){
+  .hero-photo.hero-photo-layer,
+  .hero-photo.hero-photo-layer.is-active,
+  .hero-photo.hero-photo-layer.is-active.is-initial{
+    animation:none!important;
+    transition:none!important;
+    transform:none!important;
+    will-change:auto!important;
+  }
+  .hero-photo::before,
+  .hero-photo::after,
+  .hero-grain{display:none!important}
+  .hero-picture img{transform:none!important;filter:none!important}
+  .header{backdrop-filter:none!important}
+}
