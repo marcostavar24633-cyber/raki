@@ -1038,3 +1038,9 @@ main [data-scroll-text-fade="true"]{
   .product-actions .product-call{font-size:9px;padding:8px 6px}
   .product-actions .add-link{font-size:10px}
 }
+
+
+/* Manual order fallback: readable and selectable when clipboard access is unavailable. */
+.manual-order-copy{display:grid;gap:8px;margin:18px 0;text-align:left;color:var(--bronze,#c2a669);font-size:10px;letter-spacing:.1em}
+.manual-order-copy textarea{width:100%;min-height:150px;resize:vertical;padding:12px;border:1px solid rgba(194,166,105,.35);border-radius:10px;background:#171b18;color:#f0ece4;font:12px/1.6 Manrope,Arial,sans-serif;letter-spacing:normal;user-select:text}
+.manual-order-copy small{color:#aaa99f;font-size:10px;letter-spacing:normal;line-height:1.5}
