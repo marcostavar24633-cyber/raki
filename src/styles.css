@@ -1241,8 +1241,10 @@ main [data-scroll-text-fade="true"]{
 .choice-section .kicker,
 .order-process .kicker,
 .guest-notes .kicker,
-.faq-section .kicker,
 .contact-panel .kicker{color:#c7a477}
+.faq-section .section-index,
+.faq-section .kicker{color:#735331}
+.faq-section .section-heading h2 i{color:#76512f}
 .choice-card{background:#1c211e;color:#f2ede4}
 .choice-card-content{background:#1c211e;color:#f2ede4}
 .choice-card h3,
