@@ -245,3 +245,23 @@ test('cart persists after reload and dialogs close with Escape while restoring f
   await page.locator('.cart-trigger').click();
   await expect(page.getByRole('dialog', { name: 'Корзина' })).toContainText('Живые раки — мелкие');
 });
+
+
+test('mobile defers off-screen section rendering without changing desktop', async ({ page }) => {
+  const sections = ['.intro', '.values', '.catalog', '.choice-section', '.craft', '.calculator', '.delivery', '.order-process', '.guest-notes', '.faq-section', '.contact-panel', '.final-cta'];
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const mobileStyles = await page.evaluate((selectors) => selectors.map(selector => ({
+    selector,
+    contentVisibility: getComputedStyle(document.querySelector(selector)!).contentVisibility
+  })), sections);
+  expect(mobileStyles.filter(item => item.contentVisibility !== 'auto'), JSON.stringify(mobileStyles)).toEqual([]);
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const desktopStyles = await page.evaluate((selectors) => selectors.map(selector => ({
+    selector,
+    contentVisibility: getComputedStyle(document.querySelector(selector)!).contentVisibility
+  })), sections);
+  expect(desktopStyles.filter(item => item.contentVisibility !== 'visible'), JSON.stringify(desktopStyles)).toEqual([]);
+});
