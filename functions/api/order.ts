@@ -13,7 +13,7 @@ const catalog: Record<number, { name: string; unit: string; price: number }> = {
 };
 
 const json = (data: unknown, status = 200) =>
-  new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+  new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, max-age=0' } });
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -22,12 +22,18 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
 export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   if (request.method !== 'POST') return json({ error: 'Метод не поддерживается.' }, 405);
 
+  // Browser form submissions must originate from this exact deployment origin.
+  const origin = request.headers.get('origin');
+  if (!origin || origin !== new URL(request.url).origin) {
+    return json({ error: 'Источник запроса не разрешён.' }, 403);
+  }
+
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
     return json({ error: 'Приём заказов временно не настроен. Свяжитесь с нами другим способом.' }, 503);
   }
 
   const contentType = request.headers.get('content-type') || '';
-  if (!contentType.toLowerCase().includes('application/json')) {
+  if (contentType.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
     return json({ error: 'Ожидается JSON-запрос.' }, 415);
   }
 
@@ -86,6 +92,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: message, parse_mode: 'HTML', disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(10_000),
     });
     const telegramResult = await telegramResponse.json() as { ok?: boolean };
     if (!telegramResponse.ok || !telegramResult.ok) return json({ error: 'Не удалось передать заказ менеджеру. Попробуйте ещё раз.' }, 502);
