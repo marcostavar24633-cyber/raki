@@ -20,6 +20,19 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Метод не поддерживается.' });
 
+  const originHeader = req.headers?.origin;
+  const hostHeader = req.headers?.host;
+  const origin = Array.isArray(originHeader) ? originHeader[0] : originHeader;
+  const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+  try {
+    if (!origin || !host || new URL(origin).protocol !== 'https:' ||
+      new URL(origin).host.toLowerCase() !== host.toLowerCase()) {
+      return res.status(403).json({ error: 'Источник запроса не разрешён.' });
+    }
+  } catch {
+    return res.status(403).json({ error: 'Источник запроса не разрешён.' });
+  }
+
   const contentType = req.headers?.['content-type'];
   if (typeof contentType !== 'string' || contentType.split(';', 1)[0].trim().toLowerCase() !== 'application/json') {
     return res.status(415).json({ error: 'Ожидается JSON-запрос.' });
