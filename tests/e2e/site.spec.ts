@@ -274,3 +274,49 @@ test('mobile defers off-screen section rendering without changing desktop', asyn
   })), sections);
   expect(desktopStyles.filter(item => item.contentVisibility !== 'visible'), JSON.stringify(desktopStyles)).toEqual([]);
 });
+
+test('cart recalculates totals in 0.5 kg steps and persists the adjusted quantity', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+  const cart = page.getByRole('dialog', { name: 'Корзина' });
+  const line = cart.locator('.cart-line').first();
+
+  await expect(line).toContainText('1 кг');
+  await expect(line).toContainText('1 900');
+  await line.getByRole('button', { name: 'Уменьшить' }).click();
+  await expect(line).toContainText('0,5 кг');
+  await expect(line).toContainText('950');
+  await expect(cart.locator('.cart-total')).toContainText('950');
+
+  await page.reload();
+  await page.locator('.cart-trigger').click();
+  const restoredCart = page.getByRole('dialog', { name: 'Корзина' });
+  await expect(restoredCart.locator('.cart-line').first()).toContainText('0,5 кг');
+  await expect(restoredCart.locator('.cart-total')).toContainText('950');
+});
+
+test('cart restoration rejects unknown products, invalid weights and excessive quantities', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('rak-cart', JSON.stringify([
+      { product: { id: 1 }, qty: 0.5 },
+      { product: { id: 999 }, qty: 2 },
+      { product: { id: 5 }, qty: 101 },
+      { product: { id: 6 }, qty: 0.3 },
+      { product: { id: 7 }, qty: -1 }
+    ]));
+  });
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await page.locator('.cart-trigger').click();
+
+  const cart = page.getByRole('dialog', { name: 'Корзина' });
+  await expect(cart.locator('.cart-line')).toHaveCount(1);
+  await expect(cart).toContainText('Живые раки — мелкие');
+  await expect(cart).toContainText('0,5 кг');
+  await expect(cart.locator('.cart-total')).toContainText('950');
+});
+
