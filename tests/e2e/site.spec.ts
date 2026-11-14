@@ -285,7 +285,7 @@ test('cart recalculates totals in 0.5 kg steps and persists the adjusted quantit
   const line = cart.locator('.cart-line').first();
 
   await expect(line).toContainText('1 кг');
-  await expect(line).toContainText(/1\\s?900/);
+  await expect(line).toContainText(/1\s?900/);
   await line.getByRole('button', { name: 'Уменьшить' }).click();
   await expect(line).toContainText('0,5 кг');
   await expect(line).toContainText('950');
