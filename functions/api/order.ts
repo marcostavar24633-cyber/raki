@@ -77,9 +77,9 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     if (!verifyResponse.ok) {
       return json({ error: 'Проверка безопасности временно недоступна. Попробуйте позже.' }, 503);
     }
-    const verification = await verifyResponse.json() as { success?: boolean; hostname?: string };
+    const verification = await verifyResponse.json() as { success?: boolean; hostname?: string; action?: string };
     const requestHostname = new URL(request.url).hostname;
-    if (verification.success !== true || verification.hostname !== requestHostname) {
+    if (verification.success !== true || verification.hostname !== requestHostname || verification.action !== 'order') {
       return json({ error: 'Проверка безопасности не пройдена или истекла. Пройдите её ещё раз.' }, 403);
     }
   } catch {
