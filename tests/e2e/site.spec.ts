@@ -73,3 +73,23 @@ test('mobile navigation exposes its expanded state and closes after selection', 
   await navigation.getByRole('link', { name: 'Каталог' }).click();
   await expect(page.getByRole('button', { name: 'Открыть меню' })).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('page has basic accessible landmarks, image alternatives and named buttons', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  await expect(page.locator('main')).toHaveCount(1);
+  await expect(page.locator('h1')).toHaveCount(1);
+
+  const audit = await page.evaluate(() => ({
+    imagesWithoutAlt: Array.from(document.images)
+      .filter(image => !image.hasAttribute('alt'))
+      .map(image => image.currentSrc || image.src),
+    buttonsWithoutName: Array.from(document.querySelectorAll('button'))
+      .filter(button => !button.innerText.trim() && !button.getAttribute('aria-label') && !button.getAttribute('title'))
+      .map(button => button.outerHTML.slice(0, 180))
+  }));
+
+  expect(audit.imagesWithoutAlt, 'Every image must declare alt text (empty is allowed for decorative images)').toEqual([]);
+  expect(audit.buttonsWithoutName, 'Every button must have an accessible name').toEqual([]);
+});
