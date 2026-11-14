@@ -88,7 +88,7 @@ export default function App(){
     };
   },[cartOpen,checkout,quickView]);
   useEffect(()=>{
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const hero=document.querySelector<HTMLElement>('.hero');
     if(!hero) return;
     let frame=0;
@@ -129,7 +129,7 @@ export default function App(){
     };
   },[]);
   useEffect(()=>{
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 700px)').matches) return;
     let cancelled=false;
     import('gsap').then(({gsap})=>{
       if(cancelled) return;
@@ -141,7 +141,8 @@ export default function App(){
   },[activeSlide]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduce) return;
+    const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if(reduce || !finePointer) return;
     const items=Array.from(document.querySelectorAll<HTMLElement>('.values .value-photo-img,.craft-image img'));
     if(!items.length) return;
     let frame=0;
