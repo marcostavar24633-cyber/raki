@@ -42,6 +42,13 @@ jobs:
               cwebp -quiet -q 76 -m 6 -resize 900 900 "$file" -o "$mobile"
             fi
           done
+          for name in "Рак с укропом на керамической тарелке мелкий" "Аппетитный рак с укропом на тарелке средний" "Аппетитный рак с укропом на тарелке крупный" "Аппетитный рак с укропом на тарелке отборный"; do
+            source="public/${name}.webp"
+            output="public/${name}-card.webp"
+            if [ -f "$source" ] && [ ! -f "$output" ]; then
+              cwebp -quiet -q 74 -m 6 -resize 480 480 "$source" -o "$output"
+            fi
+          done
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           for (const file of ['src/App.tsx', 'src/styles.css', 'index.html']) {
