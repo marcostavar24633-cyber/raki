@@ -1229,3 +1229,22 @@ main [data-scroll-text-fade="true"]{
   .hero-picture img{transform:none!important;filter:none!important}
   .header{backdrop-filter:none!important}
 }
+
+
+/* Accessibility: restore WCAG AA contrast for low-contrast text found by Lighthouse. */
+.intro h2 i,
+.calculator h2 i{color:#76512f}
+.intro-note{color:#555b53}
+.craft-steps b{color:#80582f}
+.calculator .section-index{color:#755331}
+.catalog .kicker,
+.choice-section .kicker,
+.order-process .kicker,
+.guest-notes .kicker,
+.faq-section .kicker,
+.contact-panel .kicker{color:#c7a477}
+.choice-card{background:#1c211e;color:#f2ede4}
+.choice-card-content{background:#1c211e;color:#f2ede4}
+.choice-card h3,
+.choice-card .under-link{color:#f2ede4}
+.choice-card p{color:#c1c3bc}
