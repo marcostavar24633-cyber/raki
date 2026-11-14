@@ -36,12 +36,14 @@ jobs:
               cwebp -quiet -q 82 -m 6 -resize 1800 1800 "$file" -o "$output"
             fi
           done
-          find public -maxdepth 1 -type f -iname '*.webp' ! -name '*-mobile.webp' -print0 | while IFS= read -r -d '' file; do
+          find public -maxdepth 1 -type f -iname '*.webp' ! -name '*-mobile.webp' ! -name '*-mobile-720.webp' ! -name '*-card.webp' -print0 | while IFS= read -r -d '' file; do
             mobile="${file%.webp}-mobile.webp"
             if [ ! -f "$mobile" ]; then
               cwebp -quiet -q 76 -m 6 -resize 900 900 "$file" -o "$mobile"
             fi
           done
+          find public -maxdepth 1 -type f -name '*-mobile-720-mobile.webp' -delete
+          find public -maxdepth 1 -type f -name '*-card-mobile.webp' -delete
           for name in "Рак с укропом на керамической тарелке мелкий" "Аппетитный рак с укропом на тарелке средний" "Аппетитный рак с укропом на тарелке крупный" "Аппетитный рак с укропом на тарелке отборный"; do
             source="public/${name}.webp"
             output="public/${name}-card.webp"
