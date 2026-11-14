@@ -123,7 +123,12 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
 
   const choiceImage = page.locator('.choice-live picture img');
   await choiceImage.scrollIntoViewIfNeeded();
-  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-mobile-720.webp');
+  await expect(page.locator('.choice-live picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /section-480-mobile\\.webp 480w, .*mobile-720\\.webp 720w/);
+  await expect(page.locator('.choice-live picture source[media="(max-width: 700px)"]')).toHaveAttribute('sizes', '(max-width: 700px) calc(100vw - 36px), 42vw');
+  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-480-mobile.webp');
+  const boiledChoiceImage = page.locator('.choice-boiled picture img');
+  await boiledChoiceImage.scrollIntoViewIfNeeded();
+  await expect.poll(async () => boiledChoiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-section-480-mobile.webp');
 
   const craftImage = page.locator('.craft-image picture img');
   await craftImage.scrollIntoViewIfNeeded();
@@ -165,7 +170,11 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
 
   const choiceImage = page.locator('.choice-live picture img');
   await choiceImage.scrollIntoViewIfNeeded();
-  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-900.webp');
+  await expect(page.locator('.choice-live picture source[media="(min-width: 701px)"]')).toHaveAttribute('srcset', /section-640\\.webp 640w, .*section-900\\.webp 900w/);
+  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-640.webp');
+  const boiledChoiceImage = page.locator('.choice-boiled picture img');
+  await boiledChoiceImage.scrollIntoViewIfNeeded();
+  await expect.poll(async () => boiledChoiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-section-640.webp');
   await expect.poll(async () => choiceImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   const craftImage = page.locator('.craft-image picture img');
