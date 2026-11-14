@@ -173,3 +173,31 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
   await deliveryBackground.scrollIntoViewIfNeeded();
   await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-section-900.webp');
 });
+
+test('cart persists after reload and dialogs close with Escape while restoring focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+  const cartDialog = page.getByRole('dialog', { name: 'Корзина' });
+  await expect(cartDialog).toBeVisible();
+
+  const checkoutButton = cartDialog.getByRole('button', { name: /Оформить заказ/ });
+  await checkoutButton.click();
+  const checkoutDialog = page.getByRole('dialog', { name: 'Оформление заказа' });
+  await expect(checkoutDialog).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(checkoutDialog).toBeHidden();
+  await expect(cartDialog).toBeVisible();
+  await expect(checkoutButton).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(cartDialog).toBeHidden();
+  await expect(page.locator('.cart-trigger')).toBeFocused();
+
+  await page.reload();
+  await page.locator('.cart-trigger').click();
+  await expect(page.getByRole('dialog', { name: 'Корзина' })).toContainText('Живые раки — мелкие');
+});
