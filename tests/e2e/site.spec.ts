@@ -100,7 +100,7 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
 
   const heroImage = page.locator('.hero-picture img');
   await expect(heroImage).toHaveAttribute('fetchpriority', 'high');
-  await expect(page.locator('.hero-picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /-mobile\\.webp/);
+  await expect(page.locator('.hero-picture source[media="(max-width: 700px)"]')).toHaveAttribute('srcset', /-mobile\.webp/);
   await expect.poll(async () => heroImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-mobile.webp');
-  await expect(page.locator('.product-image img').first()).toHaveAttribute('srcset', /-mobile\\.webp/);
+  await expect(page.locator('.product-image img').first()).toHaveAttribute('srcset', /-mobile\.webp/);
 });
