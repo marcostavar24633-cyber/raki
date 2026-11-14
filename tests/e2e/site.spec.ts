@@ -373,3 +373,40 @@ test('checkout dialog keeps keyboard focus inside the active modal', async ({ pa
   await expect(closeButton).toBeFocused();
 });
 
+
+
+test('mobile FAQ headings keep WCAG AA text contrast', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const contrast = await page.locator('.faq-section').evaluate(section => {
+    const selectors = [
+      '.section-index',
+      '.section-heading .kicker',
+      '.section-heading h2 i'
+    ];
+    const rgb = (value: string) => {
+      const match = value.match(/[\\d.]+/g)?.map(Number);
+      return match && match.length >= 3 ? match.slice(0, 3) : null;
+    };
+    const luminance = (color: number[]) => {
+      const channels = color.map(channel => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const background = rgb(getComputedStyle(section).backgroundColor);
+    return selectors.map(selector => {
+      const element = section.querySelector(selector);
+      const foreground = element ? rgb(getComputedStyle(element).color) : null;
+      if (!foreground || !background) return { selector, ratio: 0 };
+      const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+      return { selector, ratio: (values[0] + 0.05) / (values[1] + 0.05) };
+    });
+  });
+
+  for (const item of contrast) {
+    expect(item.ratio, `${item.selector} contrast ratio`).toBeGreaterThanOrEqual(4.5);
+  }
+});
