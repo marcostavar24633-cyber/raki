@@ -72,30 +72,7 @@ export default function App(){
     setTurnstileToken('');
     if (turnstileWidgetRef.current && window.turnstile) window.turnstile.reset(turnstileWidgetRef.current);
   };
-  useEffect(() => {
-    if (!checkout || import.meta.env.BASE_URL !== '/' || !turnstileSiteKey || !turnstileContainerRef.current) return;
-    let disposed = false;
-    let widgetId: string | null = null;
-    loadTurnstileScript().then(() => {
-      if (disposed || !turnstileContainerRef.current || !window.turnstile) return;
-      widgetId = window.turnstile.render(turnstileContainerRef.current, {
-        sitekey: turnstileSiteKey,
-        theme: 'dark',
-        callback: (token) => setTurnstileToken(token),
-        'error-callback': () => { setTurnstileToken(''); setOrderError('Не удалось выполнить проверку безопасности. Обновите проверку и попробуйте снова.'); },
-        'expired-callback': () => { setTurnstileToken(''); setOrderError('Проверка безопасности истекла. Пройдите её ещё раз.'); }
-      });
-      turnstileWidgetRef.current = widgetId;
-    }).catch(() => {
-      if (!disposed) setOrderError('Не удалось загрузить проверку безопасности. Обновите страницу и попробуйте снова.');
-    });
-    return () => {
-      disposed = true;
-      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
-      if (turnstileWidgetRef.current === widgetId) turnstileWidgetRef.current = null;
-      setTurnstileToken('');
-    };
-  }, [checkout, turnstileSiteKey]);
+
 
   const [cartNotice,setCartNotice]=useState('');
   const [soundEnabled,setSoundEnabled]=useState(false);
@@ -120,6 +97,30 @@ export default function App(){
     }catch{/* Audio is optional; ordering must never depend on it. */}
   };
   const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|'manual-no-telegram'|'phone'|'server'|''>(''); const [orderText,setOrderText]=useState(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[isSubmitting,setIsSubmitting]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
+  useEffect(() => {
+    if (!checkout || import.meta.env.BASE_URL !== '/' || !turnstileSiteKey || !turnstileContainerRef.current) return;
+    let disposed = false;
+    let widgetId: string | null = null;
+    loadTurnstileScript().then(() => {
+      if (disposed || !turnstileContainerRef.current || !window.turnstile) return;
+      widgetId = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: turnstileSiteKey,
+        theme: 'dark',
+        callback: (token) => setTurnstileToken(token),
+        'error-callback': () => { setTurnstileToken(''); setOrderError('Не удалось выполнить проверку безопасности. Обновите проверку и попробуйте снова.'); },
+        'expired-callback': () => { setTurnstileToken(''); setOrderError('Проверка безопасности истекла. Пройдите её ещё раз.'); }
+      });
+      turnstileWidgetRef.current = widgetId;
+    }).catch(() => {
+      if (!disposed) setOrderError('Не удалось загрузить проверку безопасности. Обновите страницу и попробуйте снова.');
+    });
+    return () => {
+      disposed = true;
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+      if (turnstileWidgetRef.current === widgetId) turnstileWidgetRef.current = null;
+      setTurnstileToken('');
+    };
+  }, [checkout, turnstileSiteKey]);
   useEffect(()=>{try{localStorage.setItem('rak-cart',JSON.stringify(cart))}catch{/* Storage may be disabled; cart remains usable for this session. */}},[cart]);
   useEffect(()=>{
     const root=document.documentElement;
