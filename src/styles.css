@@ -1098,3 +1098,24 @@ main [data-scroll-text-fade="true"]{
   }
   .hero-copy .eyebrow,.hero-copy h1,.hero-copy>p,.hero-copy .hero-buttons{will-change:auto;filter:none}
 }
+
+
+/* Mobile readability pass: raise secondary labels without changing the layout hierarchy. */
+@media(max-width:700px){
+  .announcement,.eyebrow,.hero-bottom,.section-index,.intro-note,
+  .catalog-foot,.cta-bottom,.photo-caption,.product-image-caption,
+  .product-unit,.weight-price,.product-tag,.product-index,
+  .checkout-steps span,.checkout-steps b{
+    font-size:8px;
+  }
+  .footer-bottom{font-size:9px;line-height:1.65}
+  .filters button,.product-info p,.product-call,.add-link,
+  .calc-label,.calc-result span,.cart-note,.quick-view-note,
+  .delivery-points small{font-size:9px}
+  .product-photo-note,.product-count{font-size:10px}
+  .checkout-modal form label:not(.consent),.consent{font-size:10px}
+}
+@media(max-width:520px){
+  .filters button{font-size:9px;padding:10px 11px}
+  .product-unit,.checkout-steps span{font-size:8px}
+}
