@@ -142,8 +142,13 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
 
   const productImage = page.locator('.product-image img').first();
   await page.locator('.product-image').first().scrollIntoViewIfNeeded();
-  await expect(page.locator('.product-image source[media="(min-width: 701px)"]').first()).toHaveAttribute('srcset', /-desktop\.webp/);
-  await expect.poll(async () => productImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-desktop.webp');
+  const productSource = page.locator('.product-image source[media="(min-width: 701px)"]').first();
+  await expect(productSource).toHaveAttribute('srcset', /-card\.webp 480w, .*?-card-720\.webp 720w/);
+  await expect(productSource).toHaveAttribute('sizes', '(min-width: 1200px) 25vw, 50vw');
+  await expect.poll(async () => productImage.evaluate(image => {
+    const url = new URL((image as HTMLImageElement).currentSrc).pathname;
+    return url.includes('-card.webp') || url.includes('-card-720.webp');
+  })).toBe(true);
   await expect.poll(async () => productImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   const choiceImage = page.locator('.choice-live picture img');
