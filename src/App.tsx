@@ -204,10 +204,11 @@ export default function App(){
       frame=0;
       const zoneStart=200;
       const zoneEnd=50;
-      nodes.forEach(node=>{
-        const rect=node.getBoundingClientRect();
+      // Read every layout measurement first, then write styles in a separate pass.
+      // Interleaving getBoundingClientRect() and style writes forces repeated synchronous layouts.
+      const measurements=nodes.map(node=>({node,edge:node.getBoundingClientRect().bottom}));
+      measurements.forEach(({node,edge})=>{
         // Use the bottom edge so a paragraph/card does not disappear when only its first line enters the zone.
-        const edge=rect.bottom;
         const progress=Math.max(0,Math.min(1,(zoneStart-edge)/(zoneStart-zoneEnd)));
         const eased=progress*progress*progress*(progress*(progress*6-15)+10);
         const opacity=1-eased;
