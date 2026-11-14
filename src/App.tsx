@@ -84,7 +84,7 @@ export default function App(){
     return ()=>{
       document.body.style.overflow=previousOverflow;
       window.removeEventListener('keydown',onKeyDown);
-      if(previousFocus?.isConnected) previousFocus.focus();
+      const remainingDialogs=Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]'));\n      const topDialog=remainingDialogs[remainingDialogs.length-1];\n      if(previousFocus?.isConnected&&(!topDialog||topDialog.contains(previousFocus))) previousFocus.focus();
     };
   },[cartOpen,checkout,quickView]);
   useEffect(()=>{
