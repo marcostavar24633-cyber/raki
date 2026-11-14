@@ -36,7 +36,11 @@ jobs:
               cwebp -quiet -q 82 -m 6 -resize 1800 1800 "$file" -o "$output"
             fi
           done
-          find public -maxdepth 1 -type f -iname '*.webp' ! -name '*-mobile.webp' ! -name '*-mobile-720.webp' ! -name '*-card.webp' -print0 | while IFS= read -r -d '' file; do
+          find public -maxdepth 1 -type f -iname '*.webp' ! -name '*-mobile.webp' ! -name '*-mobile-720.webp' ! -name '*-card.webp' ! -name '*-desktop.webp' -print0 | while IFS= read -r -d '' file; do
+            desktop="${file%.webp}-desktop.webp"
+            if [ ! -f "$desktop" ]; then
+              cwebp -quiet -q 78 -m 6 -resize 1400 1400 "$file" -o "$desktop"
+            fi
             mobile="${file%.webp}-mobile.webp"
             if [ ! -f "$mobile" ]; then
               cwebp -quiet -q 76 -m 6 -resize 900 900 "$file" -o "$mobile"
