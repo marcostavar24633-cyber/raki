@@ -320,3 +320,45 @@ test('cart restoration rejects unknown products, invalid weights and excessive q
   await expect(cart.locator('.cart-total')).toContainText('950');
 });
 
+test('all in-page navigation links resolve and legal pages are reachable', async ({ page, request }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  const brokenAnchors = await page.locator('a[href^="#"]').evaluateAll(links =>
+    links
+      .map(link => (link as HTMLAnchorElement).getAttribute('href') || '')
+      .filter(href => href.length > 1 && !document.getElementById(decodeURIComponent(href.slice(1))))
+  );
+  expect(brokenAnchors, 'Every in-page link must point to an existing element').toEqual([]);
+
+  const privacyResponse = await request.get('/raki/privacy.html');
+  expect(privacyResponse.status()).toBe(200);
+  const privacyHtml = await privacyResponse.text();
+  expect(privacyHtml).toContain('Политика обработки персональных данных');
+  expect(privacyHtml).toContain('Шаблон для заполнения');
+
+  const termsResponse = await request.get('/raki/terms.html');
+  expect(termsResponse.status()).toBe(200);
+  const termsHtml = await termsResponse.text();
+  expect(termsHtml).toContain('Условия оформления заказа');
+  expect(termsHtml).toContain('не является публичной офертой');
+});
+
+test('checkout dialog keeps keyboard focus inside the active modal', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'В корзину' }).first().click();
+  await page.locator('.cart-trigger').click();
+
+  const cart = page.getByRole('dialog', { name: 'Корзина' });
+  await cart.getByRole('button', { name: /Оформить заказ/ }).click();
+  const checkout = page.getByRole('dialog', { name: 'Оформление заказа' });
+  const closeButton = checkout.locator('.modal-close');
+
+  await expect(closeButton).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(checkout.getByRole('button', { name: /Отправить в Telegram/ })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(closeButton).toBeFocused();
+});
+
