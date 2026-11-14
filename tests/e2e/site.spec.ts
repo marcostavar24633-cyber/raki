@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('mobile layout stays within the viewport', async ({ page }) => {
-  for (const width of [320, 360, 390]) {
+  for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/');
     await expect(page.locator('main')).toBeVisible();
