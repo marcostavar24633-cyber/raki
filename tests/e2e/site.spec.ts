@@ -171,5 +171,5 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
 
   const deliveryBackground = page.locator('.delivery-bg');
   await deliveryBackground.scrollIntoViewIfNeeded();
-  await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-desktop.webp');
+  await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-section-900.webp');
 });
