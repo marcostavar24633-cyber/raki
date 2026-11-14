@@ -55,3 +55,21 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   expect(message).toContain('Позвонить после 18:00');
   expect(message).toContain('Прошу связаться для подтверждения наличия');
 });
+
+test('mobile navigation exposes its expanded state and closes after selection', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto('/');
+
+  const menuButton = page.getByRole('button', { name: 'Открыть меню' });
+  const navigation = page.getByRole('navigation');
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  await expect(menuButton).toHaveAttribute('aria-controls', 'primary-navigation');
+
+  await menuButton.click();
+  const closeButton = page.getByRole('button', { name: 'Закрыть меню' });
+  await expect(closeButton).toHaveAttribute('aria-expanded', 'true');
+  await expect(navigation.getByRole('link', { name: 'Каталог' })).toBeVisible();
+
+  await navigation.getByRole('link', { name: 'Каталог' }).click();
+  await expect(page.getByRole('button', { name: 'Открыть меню' })).toHaveAttribute('aria-expanded', 'false');
+});
