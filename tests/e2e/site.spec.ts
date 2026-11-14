@@ -153,21 +153,21 @@ test('desktop viewport selects optimized desktop image variants', async ({ page 
 
   const choiceImage = page.locator('.choice-live picture img');
   await choiceImage.scrollIntoViewIfNeeded();
-  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-desktop.webp');
+  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-section-900.webp');
   await expect.poll(async () => choiceImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   const craftImage = page.locator('.craft-image picture img');
   await craftImage.scrollIntoViewIfNeeded();
-  await expect.poll(async () => craftImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-1-desktop.webp');
+  await expect.poll(async () => craftImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-1-section-900.webp');
   await expect.poll(async () => craftImage.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   const valuePhoto = page.locator('.value-photo .value-photo-img');
   await valuePhoto.scrollIntoViewIfNeeded();
-  await expect.poll(async () => valuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-2-desktop.webp');
+  await expect.poll(async () => valuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-2-section-900.webp');
 
   const secondValuePhoto = page.locator('.value-image-two .value-photo-img');
   await secondValuePhoto.scrollIntoViewIfNeeded();
-  await expect.poll(async () => secondValuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-4-desktop.webp');
+  await expect.poll(async () => secondValuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-4-section-900.webp');
 
   const deliveryBackground = page.locator('.delivery-bg');
   await deliveryBackground.scrollIntoViewIfNeeded();
