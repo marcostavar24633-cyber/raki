@@ -272,7 +272,9 @@ export default function App(){
     return ()=>{window.removeEventListener('pointermove',move);document.removeEventListener('pointerover',hover);if(frame)cancelAnimationFrame(frame);dot.remove();ring.remove();document.body.classList.remove('has-lux-cursor','cursor-hover');};
   },[]);
   useEffect(()=>{
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Keep the mobile main thread quiet: changing this root-level state re-renders
+    // the full storefront. Mobile visitors can still change slides with the controls.
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 700px)').matches) return;
     const id=window.setInterval(()=>setActiveSlide(s=>(s+1)%3),6500);
     return ()=>window.clearInterval(id);
   },[]);
