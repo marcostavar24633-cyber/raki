@@ -34,6 +34,8 @@ jobs:
         run: npm run build:cloudflare
       - name: Compile Cloudflare Pages Functions
         run: npm run check:cloudflare-functions
+      - name: Type-check Vercel order function
+        run: npm run check:vercel-function
       - name: Build Vite site for GitHub Pages
         run: npm run build
       - name: Optimize public images to WebP
