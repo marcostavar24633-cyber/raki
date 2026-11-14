@@ -102,6 +102,7 @@ jobs:
           if (!app.includes('phoneDigits.length<10||phoneDigits.length>15')) failures.push('Checkout phone digit validation is missing');
           if (!app.includes("if(!name){setOrderError('Укажите, пожалуйста, ваше имя.')")) failures.push('Checkout name validation is missing');
           if (!app.includes("localStorage.setItem('rak-cart'")) failures.push('Cart persistence is missing');
+          if (!css.includes('color:#92988f;font-size:9px')) failures.push('Footer text contrast improvement is missing');
           if (failures.length) {
             console.error(failures.map(item => 'FAIL: ' + item).join('\n'));
             process.exit(1);
