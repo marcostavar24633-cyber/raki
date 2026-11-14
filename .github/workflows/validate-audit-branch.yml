@@ -66,7 +66,7 @@ jobs:
             }
           }
           for (const name of fs.readdirSync('public')) {
-            if (name.endsWith('.webp') && !used.has(name)) {
+            if (name.endsWith('.webp') && !name.endsWith('-mobile.webp') && !used.has(name)) {
               fs.renameSync(path.join('public', name), path.join('source-images', name));
             }
           }
