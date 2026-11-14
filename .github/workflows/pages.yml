@@ -32,6 +32,8 @@ jobs:
         run: npm audit --audit-level=high
       - name: Verify Cloudflare Pages build
         run: npm run build:cloudflare
+      - name: Compile Cloudflare Pages Functions
+        run: npm run check:cloudflare-functions
       - name: Build Vite site for GitHub Pages
         run: npm run build
       - name: Optimize public images to WebP
