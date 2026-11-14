@@ -49,6 +49,13 @@ jobs:
               cwebp -quiet -q 74 -m 6 -resize 480 480 "$source" -o "$output"
             fi
           done
+          for name in "Гора свежих раков на мокром камне-2" "Раки с укропом и лимоном в чугунной сковороде-1"; do
+            source="public/${name}-mobile.webp"
+            output="public/${name}-mobile-720.webp"
+            if [ -f "$source" ] && [ ! -f "$output" ]; then
+              cwebp -quiet -q 76 -m 6 -resize 720 720 "$source" -o "$output"
+            fi
+          done
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           for (const file of ['src/App.tsx', 'src/styles.css', 'index.html']) {
