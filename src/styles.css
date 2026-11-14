@@ -1171,3 +1171,12 @@ main [data-scroll-text-fade="true"]{
   .logo small{font-size:9px!important}
   .product-info h3,.quick-view-copy h3,.format-card h3{line-height:1.12}
 }
+
+
+/* LCP: render the preloaded hero image immediately; keep decorative motion separate. */
+.hero-photo.hero-photo-layer,
+.hero-photo.hero-photo-layer.is-active{
+  opacity:1!important;
+  animation:none!important;
+  transition:transform .32s ease-out!important;
+}
