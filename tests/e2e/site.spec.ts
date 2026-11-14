@@ -386,7 +386,7 @@ test('mobile FAQ headings keep WCAG AA text contrast', async ({ page }) => {
       '.section-heading h2 i'
     ];
     const rgb = (value: string) => {
-      const match = value.match(/[\\d.]+/g)?.map(Number);
+      const match = value.match(/\d+(?:\.\d+)?/g)?.map(Number);
       return match && match.length >= 3 ? match.slice(0, 3) : null;
     };
     const luminance = (color: number[]) => {
