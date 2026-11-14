@@ -26,9 +26,27 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     return json({ error: 'Приём заказов временно не настроен. Свяжитесь с нами другим способом.' }, 503);
   }
 
+  const contentType = request.headers.get('content-type') || '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    return json({ error: 'Ожидается JSON-запрос.' }, 415);
+  }
+
+  let rawText: string;
+  try { rawText = await request.text(); } catch {
+    return json({ error: 'Не удалось прочитать заказ.' }, 400);
+  }
+  // Ограничиваем фактический размер тела, не полагаясь только на Content-Length.
+  if (new TextEncoder().encode(rawText).byteLength > 16_384) {
+    return json({ error: 'Слишком большой запрос.' }, 413);
+  }
+
   let raw: unknown;
-  try { raw = await request.json(); } catch { return json({ error: 'Некорректные данные заказа.' }, 400); }
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return json({ error: 'Некорректные данные заказа.' }, 400);
+  try { raw = JSON.parse(rawText); } catch {
+    return json({ error: 'Некорректные данные заказа.' }, 400);
+  }
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return json({ error: 'Некорректные данные заказа.' }, 400);
+  }
 
   const body = raw as Partial<OrderPayload>;
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
