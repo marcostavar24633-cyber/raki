@@ -62,6 +62,18 @@ jobs:
               cwebp -quiet -q 74 -m 6 -resize 900 900 "$source" -o "$output"
             fi
           done
+          # Responsive choice-card images: avoid downloading 720/900px files into ~350/530px slots.
+          for name in "Гора свежих раков на мокром камне-2" "Кастрюля с раками и укропом"; do
+            source="public/${name}.webp"
+            mobile="public/${name}-section-480-mobile.webp"
+            desktop="public/${name}-section-640.webp"
+            if [ -f "$source" ] && [ ! -f "$mobile" ]; then
+              cwebp -quiet -q 72 -m 6 -resize 480 480 "$source" -o "$mobile"
+            fi
+            if [ -f "$source" ] && [ ! -f "$desktop" ]; then
+              cwebp -quiet -q 74 -m 6 -resize 640 640 "$source" -o "$desktop"
+            fi
+          done
           for name in "Рак с укропом на керамической тарелке мелкий" "Аппетитный рак с укропом на тарелке средний" "Аппетитный рак с укропом на тарелке крупный" "Аппетитный рак с укропом на тарелке отборный"; do
             source="public/${name}.webp"
             output="public/${name}-card.webp"
@@ -111,9 +123,13 @@ jobs:
               ? '-desktop.webp'
               : name.endsWith('-card-720.webp')
                 ? '-card-720.webp'
-                : name.endsWith('-section-900.webp')
-                  ? '-section-900.webp'
-                  : '';
+                : name.endsWith('-section-480-mobile.webp')
+                ? '-section-480-mobile.webp'
+                : name.endsWith('-section-640.webp')
+                  ? '-section-640.webp'
+                  : name.endsWith('-section-900.webp')
+                    ? '-section-900.webp'
+                    : '';
             const originalName = variantSuffix ? name.slice(0, -variantSuffix.length) + '.webp' : name;
             const referencedResponsiveVariant = Boolean(variantSuffix) && used.has(originalName);
             if (name.endsWith('.webp') && !name.endsWith('-mobile.webp') && !used.has(name) && !referencedResponsiveVariant) {
