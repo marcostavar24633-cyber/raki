@@ -95,6 +95,13 @@ jobs:
               cwebp -quiet -q 76 -m 6 -resize 720 720 "$source" -o "$output"
             fi
           done
+          # Keep the initial mobile LCP image visually sharp while reducing its transfer size.
+          hero_source="public/Аппетитная тарелка раков с укропом и лимоном-mobile.webp"
+          hero_output="public/Аппетитная тарелка раков с укропом и лимоном-mobile-720.webp"
+          if [ -f "$hero_source" ]; then
+            cwebp -quiet -q 70 -m 6 -resize 720 720 "$hero_source" -o "$hero_output"
+            echo "Optimized mobile hero image: $(stat -c%s "$hero_output") bytes"
+          fi
           for name in "Аппетитная тарелка раков с укропом и лимоном" "Раки с укропом и лимоном на тёмной тарелке" "Раки с укропом и специями"; do
             source="public/${name}.webp"
             output="public/${name}-mobile-480.webp"
