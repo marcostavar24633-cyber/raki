@@ -1,4 +1,4 @@
-type VercelRequest = { method?: string; body: unknown };
+type VercelRequest = { method?: string; headers?: Record<string, string | string[] | undefined>; body: unknown };
 type VercelResponse = { status(code: number): VercelResponse; json(payload: unknown): VercelResponse };
 
 type OrderItemInput = { productId: number; quantity: number };
@@ -19,6 +19,18 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Метод не поддерживается.' });
+
+  const contentType = req.headers?.['content-type'];
+  if (typeof contentType !== 'string' || !contentType.toLowerCase().includes('application/json')) {
+    return res.status(415).json({ error: 'Ожидается JSON-запрос.' });
+  }
+  let serializedBody: string;
+  try { serializedBody = JSON.stringify(req.body); } catch {
+    return res.status(400).json({ error: 'Некорректные данные заказа.' });
+  }
+  if (new TextEncoder().encode(serializedBody ?? '').byteLength > 16_384) {
+    return res.status(413).json({ error: 'Слишком большой запрос.' });
+  }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -42,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     (catalog[item.productId].unit === 'кг'
       ? Math.round(item.quantity * 2) === item.quantity * 2
       : Number.isInteger(item.quantity)));
-  if (!validItems) return res.status(400).json({ error: 'В заказе обнаружены некорректные позиции.' });
+  if (!validItems || new Set(items.map((item) => item.productId)).size !== items.length) return res.status(400).json({ error: 'В заказе обнаружены некорректные или повторяющиеся позиции.' });
 
   const pricedItems = items.map((item) => ({ ...catalog[item.productId], quantity: item.quantity }));
   const total = pricedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
