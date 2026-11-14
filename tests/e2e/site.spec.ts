@@ -92,6 +92,9 @@ test('page has basic accessible landmarks, image alternatives and named buttons'
 
   expect(audit.imagesWithoutAlt, 'Every image must declare alt text (empty is allowed for decorative images)').toEqual([]);
   expect(audit.buttonsWithoutName, 'Every button must have an accessible name').toEqual([]);
+
+  const footerTextColor = await page.locator('.footer-bottom').evaluate(node => getComputedStyle(node).color);
+  expect(footerTextColor, 'Footer microcopy must retain accessible contrast').toBe('rgb(146, 152, 143)');
 });
 
 test('mobile viewport selects the lightweight hero image variant', async ({ page }) => {
