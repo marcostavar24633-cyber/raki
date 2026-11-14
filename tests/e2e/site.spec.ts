@@ -56,6 +56,16 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   expect(message).toContain('Прошу связаться для подтверждения наличия');
 });
 
+test('initial hero image is not hidden by the slide entrance animation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const heroLayer = page.locator('.hero-photo.hero-photo-layer.is-active');
+  await expect(heroLayer).toHaveClass(/is-initial/);
+  await expect(heroLayer).toHaveCSS('opacity', '1');
+  await expect(heroLayer).toHaveCSS('animation-name', 'none');
+});
+
 test('mobile hero copy stays visible when desktop-only GSAP is disabled', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
