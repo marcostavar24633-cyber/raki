@@ -50,7 +50,7 @@ export default function App(){
       window.setTimeout(()=>{void context.close()},450);
     }catch{/* Audio is optional; ordering must never depend on it. */}
   };
-  const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|''>(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
+  const [quickView,setQuickView]=useState<Product|null>(null),[shareMethod,setShareMethod]=useState<'share'|'copy'|'manual'|'phone'|''>(''); const [cartOpen,setCartOpen]=useState(false),[menuOpen,setMenuOpen]=useState(false),[activeSlide,setActiveSlide]=useState(0),[checkout,setCheckout]=useState(false),[sent,setSent]=useState(false),[orderError,setOrderError]=useState(''),[quantity,setQuantity]=useState(2);
   useEffect(()=>{localStorage.setItem('rak-cart',JSON.stringify(cart))},[cart]);
   useEffect(()=>{
     const panelOpen=cartOpen||checkout||!!quickView;
