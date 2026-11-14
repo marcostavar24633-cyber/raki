@@ -1198,3 +1198,16 @@ main [data-scroll-text-fade="true"]{
   .contact-panel{content-visibility:auto;contain-intrinsic-size:auto 780px}
   .final-cta{content-visibility:auto;contain-intrinsic-size:auto 620px}
 }
+
+/* Keep the mobile LCP hero free of decorative paint and parallax work. */
+@media(max-width:700px){
+  .hero-grain{display:none!important}
+  .hero-photo.hero-photo-layer,
+  .hero-photo.hero-photo-layer.is-active{
+    transform:none!important;
+    transition:opacity .25s ease!important;
+    animation:none!important;
+    will-change:opacity;
+  }
+  .hero-photo.hero-photo-layer::after{display:none!important;animation:none!important}
+}
