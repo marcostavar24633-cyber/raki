@@ -6,10 +6,10 @@ type OrderItemInput = { productId: number; quantity: number };
 type OrderPayload = { name: string; phone: string; comment?: string; items: OrderItemInput[] };
 
 const catalog: Record<number, { name: string; unit: string; price: number }> = {
-  1: { name: 'Раки живые', unit: 'кг', price: 1290 },
-  2: { name: 'Классические', unit: 'кг', price: 1490 },
-  3: { name: 'Острые с перцем', unit: 'кг', price: 1690 },
-  4: { name: 'Большой вечер', unit: 'набор', price: 4990 },
+  1: { name: 'Живые раки — мелкие', unit: 'кг', price: 1900 },
+  5: { name: 'Живые раки — средние', unit: 'кг', price: 2300 },
+  6: { name: 'Живые раки — крупные', unit: 'кг', price: 2900 },
+  7: { name: 'Живые раки — отборные', unit: 'кг', price: 3500 },
 };
 
 const json = (data: unknown, status = 200) =>
