@@ -260,6 +260,19 @@ jobs:
               lcpElement: report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet
                 ?? report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.node?.snippet
                 ?? null,
+              lcpBreakdown: report.audits['lcp-breakdown-insight']?.details?.items?.[0] ?? null,
+              lcpDiscovery: report.audits['lcp-discovery-insight']?.details?.items?.[0] ?? null,
+              lcpPreload: report.audits['prioritize-lcp-image']?.details?.items?.[0] ?? null,
+              heroImageRequests: (report.audits['network-requests']?.details?.items ?? [])
+                .filter(item => /Аппетитная|mobile-(480|720)|desktop\\.webp/.test(item.url ?? ''))
+                .map(item => ({
+                  url: item.url,
+                  transferSize: item.transferSize,
+                  resourceSize: item.resourceSize,
+                  startTime: item.startTime,
+                  networkEndTime: item.networkEndTime,
+                  renderBlocking: item.renderBlocking
+                })),
               contrastIssues: (report.audits['color-contrast']?.details?.items ?? [])
                 .slice(0, 12)
                 .map(item => ({
