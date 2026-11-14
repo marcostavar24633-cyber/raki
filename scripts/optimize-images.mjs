@@ -44,7 +44,7 @@ for (const file of pngFiles) {
     .toFile(output);
 
   const outputInfo = await stat(output);
-  if (outputInfo.size === 0) throw new Error(`Empty WebP output: ${output}`);
+  if (outputInfo.size === 0) throw new Error(\`Empty WebP output: \${output}\`);
   afterBytes += outputInfo.size;
   converted.push({ input: file, output });
 }
@@ -53,11 +53,11 @@ for (const file of files.filter((item) => textExtensions.has(path.extname(item).
   let content = await readFile(file, 'utf8');
   if (path.extname(file).toLowerCase() === '.html') {
     content = content.replace(
-      /(<link\\b[^>]*rel=["']preload["'][^>]*as=["']image["'][^>]*href=["'][^"']+)\\.png(["'][^>]*>)/gi,
+      /(<link\b[^>]*rel=["']preload["'][^>]*as=["']image["'][^>]*href=["'][^"']+)\.png(["'][^>]*>)/gi,
       '$1.webp$2'
     );
   } else {
-    content = content.replace(/\\.png(?=["'\\s)])/gi, '.webp');
+    content = content.replace(/\.png(?=["'\s)])/gi, '.webp');
   }
   await writeFile(file, content);
 }
@@ -67,6 +67,6 @@ for (const file of converted.map((item) => item.input)) {
 }
 
 console.log(
-  `Image optimization complete: ${converted.length} PNG → WebP; ` +
-  `original social preview retained; ${(beforeBytes / 1048576).toFixed(1)} MB → ${(afterBytes / 1048576).toFixed(1)} MB.`
+  \`Image optimization complete: \${converted.length} PNG → WebP; \` +
+  \`original social preview retained; \${(beforeBytes / 1048576).toFixed(1)} MB → \${(afterBytes / 1048576).toFixed(1)} MB.\`
 );
