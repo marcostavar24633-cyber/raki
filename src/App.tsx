@@ -84,9 +84,13 @@ export default function App(){
     return ()=>{
       document.body.style.overflow=previousOverflow;
       window.removeEventListener('keydown',onKeyDown);
-      const remainingDialogs=Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]'));
-      const topDialog=remainingDialogs[remainingDialogs.length-1];
-      if(previousFocus?.isConnected&&(!topDialog||topDialog.contains(previousFocus))) previousFocus.focus();
+      if(previousFocus?.isConnected){
+        requestAnimationFrame(()=>{
+          const remainingDialogs=Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]'));
+          const topDialog=remainingDialogs[remainingDialogs.length-1];
+          if(previousFocus.isConnected&&(!topDialog||topDialog.contains(previousFocus))) previousFocus.focus();
+        });
+      }
     };
   },[cartOpen,checkout,quickView]);
   useEffect(()=>{
