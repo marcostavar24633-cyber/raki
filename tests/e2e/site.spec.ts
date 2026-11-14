@@ -129,3 +129,38 @@ test('mobile viewport selects the lightweight hero image variant', async ({ page
   await deliveryBackground.scrollIntoViewIfNeeded();
   await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-mobile-720.webp');
 });
+
+
+test('desktop viewport selects optimized desktop image variants', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+
+  const heroImage = page.locator('.hero-picture img');
+  await expect(page.locator('.hero-picture source[media="(min-width: 701px)"]')).toHaveAttribute('srcset', /-desktop\.webp/);
+  await expect.poll(async () => heroImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-desktop.webp');
+
+  const productImage = page.locator('.product-image img').first();
+  await page.locator('.product-image').first().scrollIntoViewIfNeeded();
+  await expect(page.locator('.product-image source[media="(min-width: 701px)"]').first()).toHaveAttribute('srcset', /-desktop\.webp/);
+  await expect.poll(async () => productImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-desktop.webp');
+
+  const choiceImage = page.locator('.choice-live picture img');
+  await choiceImage.scrollIntoViewIfNeeded();
+  await expect.poll(async () => choiceImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-2-desktop.webp');
+
+  const craftImage = page.locator('.craft-image picture img');
+  await craftImage.scrollIntoViewIfNeeded();
+  await expect.poll(async () => craftImage.evaluate(image => new URL((image as HTMLImageElement).currentSrc).pathname)).toContain('-1-desktop.webp');
+
+  const valuePhoto = page.locator('.value-photo .value-photo-img');
+  await valuePhoto.scrollIntoViewIfNeeded();
+  await expect.poll(async () => valuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-2-desktop.webp');
+
+  const secondValuePhoto = page.locator('.value-image-two .value-photo-img');
+  await secondValuePhoto.scrollIntoViewIfNeeded();
+  await expect.poll(async () => secondValuePhoto.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-4-desktop.webp');
+
+  const deliveryBackground = page.locator('.delivery-bg');
+  await deliveryBackground.scrollIntoViewIfNeeded();
+  await expect.poll(async () => deliveryBackground.evaluate(node => getComputedStyle(node).backgroundImage)).toContain('-1-desktop.webp');
+});
