@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 
 type Product = { id:number; name:string; subtitle:string; price:number; unit:string; image:string; tag?:string; category:'live' };
 type CartLine = { product:Product; qty:number };
+const asset=(path:string)=>`${import.meta.env.BASE_URL}${path.replace(/^\/raki\//,'')}`;
 const products:Product[] = [
   {id:1,name:'Живые раки — мелкие',subtitle:'Мелкие речные раки. Цена указана за 1 кг.',price:1900,unit:'кг',image:asset('/raki/Рак с укропом на керамической тарелке мелкий.png'),tag:'Мелкий размер · ≈ 30 шт. / 1 кг',category:'live'},
   {id:5,name:'Живые раки — средние',subtitle:'Средние речные раки. Цена указана за 1 кг.',price:2300,unit:'кг',image:asset('/raki/Аппетитный рак с укропом на тарелке средний.png'),tag:'Средний размер · ≈ 20 шт. / 1 кг',category:'live'},
@@ -11,7 +12,6 @@ const products:Product[] = [
   {id:7,name:'Живые раки — отборные',subtitle:'Отборные речные раки. Цена указана за 1 кг.',price:3500,unit:'кг',image:asset('/raki/Аппетитный рак с укропом на тарелке отборный.png'),tag:'Отборный размер · ≈ 7 шт. / 1 кг',category:'live'}
 ];
 const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
-const asset=(path:string)=>`${import.meta.env.BASE_URL}${path.replace(/^\/raki\//,'')}`;
 const MAX_CART_KG=100;
 const restoreCart=():CartLine[]=>{
   try{
