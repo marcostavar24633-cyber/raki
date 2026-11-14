@@ -174,7 +174,14 @@ jobs:
                 })),
               lcpElement: report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.items?.[0]?.node?.snippet
                 ?? report.audits['largest-contentful-paint-element']?.details?.items?.[0]?.node?.snippet
-                ?? null
+                ?? null,
+              contrastIssues: (report.audits['color-contrast']?.details?.items ?? [])
+                .slice(0, 12)
+                .map(item => ({
+                  selector: item.node?.selector,
+                  snippet: item.node?.snippet,
+                  explanation: item.node?.explanation
+                }))
             }));
           }
           NODE
