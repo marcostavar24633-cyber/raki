@@ -1044,3 +1044,30 @@ main [data-scroll-text-fade="true"]{
 .manual-order-copy{display:grid;gap:8px;margin:18px 0;text-align:left;color:var(--bronze,#c2a669);font-size:10px;letter-spacing:.1em}
 .manual-order-copy textarea{width:100%;min-height:150px;resize:vertical;padding:12px;border:1px solid rgba(194,166,105,.35);border-radius:10px;background:#171b18;color:#f0ece4;font:12px/1.6 Manrope,Arial,sans-serif;letter-spacing:normal;user-select:text}
 .manual-order-copy small{color:#aaa99f;font-size:10px;letter-spacing:normal;line-height:1.5}
+
+
+/* Accessibility pass: clear keyboard focus and comfortable touch targets. */
+:where(a,button,input,textarea,select,summary,[tabindex]):focus-visible{
+  outline:3px solid #f0c98e;
+  outline-offset:4px;
+  box-shadow:0 0 0 2px #101211;
+}
+:where(.drawer,.checkout-modal,.quick-view-modal) :where(a,button,input,textarea,select,summary):focus-visible{
+  outline-color:#76532f;
+  box-shadow:0 0 0 2px #f5f0e7;
+}
+@media(max-width:700px),(pointer:coarse){
+  .menu-trigger,.sound-toggle,.cart-trigger,.slide-controls button,
+  .qty button,.close-btn,.product-view,.add-link,.product-call,
+  .mobile-bottom button,.mobile-bottom a{
+    min-height:44px;
+  }
+  .menu-trigger,.slide-controls button,.qty button,.close-btn{
+    min-width:44px;
+  }
+  .checkout-modal input:not([type=checkbox]),
+  .checkout-modal textarea{
+    min-height:44px;
+    font-size:16px;
+  }
+}
