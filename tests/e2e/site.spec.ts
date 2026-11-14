@@ -56,6 +56,18 @@ test('cart validates contacts and includes the complete order in the Telegram sh
   expect(message).toContain('Прошу связаться для подтверждения наличия');
 });
 
+test('mobile hero copy stays visible when desktop-only GSAP is disabled', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const heroCopy = page.locator('.hero-copy');
+  for (const selector of ['.eyebrow', 'h1', '> p', '.hero-buttons']) {
+    const element = heroCopy.locator(selector);
+    await expect(element).toBeVisible();
+    await expect(element).toHaveCSS('opacity', '1');
+  }
+});
+
 test('mobile navigation exposes its expanded state and closes after selection', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/');
