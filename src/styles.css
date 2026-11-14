@@ -1029,3 +1029,12 @@ main [data-scroll-text-fade="true"]{
   background-position:center;
   background-size:cover;
 }
+
+
+/* Mobile safety: keep product actions inside narrow two-column cards. */
+@media(max-width:380px){
+  .product-actions{width:100%;flex-direction:column;align-items:stretch;gap:7px}
+  .product-actions .add-link,.product-actions .product-call{width:100%;min-height:36px;justify-content:center}
+  .product-actions .product-call{font-size:9px;padding:8px 6px}
+  .product-actions .add-link{font-size:10px}
+}
