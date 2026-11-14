@@ -2,7 +2,7 @@ type VercelRequest = { method?: string; headers?: Record<string, string | string
 type VercelResponse = { status(code: number): VercelResponse; json(payload: unknown): VercelResponse };
 
 type OrderItemInput = { productId: number; quantity: number };
-type OrderPayload = { name: string; phone: string; comment?: string; items: OrderItemInput[] };
+type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
 
 // Серверный каталог: цена и название не принимаются от браузера.
 // Перед публикацией замените демонстрационные значения на утверждённый ассортимент.
@@ -35,6 +35,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return res.status(503).json({ error: 'Приём заказов временно не настроен. Свяжитесь с нами другим способом.' });
+
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+  if (!turnstileSecret) return res.status(503).json({ error: 'Защита формы временно не настроена. Свяжитесь с нами другим способом.' });
+
+  const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
+  if (!turnstileToken || turnstileToken.length > 2048) {
+    return res.status(400).json({ error: 'Пройдите проверку безопасности и повторите отправку.' });
+  }
+
+  try {
+    const verificationResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: turnstileSecret, response: turnstileToken }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!verificationResponse.ok) {
+      return res.status(503).json({ error: 'Проверка безопасности временно недоступна. Попробуйте позже.' });
+    }
+    const verification = await verificationResponse.json() as { success?: boolean; hostname?: string };
+    const requestHost = req.headers?.host;
+    const hostname = Array.isArray(requestHost) ? requestHost[0] : requestHost;
+    if (verification.success !== true || (hostname && verification.hostname !== hostname.split(':')[0])) {
+      return res.status(403).json({ error: 'Проверка безопасности не пройдена или истекла. Пройдите её ещё раз.' });
+    }
+  } catch {
+    return res.status(503).json({ error: 'Не удалось выполнить проверку безопасности. Попробуйте позже.' });
+  }
 
   if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
     return res.status(400).json({ error: 'Некорректные данные заказа.' });
