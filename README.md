@@ -51,7 +51,7 @@ npm run preview
 - **Cloudflare Pages:** при сборке командой `npm run build:cloudflare` фронтенд обращается к `/api/order`, который обслуживает `functions/api/order.ts`. Обработчик проверяет входные данные, рассчитывает сумму по серверному каталогу и отправляет сообщение через Telegram Bot API.
 - **Vercel:** `api/order.ts` — отдельный вариант серверного обработчика; текущая конфигурация GitHub Pages его не запускает.
 
-Для Vercel также задайте `VITE_TURNSTILE_SITE_KEY` как build-переменную и `TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` как секретные environment variables. Vercel endpoint проверяет одноразовый токен через Siteverify, а также сверяет hostname и `action=order`.
+Для Vercel также задайте `VITE_SITE_ORIGIN` равным фактическому production origin (без завершающего `/`) и `VITE_TURNSTILE_SITE_KEY` как build-переменную и `TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` как секретные environment variables. Vercel endpoint проверяет одноразовый токен через Siteverify, а также сверяет hostname и `action=order`.
 
 Для автоматической отправки на Cloudflare необходимо создать Pages-проект, подключить репозиторий и настроить параметры в **Settings → Variables and Secrets**:
 - `VITE_TURNSTILE_SITE_KEY` — обычная build-переменная (публичный Site Key виден в клиентском коде по назначению);
@@ -74,6 +74,7 @@ Site Key и Secret Key создаются в Cloudflare Dashboard → Turnstile.
 Для Cloudflare Pages используйте:
 - **Framework preset:** Vite (или None, если интерфейс предлагает ручную настройку)
 - **Build command:** `npm run build:cloudflare`
+- **Public build variable:** `VITE_SITE_ORIGIN=https://<имя-проекта>.pages.dev` (без завершающего `/`; при подключении собственного домена укажите его origin).
 - **Build output directory:** `dist`
 - **Production branch:** `main`
 - **Root directory:** `/`
@@ -85,7 +86,7 @@ Site Key и Secret Key создаются в Cloudflare Dashboard → Turnstile.
 1. В аккаунте владельца Cloudflare откройте **Workers & Pages → Create application → Pages → Connect to Git**.
 2. Подключите репозиторий `marcostavar24633-cyber/raki`, выберите production branch `main` и укажите настройки сборки выше.
 3. В Cloudflare Dashboard → Turnstile создайте виджет типа **Managed** и добавьте hostname вашего Pages-домена (`<имя-проекта>.pages.dev`). Добавьте custom domain в список только если он действительно подключён.
-4. В Pages → **Settings → Variables and Secrets** задайте `VITE_TURNSTILE_SITE_KEY` как обычную переменную сборки, а `TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` — как **Secrets**. Не присылайте секреты в чат и не добавляйте их в Git.
+4. В Pages → **Settings → Variables and Secrets** задайте `VITE_SITE_ORIGIN` как обычную переменную сборки со значением `https://<имя-проекта>.pages.dev` (или origin подключённого домена), `VITE_TURNSTILE_SITE_KEY` как обычную переменную сборки, а `TURNSTILE_SECRET_KEY`, `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` — как **Secrets**. Не присылайте секреты в чат и не добавляйте их в Git.
 5. Запустите production deployment заново: `VITE_TURNSTILE_SITE_KEY` встраивается во фронтенд во время сборки. Проверьте, что виджет отображается и проходит проверку на реальном домене.
 
 Для локальной проверки Cloudflare предоставляет тестовые ключи, но тестовый Siteverify-ответ всегда использует hostname `example.com`; текущая серверная проверка намеренно требует точное совпадение hostname и `action=order`. Поэтому тестовые ключи не подходят для успешной проверки этого production-потока без отдельного изолированного тестового окружения. Для сквозной проверки используйте отдельный реальный Turnstile-виджет, разрешённый на тестовом hostname, и тестовый Telegram-чат.
@@ -125,7 +126,8 @@ Vite настроен на путь `/raki/`, необходимый для пу
 
 ## Поисковые системы и индексация
 - Основной адрес сайта: `https://marcostavar24633-cyber.github.io/raki/`.
-- Sitemap: `https://marcostavar24633-cyber.github.io/raki/sitemap.xml`.
+- Sitemap для GitHub Pages: `https://marcostavar24633-cyber.github.io/raki/sitemap.xml`.
+- `VITE_SITE_ORIGIN` задаёт origin для canonical, Open Graph и Twitter URL; `.env.production` содержит значение по умолчанию для GitHub Pages. Для Cloudflare Pages/Vercel обязательно переопределите его на фактический origin проекта без завершающего `/`.
 - Файл robots.txt проекта публикуется по адресу `https://marcostavar24633-cyber.github.io/raki/robots.txt`.
 - Google Search Console и Яндекс Вебмастер пока не подтверждены и не подключены к аккаунтам владельца. Наличие sitemap и метаданных само по себе не подтверждает индексацию.
 - Для подключения добавьте URL-префикс сайта в Google Search Console и Яндекс Вебмастер, получите выданный сервисом уникальный HTML-файл или meta-тег подтверждения и добавьте его в репозиторий. Не используйте чужие или придуманные verification-токены.
