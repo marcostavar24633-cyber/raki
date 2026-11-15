@@ -176,7 +176,7 @@ Cloudflare Pages Function использует встроенный Workers Rate
 - [x] GitHub Pages build и deployment прошли успешно.
 - [ ] Cloudflare Pages project и production secrets ещё не подтверждены.
 - [ ] Реальная доставка в отдельный Telegram test chat ещё не подтверждена.
-- [ ] Rate limiting binding ещё не настроен.
+- [ ] Уникальность `namespace_id = 73115001` проверена в Cloudflare account, Pages production binding активирован и проверен на реальном deployment.
 - [ ] Ассортимент, цены, доставка и юридические документы ещё требуют подтверждения владельцем.
 
 **Режим GitHub Pages остаётся ручным:** он не вызывает серверный API и не отправляет заявку автоматически. До завершения production checklist не рекламируйте форму как работающий автоматический канал приёма заказов.
