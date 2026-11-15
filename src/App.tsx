@@ -162,7 +162,7 @@ export default function App(){
     const appRoot=document.getElementById('root');
     if(appRoot&&activeLayer){
       Array.from(appRoot.children).forEach(child=>{
-        if(!(child instanceof HTMLElement)||child.contains(dialog)) return;
+        if(!(child instanceof HTMLElement)||!dialog||child.contains(dialog)) return;
         inerted.push({element:child,inert:child.inert,ariaHidden:child.getAttribute('aria-hidden')});
         child.inert=true;
         child.setAttribute('aria-hidden','true');
