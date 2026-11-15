@@ -40,7 +40,8 @@ jobs:
         run: npm run build
       - name: Optimize public images to WebP
         run: |
-          npm install --no-save --no-package-lock sharp@0.33.5
+          npm install --no-save --no-package-lock sharp@0.35.5
+          npm audit --audit-level=high
           node scripts/optimize-images.mjs
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
