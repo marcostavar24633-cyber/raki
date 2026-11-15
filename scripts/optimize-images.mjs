@@ -4,6 +4,7 @@ import sharp from 'sharp';
 
 const root = path.resolve('dist');
 const socialImage = 'Раки с укропом и лимоном на тёмной тарелке.png';
+const developmentOnlyAssets = new Set(['design-reference.png']);
 const textExtensions = new Set(['.js', '.css', '.html']);
 const files = [];
 
@@ -18,7 +19,13 @@ async function walk(dir) {
 await stat(root);
 await walk(root);
 
-const pngFiles = files.filter((file) => path.extname(file).toLowerCase() === '.png');
+// Keep visual references in the repository, but do not ship them to visitors.
+for (const file of files.filter((item) => developmentOnlyAssets.has(path.basename(item)))) {
+  await unlink(file);
+}
+const productionFiles = files.filter((item) => !developmentOnlyAssets.has(path.basename(item)));
+
+const pngFiles = productionFiles.filter((file) => path.extname(file).toLowerCase() === '.png');
 if (pngFiles.length === 0) {
   console.log('Image optimization: no PNG files found; nothing to do.');
   process.exit(0);
@@ -40,6 +47,9 @@ for (const file of pngFiles) {
   const output = file.slice(0, -4) + '.webp';
   await sharp(file)
     .rotate()
+    // 1920px covers full-width desktop imagery and high-density displays without
+    // shipping oversized source photography to every mobile visitor.
+    .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
     .webp({ quality: 82, effort: 5 })
     .toFile(output);
 
@@ -49,7 +59,7 @@ for (const file of pngFiles) {
   converted.push({ input: file, output });
 }
 
-for (const file of files.filter((item) => textExtensions.has(path.extname(item).toLowerCase()))) {
+for (const file of productionFiles.filter((item) => textExtensions.has(path.extname(item).toLowerCase()))) {
   let content = await readFile(file, 'utf8');
   if (path.extname(file).toLowerCase() === '.html') {
     content = content.replace(
