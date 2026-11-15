@@ -138,9 +138,31 @@ export default function App(){
   useEffect(()=>{try{localStorage.setItem('rak-cart',JSON.stringify(cart))}catch{/* Storage may be disabled; cart remains usable for this session. */}},[cart]);
   useEffect(()=>{
     const root=document.documentElement;
-    root.style.setProperty('--value-photo-image',`url("${asset('/raki/Гора свежих раков на мокром камне-2.png')}")`);
-    root.style.setProperty('--value-photo-image-two',`url("${asset('/raki/Макросъёмка речного рака на мокром камне-4.png')}")`);
-    root.style.setProperty('--delivery-image',`url("${asset('/raki/Раки с укропом и лимоном в чугунной сковороде-1.png')}")`);
+    const loadValuesImages=()=>{
+      root.style.setProperty('--value-photo-image',`url("${asset('/raki/Гора свежих раков на мокром камне-2.png')}")`);
+      root.style.setProperty('--value-photo-image-two',`url("${asset('/raki/Макросъёмка речного рака на мокром камне-4.png')}")`);
+    };
+    const loadDeliveryImage=()=>{
+      root.style.setProperty('--delivery-image',`url("${asset('/raki/Раки с укропом и лимоном в чугунной сковороде-1.png')}")`);
+    };
+    const values=document.querySelector('.values');
+    const delivery=document.querySelector('#delivery');
+    if(!('IntersectionObserver' in window)){
+      loadValuesImages();
+      loadDeliveryImage();
+      return;
+    }
+    const observer=new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting) return;
+        if(entry.target===values) loadValuesImages();
+        if(entry.target===delivery) loadDeliveryImage();
+        observer.unobserve(entry.target);
+      });
+    },{rootMargin:'350px 0px'});
+    if(values) observer.observe(values); else loadValuesImages();
+    if(delivery) observer.observe(delivery); else loadDeliveryImage();
+    return ()=>observer.disconnect();
   },[]);
   useEffect(()=>{
     if(!menuOpen) return;
