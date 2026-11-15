@@ -166,7 +166,18 @@ Cloudflare Pages Function использует встроенный Workers Rate
 
 Важно: лимит Cloudflare приблизительный, локальный для каждой точки сети и может быть превышен при параллельных запросах. IP-ограничение может затронуть нескольких покупателей за одной общей сетью. Это дополнительный антиспам-барьер, а не строгая защита от дублей и не глобальная квота. Подробности — [официальная документация Cloudflare Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
 
-Для Vercel отдельный долговременный rate limit пока не подключён: он потребует настройки Firewall/Rate Limiting в аккаунте Vercel либо внешнего постоянного хранилища/сервиса. Не заменяйте его локальным счётчиком в памяти функции — он ненадёжен в serverless-среде.
+Для Vercel серверный обработчик защищается через **Vercel Firewall**, без дополнительной базы данных и без изменения кода функции. В проекте Vercel откройте **Firewall → Configure → New Rule** и создайте правило:
+- Name: `order-api-rate-limit`.
+- Условие: Request Path equals `/api/order` и Request Method equals `POST` (объединить через AND).
+- Action: **Rate Limit**.
+- Strategy: **Fixed Window**.
+- Time Window: **60 seconds**.
+- Request Limit: **10**.
+- Counting key: **IP**.
+- Action on exceed: **Default (429)** или Deny/429, если интерфейс предлагает выбор.
+Сохраните правило, затем обязательно нажмите **Review Changes → Publish**. До публикации правило не действует. После публикации проверьте в Firewall overview, что запросы к `POST /api/order` учитываются правилом. Встроенный Vercel Firewall поддерживает rate limiting на всех планах, но может иметь отдельные тарифные условия на обработанные запросы; проверьте показанные условия перед включением. Подробности: [Vercel WAF Rate Limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).
+
+Не добавляйте локальный счётчик в памяти Vercel Function: он не является надёжным ограничителем в serverless-среде. Правило Firewall защищает входящий трафик, но не обеспечивает постоянную идемпотентность заказа при повторной доставке.
 
 Для собственного домена, подключённого к Cloudflare Zone, дополнительно можно настроить WAF Rate Limiting rule для `POST /api/order`. Не считайте, что zone-level WAF rule автоматически действует на стандартном `pages.dev` hostname.
 
