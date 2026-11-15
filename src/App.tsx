@@ -32,7 +32,12 @@ const loadTurnstileScript = () => {
         document.head.appendChild(script);
       }
       script.addEventListener('load', () => resolve(), { once: true });
-      script.addEventListener('error', () => reject(new Error('Не удалось загрузить проверку безопасности.')), { once: true });
+      script.addEventListener('error', () => {
+        // Remove the failed script and clear the cached promise so reopening checkout can retry.
+        script?.remove();
+        turnstileScriptPromise = null;
+        reject(new Error('Не удалось загрузить проверку безопасности.'));
+      }, { once: true });
     });
   }
   return turnstileScriptPromise;
