@@ -6,14 +6,7 @@ type VercelResponse = { status(code: number): VercelResponse; json(payload: unkn
 type OrderItemInput = { productId: number; quantity: number };
 type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
 
-// Серверный каталог: цена и название не принимаются от браузера.
-// Перед публикацией замените демонстрационные значения на утверждённый ассортимент.
-const catalog: Record<number, { name: string; unit: string; price: number }> = {
-  1: { name: 'Живые раки — мелкие', unit: 'кг', price: 1900 },
-  5: { name: 'Живые раки — средние', unit: 'кг', price: 2300 },
-  6: { name: 'Живые раки — крупные', unit: 'кг', price: 2900 },
-  7: { name: 'Живые раки — отборные', unit: 'кг', price: 3500 },
-};
+import { ORDER_CATALOG as catalog } from '../shared/order-catalog';
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',

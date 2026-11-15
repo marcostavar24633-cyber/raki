@@ -6,12 +6,7 @@ interface Env {
 type OrderItemInput = { productId: number; quantity: number };
 type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
 
-const catalog: Record<number, { name: string; unit: string; price: number }> = {
-  1: { name: 'Живые раки — мелкие', unit: 'кг', price: 1900 },
-  5: { name: 'Живые раки — средние', unit: 'кг', price: 2300 },
-  6: { name: 'Живые раки — крупные', unit: 'кг', price: 2900 },
-  7: { name: 'Живые раки — отборные', unit: 'кг', price: 3500 },
-};
+import { ORDER_CATALOG as catalog } from '../../shared/order-catalog';
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, max-age=0' } });
