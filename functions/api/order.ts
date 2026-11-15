@@ -5,7 +5,7 @@ interface Env {
   ORDER_RATE_LIMITER: { limit(options: { key: string }): Promise<{ success: boolean }> };
 }
 type OrderItemInput = { productId: number; quantity: number };
-type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
+type OrderPayload = { name: string; phone: string; comment?: string; personalDataConsent: boolean; turnstileToken: string; items: OrderItemInput[] };
 
 import { ORDER_CATALOG as catalog } from '../../shared/order-catalog';
 
@@ -80,6 +80,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
   const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
   const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
+  if (body.personalDataConsent !== true) return json({ error: 'Подтвердите согласие на обработку персональных данных.' }, 400);
   const items = Array.isArray(body.items) ? body.items : [];
   const phoneDigits = phone.replace(/\D/g, '');
 
@@ -132,7 +133,9 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const message = [
     '<b>Новый заказ с сайта РАКОВАРНЯ 73</b>', '',
     `<b>Имя:</b> ${escapeHtml(name)}`,
-    `<b>Телефон:</b> ${escapeHtml(phone)}`, '',
+    `<b>Телефон:</b> ${escapeHtml(phone)}`,
+    '<b>Согласие на обработку персональных данных:</b> подтверждено в форме сайта',
+    `<b>Время получения сервером:</b> ${new Date().toISOString()}`, '',
     '<b>Состав заказа:</b>', lines, '',
     `<b>Итого:</b> ${total.toLocaleString('ru-RU')} ₽`,
     comment ? `\n<b>Комментарий:</b> ${escapeHtml(comment)}` : '',

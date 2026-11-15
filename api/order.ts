@@ -4,7 +4,7 @@ type VercelRequest = { method?: string; headers?: Record<string, string | string
 type VercelResponse = { status(code: number): VercelResponse; json(payload: unknown): VercelResponse };
 
 type OrderItemInput = { productId: number; quantity: number };
-type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
+type OrderPayload = { name: string; phone: string; comment?: string; personalDataConsent: boolean; turnstileToken: string; items: OrderItemInput[] };
 
 import { ORDER_CATALOG as catalog } from '../shared/order-catalog';
 
@@ -56,6 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : '';
   const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 40) : '';
   const comment = typeof body.comment === 'string' ? body.comment.trim().slice(0, 1000) : '';
+  if (body.personalDataConsent !== true) return res.status(400).json({ error: 'Подтвердите согласие на обработку персональных данных.' });
   const items = Array.isArray(body.items) ? body.items as OrderItemInput[] : [];
   const phoneDigits = phone.replace(/\D/g, '');
   if (!name || phoneDigits.length < 10 || phoneDigits.length > 15 || !items.length || items.length > 30) {
@@ -108,6 +109,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     '',
     `<b>Имя:</b> ${escapeHtml(name)}`,
     `<b>Телефон:</b> ${escapeHtml(phone)}`,
+    '<b>Согласие на обработку персональных данных:</b> подтверждено в форме сайта',
+    `<b>Время получения сервером:</b> ${new Date().toISOString()}`,
     '',
     '<b>Состав заказа:</b>', lines,
     '',
