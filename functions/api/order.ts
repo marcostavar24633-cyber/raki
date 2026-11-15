@@ -2,6 +2,7 @@ interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   TURNSTILE_SECRET_KEY: string;
+  ORDER_RATE_LIMITER: { limit(options: { key: string }): Promise<{ success: boolean }> };
 }
 type OrderItemInput = { productId: number; quantity: number };
 type OrderPayload = { name: string; phone: string; comment?: string; turnstileToken: string; items: OrderItemInput[] };
@@ -22,6 +23,30 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const origin = request.headers.get('origin');
   if (!origin || origin !== new URL(request.url).origin) {
     return json({ error: 'Источник запроса не разрешён.' }, 403);
+  }
+
+  // Anonymous checkout has no stable account identifier; use Cloudflare's
+  // trusted client IP as a practical per-network key. This limit is approximate
+  // and local to each Cloudflare location, not a global abuse-prevention quota.
+  const clientIp = request.headers.get('CF-Connecting-IP');
+  if (!clientIp) {
+    return json({ error: 'Не удалось определить источник запроса. Попробуйте позже.' }, 503);
+  }
+  try {
+    const rateLimit = await env.ORDER_RATE_LIMITER.limit({ key: clientIp });
+    if (!rateLimit.success) {
+      return new Response(JSON.stringify({ error: 'Слишком много попыток отправки. Подождите минуту и попробуйте снова.' }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store, max-age=0',
+          'Retry-After': '60',
+        },
+      });
+    }
+  } catch {
+    // Fail closed: do not send orders when the configured limiter is unavailable.
+    return json({ error: 'Защита формы временно недоступна. Попробуйте позже.' }, 503);
   }
 
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID || !env.TURNSTILE_SECRET_KEY) {

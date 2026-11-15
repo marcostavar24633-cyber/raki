@@ -160,11 +160,15 @@ Vite настроен на путь `/raki/`, необходимый для пу
 
 ### Rate limiting для Cloudflare Pages
 
-Turnstile — проверка на автоматизацию, но не ограничитель количества запросов. Дополнительный rate limit можно подключить непосредственно к Pages Function через Cloudflare Workers Rate Limiting binding. В отличие от внешней базы данных, отдельное хранилище проекта для этого не требуется.
+Cloudflare Pages Function использует встроенный Workers Rate Limiting binding `ORDER_RATE_LIMITER`, настроенный в `wrangler.toml`: не более 10 попыток за 60 секунд на IP-адрес клиента. Счётчик применяется до проверки тела заказа, поэтому частые некорректные запросы также расходуют лимит. При превышении API возвращает `429` и `Retry-After: 60`; если binding или IP недоступны, обработчик работает fail closed и не отправляет заказ.
 
-Текущий обработчик пока **не использует** такой binding. Перед его включением владелец аккаунта должен выделить уникальный положительный числовой `namespace_id` для этого проекта, после чего binding можно добавить в `wrangler.toml` и использовать в `functions/api/order.ts`. Не копируйте чужой namespace ID и не публикуйте секреты. Cloudflare указывает, что такие лимиты приблизительные и учитываются отдельно в каждой локации; это не строгий глобальный лимит. Смотрите [документацию Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) и [настройку Pages Functions](https://developers.cloudflare.com/pages/functions/wrangler-configuration/).
+`namespace_id = "73115001"` — выбранный для этого проекта положительный числовой идентификатор. Cloudflare требует, чтобы он был уникальным в аккаунте; перед подключением production deployment проверьте, что этот ID не занят другим rate-limit binding в аккаунте. Если занят — замените его на другой уникальный положительный integer string одновременно в `wrangler.toml`. Binding должен быть доступен production Pages Function; успешная локальная сборка сама по себе не подтверждает его включение в аккаунте.
 
-Для собственного домена, подключённого к Cloudflare Zone, можно также настроить WAF Rate Limiting rule для `POST /api/order`. Не считайте, что zone-level WAF rule автоматически действует на стандартном `pages.dev` hostname.
+Важно: лимит Cloudflare приблизительный, локальный для каждой точки сети и может быть превышен при параллельных запросах. IP-ограничение может затронуть нескольких покупателей за одной общей сетью. Это дополнительный антиспам-барьер, а не строгая защита от дублей и не глобальная квота. Подробности — [официальная документация Cloudflare Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+
+Для Vercel отдельный долговременный rate limit пока не подключён: он потребует настройки Firewall/Rate Limiting в аккаунте Vercel либо внешнего постоянного хранилища/сервиса. Не заменяйте его локальным счётчиком в памяти функции — он ненадёжен в serverless-среде.
+
+Для собственного домена, подключённого к Cloudflare Zone, дополнительно можно настроить WAF Rate Limiting rule для `POST /api/order`. Не считайте, что zone-level WAF rule автоматически действует на стандартном `pages.dev` hostname.
 
 ### Статус на момент этапа 46
 - [x] Cloudflare и Vercel обработчики проверяют данные заказа до расходования Turnstile token.

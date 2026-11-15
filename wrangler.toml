@@ -1,3 +1,13 @@
 name = "rakovarnya-73"
 pages_build_output_dir = "./dist"
 compatibility_date = "2026-11-13"
+
+# Approximate per-client-network throttle for anonymous order submissions.
+# namespace_id must be unique within the deploying Cloudflare account.
+[[ratelimits]]
+name = "ORDER_RATE_LIMITER"
+namespace_id = "73115001"
+
+[ratelimits.simple]
+limit = 10
+period = 60
