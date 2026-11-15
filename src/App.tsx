@@ -51,16 +51,21 @@ const restoreCart=():CartLine[]=>{
   try{
     const raw=JSON.parse(localStorage.getItem('rak-cart')||'[]');
     if(!Array.isArray(raw)) return [];
-    return raw.flatMap((line:unknown)=>{
-      if(!line || typeof line!=='object') return [];
+    const restored=new Map<number,CartLine>();
+    raw.forEach((line:unknown)=>{
+      if(!line || typeof line!=='object') return;
       const candidate=line as {product?:{id?:unknown};qty?:unknown};
       const product=products.find(item=>item.id===candidate.product?.id);
       const qty=Number(candidate.qty);
-      if(!product || !Number.isFinite(qty) || qty<=0 || qty>100) return [];
-      if(product.unit==='кг' && Math.round(qty*2)!==qty*2) return [];
-      if(product.unit!=='кг' && !Number.isInteger(qty)) return [];
-      return [{product,qty}];
+      if(!product || !Number.isFinite(qty) || qty<=0) return;
+      if(product.unit==='кг' && Math.round(qty*2)!==qty*2) return;
+      if(product.unit!=='кг' && !Number.isInteger(qty)) return;
+      const combined=(restored.get(product.id)?.qty||0)+qty;
+      // Match the live cart and server limit; discard corrupted/duplicated over-limit entries.
+      if(combined>MAX_CART_KG) { restored.delete(product.id); return; }
+      restored.set(product.id,{product,qty:combined});
     });
+    return Array.from(restored.values());
   }catch{return []}
 };
 export default function App(){
