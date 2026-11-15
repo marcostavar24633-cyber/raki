@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://marcostavar24633-cyber.github.io/raki/sitemap.xml
+Sitemap: __SITE_URL__sitemap.xml
