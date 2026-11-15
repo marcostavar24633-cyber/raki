@@ -79,6 +79,7 @@ export default function App(){
   const [cart,setCart]=useState<CartLine[]>(restoreCart);
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
+  const submitLockRef = useRef(false);
   const turnstileWidgetRef = useRef<string | null>(null);
   const [turnstileToken,setTurnstileToken]=useState('');
   const resetTurnstile = () => {
@@ -370,7 +371,8 @@ export default function App(){
   },[activeSlide]);
   const submitOrder=async(e:React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
-    if(isSubmitting) return;
+    // A ref closes the same-tick race before React can commit the disabled button state.
+    if(submitLockRef.current || isSubmitting) return;
     if(!cart.length){setOrderError('Корзина пуста. Добавьте товары перед оформлением.');return;}
     if(import.meta.env.BASE_URL==='/' && (!turnstileSiteKey || !turnstileToken)){
       setOrderError(!turnstileSiteKey ? 'Защита формы ещё не настроена. Попробуйте связаться с нами по телефону.' : 'Пройдите проверку безопасности перед отправкой заказа.');
@@ -404,6 +406,7 @@ export default function App(){
       await prepareManualFallback('Автоматическая отправка недоступна на этой версии сайта. Заявка не отправлена: скопируйте текст и отправьте его продавцу вручную.');
       return;
     }
+    submitLockRef.current = true;
     setIsSubmitting(true);
     try{
       const response=await fetch('/api/order',{
@@ -430,6 +433,7 @@ export default function App(){
       resetTurnstile();
       await prepareManualFallback('Не удалось получить подтверждение от сервера. Заказ мог успеть поступить продавцу. Сначала уточните получение заявки и только потом отправляйте её повторно. Корзина сохранена.');
     }finally{
+      submitLockRef.current = false;
       setIsSubmitting(false);
     }
   };
