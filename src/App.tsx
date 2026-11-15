@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, Check, Eye, ChevronLeft, ChevronRight, Clock3, Fish, Menu, Minus, Plus, ShoppingBag, Truck, Phone, X } from 'lucide-react';
-import { gsap } from 'gsap';
 import { ORDER_CATALOG } from '../shared/order-catalog';
 
 type Product = { id:number; name:string; subtitle:string; price:number; unit:string; image:string; tag?:string; category:'live' };
@@ -244,9 +243,16 @@ export default function App(){
   },[]);
   useEffect(()=>{
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const targets=gsap.utils.toArray<HTMLElement>('.hero-copy .eyebrow, .hero-copy h1, .hero-copy > p, .hero-copy .hero-buttons');
-    gsap.fromTo(targets,{y:26,opacity:0,filter:'blur(5px)'},{y:0,opacity:1,filter:'blur(0px)',duration:.85,stagger:.11,ease:'power3.out',overwrite:true});
-    gsap.fromTo('.hero-stamp',{scale:.82,opacity:0,rotate:-8},{scale:1,opacity:1,rotate:12,duration:1,ease:'back.out(1.5)',delay:.18,overwrite:true});
+    let disposed=false;
+    const timer=window.setTimeout(()=>{
+      void import('gsap').then(({gsap})=>{
+        if(disposed) return;
+        const targets=gsap.utils.toArray<HTMLElement>('.hero-copy .eyebrow, .hero-copy h1, .hero-copy > p, .hero-copy .hero-buttons');
+        gsap.fromTo(targets,{y:26,opacity:0,filter:'blur(5px)'},{y:0,opacity:1,filter:'blur(0px)',duration:.85,stagger:.11,ease:'power3.out',overwrite:true});
+        gsap.fromTo('.hero-stamp',{scale:.82,opacity:0,rotate:-8},{scale:1,opacity:1,rotate:12,duration:1,ease:'back.out(1.5)',delay:.18,overwrite:true});
+      }).catch(()=>{/* The hero remains usable if the optional animation chunk fails. */});
+    },350);
+    return ()=>{disposed=true;window.clearTimeout(timer)};
   },[activeSlide]);
   useEffect(()=>{
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
