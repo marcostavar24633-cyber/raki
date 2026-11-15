@@ -415,7 +415,11 @@ export default function App(){
       try{result=await response.json() as {ok?:boolean;error?:string};}catch{/* Invalid response is treated as failure. */}
       if(!response.ok||result.ok!==true){
         resetTurnstile();
-        await prepareManualFallback(result.error||'Сервер не подтвердил доставку заказа. Заявка не отправлена автоматически; отправьте подготовленный текст вручную.');
+        const deliveryMayBeUnconfirmed=response.status===502||response.ok;
+        const fallbackMessage=deliveryMayBeUnconfirmed
+          ? 'Не удалось подтвердить результат передачи заказа. Перед повторной отправкой уточните у продавца, не поступила ли заявка.'
+          : result.error||'Сервер отклонил заявку. Проверьте данные и попробуйте снова либо отправьте подготовленный текст вручную.';
+        await prepareManualFallback(fallbackMessage);
         return;
       }
       setShareMethod('server');
@@ -424,7 +428,7 @@ export default function App(){
       setCartNotice('');
     }catch{
       resetTurnstile();
-      await prepareManualFallback('Не удалось связаться с сервером. Заявка не отправлена автоматически; корзина сохранена, отправьте текст вручную.');
+      await prepareManualFallback('Не удалось получить подтверждение от сервера. Заказ мог успеть поступить продавцу. Сначала уточните получение заявки и только потом отправляйте её повторно. Корзина сохранена.');
     }finally{
       setIsSubmitting(false);
     }
