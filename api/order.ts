@@ -91,10 +91,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(503).json({ error: 'Проверка безопасности временно недоступна. Попробуйте позже.' });
     }
     const verification = await verificationResponse.json() as { success?: boolean; hostname?: string; action?: string };
-    const requestHost = req.headers?.host;
-    const hostname = Array.isArray(requestHost) ? requestHost[0] : requestHost;
-    if (!hostname || verification.success !== true ||
-      verification.hostname !== hostname.split(':')[0].toLowerCase() || verification.action !== 'order') {
+    // Origin was already validated against Host above; use URL.hostname for
+    // canonical hostname parsing (including IPv6 and optional ports).
+    const expectedHostname = new URL(origin).hostname.toLowerCase();
+    if (verification.success !== true ||
+      verification.hostname?.toLowerCase() !== expectedHostname || verification.action !== 'order') {
       return res.status(403).json({ error: 'Проверка безопасности не пройдена или истекла. Пройдите её ещё раз.' });
     }
   } catch {
