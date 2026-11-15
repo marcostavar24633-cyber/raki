@@ -281,50 +281,6 @@ export default function App(){
     return ()=>{observer.disconnect();nodes.forEach(node=>node.classList.remove('reveal-ready','is-visible'))};
   },[]);
   useEffect(()=>{
-    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduce) return;
-    // Cover the entire visible site: header, all main sections, footer and floating UI.
-    // Each selected element is evaluated by its own lower edge as it enters the top fade zone.
-    const selector='main,main *,footer,footer *,[role="dialog"],[role="dialog"] *,[role="complementary"],[role="complementary"] *';
-    const textTargets='h1,h2,h3,h4,h5,h6,p,li,a,button,span,strong,em,b,small,label,blockquote,figcaption,summary,dt,dd';
-    const visualTargets='section,article,aside,nav,form,figure,details,img,picture,video,canvas,[role="dialog"],[role="complementary"],.product-card,.format-card,.process-item,.value-card,.contact-panel,.craft-image,.quick-view-photo,.hero-photo-layer,.hero-stamp';
-    const allNodes=Array.from(document.querySelectorAll<HTMLElement>(selector));
-    // Include text elements even when nested inside a section/card, plus each major visual block.
-    const nodes=allNodes.filter(node=>node.matches(textTargets+', '+visualTargets));
-    nodes.forEach(node=>node.dataset.scrollTextFade='true');
-    let frame=0;
-    const update=()=>{
-      frame=0;
-      const zoneStart=200;
-      const zoneEnd=50;
-      nodes.forEach(node=>{
-        const rect=node.getBoundingClientRect();
-        // Use the bottom edge so a paragraph/card does not disappear when only its first line enters the zone.
-        const edge=rect.bottom;
-        const progress=Math.max(0,Math.min(1,(zoneStart-edge)/(zoneStart-zoneEnd)));
-        const eased=progress*progress*progress*(progress*(progress*6-15)+10);
-        const opacity=1-eased;
-        const slowOffset=Math.min(54,Math.max(0,zoneStart-edge)*.18);
-        node.style.setProperty('--scroll-text-opacity',opacity.toFixed(3));
-        node.style.setProperty('--scroll-slow-offset',slowOffset.toFixed(1)+'px');
-      });
-    };
-    const requestUpdate=()=>{if(!frame) frame=requestAnimationFrame(update)};
-    update();
-    window.addEventListener('scroll',requestUpdate,{passive:true});
-    window.addEventListener('resize',requestUpdate);
-    return ()=>{
-      window.removeEventListener('scroll',requestUpdate);
-      window.removeEventListener('resize',requestUpdate);
-      if(frame) cancelAnimationFrame(frame);
-      nodes.forEach(node=>{
-        delete node.dataset.scrollTextFade;
-        node.style.removeProperty('--scroll-text-opacity');
-        node.style.removeProperty('--scroll-slow-offset');
-      });
-    };
-  },[]);
-  useEffect(()=>{
     const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(!finePointer || reducedMotion) return;
