@@ -936,7 +936,8 @@ main [data-scroll-text-fade="true"]{
   opacity:var(--scroll-text-opacity,1);
   translate:0 var(--scroll-slow-offset,0px);
   transition:opacity .22s ease-out;
-  will-change:opacity,translate;
+  /* Avoid forcing a separate compositor layer for every text node on mobile. */
+  will-change:auto;
 }
 @media(prefers-reduced-motion:reduce){
   main [data-scroll-text-fade="true"]{
@@ -1079,3 +1080,9 @@ main [data-scroll-text-fade="true"]{
 .turnstile-container{min-height:66px;display:flex;align-items:center;justify-content:flex-start;max-width:100%;overflow:hidden}
 .turnstile-field .form-error{margin:0;font-size:11px;line-height:1.6}
 @media(max-width:420px){.turnstile-field{padding:10px}.turnstile-container{transform-origin:left center;max-width:100%}}
+
+
+/* Keyboard users can skip the navigation and reach the page content immediately. */
+.skip-link{position:fixed;z-index:100;top:8px;left:8px;transform:translateY(calc(-100% - 16px));padding:12px 16px;border:2px solid #f0c98e;border-radius:999px;background:#f0ebe2;color:#171b17;font-size:14px;font-weight:700;box-shadow:0 4px 18px rgba(0,0,0,.28);transition:transform .18s ease}
+.skip-link:focus{transform:translateY(0);outline:3px solid #f0c98e;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.skip-link{transition:none}}
