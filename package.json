@@ -15,7 +15,7 @@
     "check:vercel-function": "tsc --noEmit --target ES2022 --lib ES2022,DOM --strict --skipLibCheck --moduleResolution bundler --module ESNext api/order.ts"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "4.3.4",
+    "@vitejs/plugin-react": "6.3.0",
     "gsap": "3.14.2",
     "lucide-react": "0.468.0",
     "react": "18.3.1",
